@@ -88,7 +88,7 @@ export function createSeededRandom(seed: number): () => number {
 
 /**
  * Default grid bounds for visualization.
- * Centered at origin with unit cube extent.
+ * Centered at origin with extent of 10 units per axis.
  */
 export const DEFAULT_BOUNDS: [number, number, number, number, number, number] = [
   -5, -5, -5, 5, 5, 5,
@@ -108,18 +108,19 @@ export const DEFAULT_RESOLUTION = 16;
  * Generates a single-mass scenario configuration.
  * Places one mass at the center of the grid.
  *
- * @param seed - Random seed for deterministic generation
+ * @param seed - Random seed for API consistency (used for mass variation)
  * @returns CurvatureGridConfig for a single centered mass
  */
 export function generateSingleMassScenario(seed: number = 42): CurvatureGridConfig {
-  // Single mass doesn't need randomness, but we accept seed for API consistency
-  void seed;
+  // Use seed for minor mass variation to maintain API consistency
+  const random = createSeededRandom(seed);
+  const massVariation = 0.9 + random() * 0.2; // 0.9 to 1.1 multiplier
 
   const masses: MassSource[] = [
     {
       id: 'center-mass',
       position: [0, 0, 0],
-      mass: 100,
+      mass: 100 * massVariation,
       radius: 0.5,
       color: '#ffcc00',
     },
