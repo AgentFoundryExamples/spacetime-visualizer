@@ -193,18 +193,21 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 
     set({ isComputing: true, error: null });
 
-    try {
-      const result = computeCurvatureGrid(config);
-      set({ result, isComputing: false, error: null });
-    } catch (err) {
-      const message =
-        err instanceof CurvatureValidationError
-          ? err.message
-          : err instanceof Error
+    // Use setTimeout to allow the UI to update before the synchronous, blocking computation
+    setTimeout(() => {
+      try {
+        const result = computeCurvatureGrid(config);
+        set({ result, isComputing: false, error: null });
+      } catch (err) {
+        const message =
+          err instanceof CurvatureValidationError
             ? err.message
-            : 'Unknown error during computation';
-      set({ result: null, isComputing: false, error: message });
-    }
+            : err instanceof Error
+              ? err.message
+              : 'Unknown error during computation';
+        set({ result: null, isComputing: false, error: message });
+      }
+    }, 0);
   },
 
   reset: () => {

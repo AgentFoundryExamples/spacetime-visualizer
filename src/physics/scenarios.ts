@@ -73,6 +73,11 @@ export const SCENARIO_PRESETS: ScenarioDescription[] = [
  * Simple deterministic pseudo-random number generator.
  * Uses a linear congruential generator (LCG) for reproducibility.
  *
+ * **Note**: This generator is deterministic within a single JavaScript environment.
+ * Cross-platform reproducibility is not guaranteed due to potential differences
+ * in floating-point handling across JavaScript engines. For scenarios requiring
+ * exact cross-platform reproducibility, consider using a fixed-point implementation.
+ *
  * @param seed - Initial seed value
  * @returns Function that returns next random number in [0, 1)
  */
@@ -82,11 +87,11 @@ export function createSeededRandom(seed: number): () => number {
   const c = 1013904223;
   const m = 2 ** 32;
 
-  let state = seed >>> 0; // Ensure unsigned 32-bit
+  let state = seed | 0; // Ensure 32-bit integer
 
   return () => {
-    state = (a * state + c) % m;
-    return state / m;
+    state = (a * state + c) | 0; // Multiplication overflows and wraps, | 0 keeps it 32-bit
+    return (state >>> 0) / m; // Use unsigned right shift for division
   };
 }
 

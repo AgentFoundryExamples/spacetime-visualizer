@@ -36,6 +36,10 @@ export const C_CONSTANT = 1.0;
 /**
  * Minimum distance to prevent division by zero or infinity.
  * Used to clamp distances when computing potentials.
+ *
+ * **Warning**: When sample points fall within this distance of a mass source,
+ * curvature values are artificially limited and may not reflect physical reality.
+ * This is an intentional safeguard to prevent numerical instability (infinity/NaN).
  */
 export const MIN_DISTANCE = 0.001;
 
@@ -299,15 +303,15 @@ export function computeTidalTensor(
     const r2 = dx * dx + dy * dy + dz * dz;
     const r = Math.max(Math.sqrt(r2), MIN_DISTANCE);
     const r3 = r * r * r;
-    const r5 = r3 * r * r;
 
     // Tidal tensor components: T_ii = GM * (3*x_i² - r²) / r^5
+    // Optimized: factor out r^2 to avoid computing r^5 directly
     const gmOverR3 = (G_CONSTANT * mass.mass) / r3;
-    const gmOverR5 = (G_CONSTANT * mass.mass) / r5;
+    const rSquared = r * r;
 
-    txx += 3 * gmOverR5 * dx * dx - gmOverR3;
-    tyy += 3 * gmOverR5 * dy * dy - gmOverR3;
-    tzz += 3 * gmOverR5 * dz * dz - gmOverR3;
+    txx += ((3 * dx * dx) / rSquared - 1) * gmOverR3;
+    tyy += ((3 * dy * dy) / rSquared - 1) * gmOverR3;
+    tzz += ((3 * dz * dz) / rSquared - 1) * gmOverR3;
   }
 
   // Clamp values to prevent overflow
@@ -346,6 +350,14 @@ export function computeMetricDeviation(potential: number): number {
  * 5. Normalizes output for visualization
  *
  * The computation is deterministic: identical inputs always produce identical outputs.
+ *
+ * **Performance Note**: This function performs synchronous, blocking computation.
+ * For resolutions above 64, computation may take noticeable time (100ms+).
+ * Expected performance for common resolutions:
+ * - Resolution 16: ~1ms
+ * - Resolution 32: ~10ms
+ * - Resolution 64: ~50-100ms
+ * - Resolution 128+: 500ms+ (may cause UI lag if not deferred)
  *
  * @param config - Configuration specifying grid, masses, and parameters
  * @returns CurvatureGridResult with samples for each grid point

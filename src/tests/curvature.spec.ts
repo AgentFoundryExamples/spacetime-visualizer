@@ -550,14 +550,19 @@ describe('simulation store', () => {
     expect(state.currentPreset).toBeNull();
   });
 
-  it('should load preset scenario', () => {
+  it('should load preset scenario', async () => {
     const store = useSimulationStore.getState();
     store.loadScenario('single-mass');
 
     const state = useSimulationStore.getState();
     expect(state.currentPreset).toBe('single-mass');
     expect(state.config.masses.length).toBe(1);
-    expect(state.result).not.toBeNull();
+
+    // Wait for async computation to complete
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const finalState = useSimulationStore.getState();
+    expect(finalState.result).not.toBeNull();
   });
 
   it('should add and remove masses', () => {
@@ -596,7 +601,7 @@ describe('simulation store', () => {
     expect(useSimulationStore.getState().currentPreset).toBeNull();
   });
 
-  it('should compute curvature on demand', () => {
+  it('should compute curvature on demand', async () => {
     const store = useSimulationStore.getState();
     store.addMass({ id: 'test', position: [0, 0, 0], mass: 100 });
 
@@ -604,17 +609,23 @@ describe('simulation store', () => {
 
     store.compute();
 
+    // Wait for async computation to complete
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     const state = useSimulationStore.getState();
     expect(state.result).not.toBeNull();
     expect(state.error).toBeNull();
   });
 
-  it('should capture validation errors', () => {
+  it('should capture validation errors', async () => {
     const store = useSimulationStore.getState();
 
     // Set invalid configuration
     store.setMasses([{ id: 'bad', position: [0, 0, 0], mass: -100 }]);
     store.compute();
+
+    // Wait for async computation to complete
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     const state = useSimulationStore.getState();
     expect(state.result).toBeNull();
