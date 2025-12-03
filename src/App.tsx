@@ -15,12 +15,7 @@
  */
 
 import { useMemo } from 'react';
-import {
-  ThreeCanvas,
-  Sidebar,
-  Footer,
-  isWebGL2Supported,
-} from './components';
+import { ThreeCanvas, Sidebar, Footer, isWebGL2Supported } from './components';
 import './styles/layout.css';
 
 /**

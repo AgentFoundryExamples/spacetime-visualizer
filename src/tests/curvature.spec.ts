@@ -179,7 +179,9 @@ describe('curvature physics', () => {
       expect(result1.samples.length).toBe(result2.samples.length);
 
       for (let i = 0; i < result1.samples.length; i++) {
-        expect(result1.samples[i].position).toEqual(result2.samples[i].position);
+        expect(result1.samples[i].position).toEqual(
+          result2.samples[i].position
+        );
         expect(result1.samples[i].metricDeviation).toBe(
           result2.samples[i].metricDeviation
         );
@@ -281,9 +283,15 @@ describe('validation', () => {
     });
 
     it('should reject invalid position array', () => {
-      const mass = { id: 'test', position: [0, 0], mass: 100 } as unknown as MassSource;
+      const mass = {
+        id: 'test',
+        position: [0, 0],
+        mass: 100,
+      } as unknown as MassSource;
       expect(() => validateMassSource(mass)).toThrow(CurvatureValidationError);
-      expect(() => validateMassSource(mass)).toThrow('position array of length 3');
+      expect(() => validateMassSource(mass)).toThrow(
+        'position array of length 3'
+      );
     });
 
     it('should reject non-finite position values', () => {
@@ -311,7 +319,9 @@ describe('validation', () => {
         radius: -1,
       };
       expect(() => validateMassSource(mass)).toThrow(CurvatureValidationError);
-      expect(() => validateMassSource(mass)).toThrow('non-negative finite number');
+      expect(() => validateMassSource(mass)).toThrow(
+        'non-negative finite number'
+      );
     });
   });
 
@@ -329,51 +339,81 @@ describe('validation', () => {
 
     it('should reject non-integer resolution', () => {
       const config = { ...validConfig, resolution: 16.5 };
-      expect(() => validateGridConfig(config)).toThrow(CurvatureValidationError);
+      expect(() => validateGridConfig(config)).toThrow(
+        CurvatureValidationError
+      );
       expect(() => validateGridConfig(config)).toThrow('integer');
     });
 
     it('should reject resolution below minimum', () => {
       const config = { ...validConfig, resolution: 1 };
-      expect(() => validateGridConfig(config)).toThrow(CurvatureValidationError);
+      expect(() => validateGridConfig(config)).toThrow(
+        CurvatureValidationError
+      );
       expect(() => validateGridConfig(config)).toThrow('between');
     });
 
     it('should reject resolution above maximum', () => {
       const config = { ...validConfig, resolution: 1000 };
-      expect(() => validateGridConfig(config)).toThrow(CurvatureValidationError);
+      expect(() => validateGridConfig(config)).toThrow(
+        CurvatureValidationError
+      );
       expect(() => validateGridConfig(config)).toThrow('between');
     });
 
     it('should reject invalid bounds length', () => {
-      const config = { ...validConfig, bounds: [0, 0, 0, 1, 1] as unknown as CurvatureGridConfig['bounds'] };
-      expect(() => validateGridConfig(config)).toThrow(CurvatureValidationError);
+      const config = {
+        ...validConfig,
+        bounds: [0, 0, 0, 1, 1] as unknown as CurvatureGridConfig['bounds'],
+      };
+      expect(() => validateGridConfig(config)).toThrow(
+        CurvatureValidationError
+      );
       expect(() => validateGridConfig(config)).toThrow('array of 6 numbers');
     });
 
     it('should reject bounds where max <= min', () => {
-      const config = { ...validConfig, bounds: [-5, -5, -5, -5, 5, 5] as CurvatureGridConfig['bounds'] };
-      expect(() => validateGridConfig(config)).toThrow(CurvatureValidationError);
+      const config = {
+        ...validConfig,
+        bounds: [-5, -5, -5, -5, 5, 5] as CurvatureGridConfig['bounds'],
+      };
+      expect(() => validateGridConfig(config)).toThrow(
+        CurvatureValidationError
+      );
       expect(() => validateGridConfig(config)).toThrow('greater than');
     });
 
     it('should reject invalid time step', () => {
       const configLow = { ...validConfig, timeStep: 0.00001 };
-      expect(() => validateGridConfig(configLow)).toThrow(CurvatureValidationError);
+      expect(() => validateGridConfig(configLow)).toThrow(
+        CurvatureValidationError
+      );
 
       const configHigh = { ...validConfig, timeStep: 10 };
-      expect(() => validateGridConfig(configHigh)).toThrow(CurvatureValidationError);
+      expect(() => validateGridConfig(configHigh)).toThrow(
+        CurvatureValidationError
+      );
     });
 
     it('should validate all masses in array', () => {
       const config = {
         ...validConfig,
         masses: [
-          { id: 'm1', position: [0, 0, 0] as [number, number, number], mass: 100 },
-          { id: 'm2', position: [1, 1, 1] as [number, number, number], mass: -50 }, // Invalid
+          {
+            id: 'm1',
+            position: [0, 0, 0] as [number, number, number],
+            mass: 100,
+          },
+          {
+            id: 'm2',
+            position: [1, 1, 1] as [number, number, number],
+            mass: -50,
+          }, // Invalid
         ],
       };
-      expect(() => validateGridConfig(config)).toThrow(CurvatureValidationError);
+      expect(() => validateGridConfig(config)).toThrow(
+        CurvatureValidationError
+      );
       expect(() => validateGridConfig(config)).toThrow('non-negative');
     });
   });
@@ -640,10 +680,12 @@ describe('multi-mass superposition', () => {
 
     // Find samples at symmetric positions along x-axis
     const leftSample = result.samples.find(
-      (s) => Math.abs(s.position[0] + 1.8) < 0.5 && Math.abs(s.position[1]) < 0.5
+      (s) =>
+        Math.abs(s.position[0] + 1.8) < 0.5 && Math.abs(s.position[1]) < 0.5
     );
     const rightSample = result.samples.find(
-      (s) => Math.abs(s.position[0] - 1.8) < 0.5 && Math.abs(s.position[1]) < 0.5
+      (s) =>
+        Math.abs(s.position[0] - 1.8) < 0.5 && Math.abs(s.position[1]) < 0.5
     );
 
     if (leftSample && rightSample) {
@@ -717,7 +759,13 @@ describe('edge cases', () => {
     // Sum should equal single mass of 100
     const singleConfig = {
       ...config,
-      masses: [{ id: 'single', position: [0, 0, 0] as [number, number, number], mass: 100 }],
+      masses: [
+        {
+          id: 'single',
+          position: [0, 0, 0] as [number, number, number],
+          mass: 100,
+        },
+      ],
     };
     const singleResult = computeCurvatureGrid(singleConfig);
 

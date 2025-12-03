@@ -42,25 +42,29 @@ export const SCENARIO_PRESETS: ScenarioDescription[] = [
   {
     id: 'single-mass',
     name: 'Single Mass',
-    description: 'A single massive object at the center, demonstrating spherically symmetric curvature.',
+    description:
+      'A single massive object at the center, demonstrating spherically symmetric curvature.',
     massCount: 1,
   },
   {
     id: 'binary-orbit',
     name: 'Binary System',
-    description: 'Two masses in orbital configuration, showing gravitational interaction.',
+    description:
+      'Two masses in orbital configuration, showing gravitational interaction.',
     massCount: 2,
   },
   {
     id: 'triple-system',
     name: 'Triple System',
-    description: 'Three-body configuration demonstrating complex gravitational superposition.',
+    description:
+      'Three-body configuration demonstrating complex gravitational superposition.',
     massCount: 3,
   },
   {
     id: 'cluster',
     name: 'Mass Cluster',
-    description: 'A cluster of multiple masses showing aggregate curvature effects.',
+    description:
+      'A cluster of multiple masses showing aggregate curvature effects.',
     massCount: 5,
   },
 ];
@@ -90,9 +94,8 @@ export function createSeededRandom(seed: number): () => number {
  * Default grid bounds for visualization.
  * Centered at origin with extent of 10 units per axis.
  */
-export const DEFAULT_BOUNDS: [number, number, number, number, number, number] = [
-  -5, -5, -5, 5, 5, 5,
-];
+export const DEFAULT_BOUNDS: [number, number, number, number, number, number] =
+  [-5, -5, -5, 5, 5, 5];
 
 /**
  * Default time step for simulations (seconds).
@@ -111,7 +114,9 @@ export const DEFAULT_RESOLUTION = 16;
  * @param seed - Random seed for API consistency (used for mass variation)
  * @returns CurvatureGridConfig for a single centered mass
  */
-export function generateSingleMassScenario(seed: number = 42): CurvatureGridConfig {
+export function generateSingleMassScenario(
+  seed: number = 42
+): CurvatureGridConfig {
   // Use seed for minor mass variation to maintain API consistency
   const random = createSeededRandom(seed);
   const massVariation = 0.9 + random() * 0.2; // 0.9 to 1.1 multiplier
@@ -223,7 +228,9 @@ export function generateTripleScenario(seed: number = 42): CurvatureGridConfig {
  * @param seed - Random seed for deterministic generation
  * @returns CurvatureGridConfig for a mass cluster
  */
-export function generateClusterScenario(seed: number = 42): CurvatureGridConfig {
+export function generateClusterScenario(
+  seed: number = 42
+): CurvatureGridConfig {
   const random = createSeededRandom(seed);
 
   const clusterRadius = 3;

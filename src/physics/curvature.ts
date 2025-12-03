@@ -74,7 +74,9 @@ export class CurvatureValidationError extends Error {
  */
 export function validateMassSource(mass: MassSource): void {
   if (!mass.id || typeof mass.id !== 'string') {
-    throw new CurvatureValidationError('MassSource must have a valid string id');
+    throw new CurvatureValidationError(
+      'MassSource must have a valid string id'
+    );
   }
 
   if (!Array.isArray(mass.position) || mass.position.length !== 3) {
@@ -84,7 +86,10 @@ export function validateMassSource(mass: MassSource): void {
   }
 
   for (let i = 0; i < 3; i++) {
-    if (typeof mass.position[i] !== 'number' || !Number.isFinite(mass.position[i])) {
+    if (
+      typeof mass.position[i] !== 'number' ||
+      !Number.isFinite(mass.position[i])
+    ) {
       throw new CurvatureValidationError(
         `MassSource "${mass.id}" position[${i}] must be a finite number`
       );
@@ -104,7 +109,11 @@ export function validateMassSource(mass: MassSource): void {
   }
 
   if (mass.radius !== undefined) {
-    if (typeof mass.radius !== 'number' || !Number.isFinite(mass.radius) || mass.radius < 0) {
+    if (
+      typeof mass.radius !== 'number' ||
+      !Number.isFinite(mass.radius) ||
+      mass.radius < 0
+    ) {
       throw new CurvatureValidationError(
         `MassSource "${mass.id}" radius must be a non-negative finite number`
       );
@@ -134,12 +143,19 @@ export function validateGridConfig(config: CurvatureGridConfig): void {
 
   // Validate bounds
   if (!Array.isArray(config.bounds) || config.bounds.length !== 6) {
-    throw new CurvatureValidationError('Bounds must be an array of 6 numbers [minX, minY, minZ, maxX, maxY, maxZ]');
+    throw new CurvatureValidationError(
+      'Bounds must be an array of 6 numbers [minX, minY, minZ, maxX, maxY, maxZ]'
+    );
   }
 
   for (let i = 0; i < 6; i++) {
-    if (typeof config.bounds[i] !== 'number' || !Number.isFinite(config.bounds[i])) {
-      throw new CurvatureValidationError(`Bounds[${i}] must be a finite number`);
+    if (
+      typeof config.bounds[i] !== 'number' ||
+      !Number.isFinite(config.bounds[i])
+    ) {
+      throw new CurvatureValidationError(
+        `Bounds[${i}] must be a finite number`
+      );
     }
   }
 
@@ -186,7 +202,10 @@ export function validateGridConfig(config: CurvatureGridConfig): void {
   }
 
   // Validate time step
-  if (typeof config.timeStep !== 'number' || !Number.isFinite(config.timeStep)) {
+  if (
+    typeof config.timeStep !== 'number' ||
+    !Number.isFinite(config.timeStep)
+  ) {
     throw new CurvatureValidationError('Time step must be a finite number');
   }
 
@@ -309,7 +328,10 @@ export function computeTidalTensor(
 export function computeMetricDeviation(potential: number): number {
   // In our normalized units, c = 1
   const deviation = (2 * potential) / (C_CONSTANT * C_CONSTANT);
-  return Math.max(-MAX_METRIC_DEVIATION, Math.min(MAX_METRIC_DEVIATION, deviation));
+  return Math.max(
+    -MAX_METRIC_DEVIATION,
+    Math.min(MAX_METRIC_DEVIATION, deviation)
+  );
 }
 
 /**
@@ -329,7 +351,9 @@ export function computeMetricDeviation(potential: number): number {
  * @returns CurvatureGridResult with samples for each grid point
  * @throws CurvatureValidationError if configuration is invalid
  */
-export function computeCurvatureGrid(config: CurvatureGridConfig): CurvatureGridResult {
+export function computeCurvatureGrid(
+  config: CurvatureGridConfig
+): CurvatureGridResult {
   // Validate configuration
   validateGridConfig(config);
 

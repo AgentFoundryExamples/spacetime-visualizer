@@ -20,7 +20,10 @@ import type {
   CurvatureGridConfig,
   CurvatureGridResult,
 } from '../physics/types';
-import { computeCurvatureGrid, CurvatureValidationError } from '../physics/curvature';
+import {
+  computeCurvatureGrid,
+  CurvatureValidationError,
+} from '../physics/curvature';
 import type { ScenarioPreset } from '../physics/scenarios';
 import {
   getScenarioConfig,
@@ -217,7 +220,12 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 }));
 
 // Re-export types for UI convenience
-export type { MassSource, CurvatureSample, CurvatureGridConfig, CurvatureGridResult } from '../physics/types';
+export type {
+  MassSource,
+  CurvatureSample,
+  CurvatureGridConfig,
+  CurvatureGridResult,
+} from '../physics/types';
 export type { ScenarioPreset, ScenarioDescription } from '../physics/scenarios';
 export { SCENARIO_PRESETS } from '../physics/scenarios';
 export { CurvatureValidationError } from '../physics/curvature';
