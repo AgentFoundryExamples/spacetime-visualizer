@@ -87,7 +87,7 @@ export function createSeededRandom(seed: number): () => number {
   const c = 1013904223;
   const m = 2 ** 32;
 
-  let state = seed | 0; // Ensure 32-bit integer
+  let state = seed >>> 0; // Ensure unsigned 32-bit
 
   return () => {
     state = (a * state + c) | 0; // Multiplication overflows and wraps, | 0 keeps it 32-bit
