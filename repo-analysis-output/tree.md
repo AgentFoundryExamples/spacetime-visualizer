@@ -1,4 +1,4 @@
-# agent-foundry-template
+# spacetime-visualizer
 
 ├── .github
   ├── af-config
