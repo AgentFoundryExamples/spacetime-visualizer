@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   useConfigStore,
   DEFAULT_GRID_RESOLUTION,
   DEFAULT_ANIMATION_TIMESTEP,
   getInitialConfig,
+  MIN_GRID_RESOLUTION,
+  MAX_GRID_RESOLUTION,
+  MIN_ANIMATION_TIMESTEP,
+  MAX_ANIMATION_TIMESTEP,
 } from '../state/config';
 
 // Reset store between tests
@@ -81,21 +85,21 @@ describe('getInitialConfig', () => {
     expect(config.animationTimestep).toBe(DEFAULT_ANIMATION_TIMESTEP);
   });
 
-  it('should parse env vars when set', () => {
-    // Mock import.meta.env
-    const originalEnv = { ...import.meta.env };
+  it('should have valid range constants', () => {
+    // Verify documented ranges are exported and valid
+    expect(MIN_GRID_RESOLUTION).toBe(8);
+    expect(MAX_GRID_RESOLUTION).toBe(256);
+    expect(MIN_ANIMATION_TIMESTEP).toBe(0.001);
+    expect(MAX_ANIMATION_TIMESTEP).toBe(0.1);
 
-    vi.stubGlobal('import', {
-      meta: {
-        env: {
-          ...originalEnv,
-          VITE_GRID_RESOLUTION: '64',
-          VITE_ANIMATION_TIMESTEP: '0.033',
-        },
-      },
-    });
-
-    // The function reads from import.meta.env directly, so we need to restore
-    vi.unstubAllGlobals();
+    // Verify defaults are within range
+    expect(DEFAULT_GRID_RESOLUTION).toBeGreaterThanOrEqual(MIN_GRID_RESOLUTION);
+    expect(DEFAULT_GRID_RESOLUTION).toBeLessThanOrEqual(MAX_GRID_RESOLUTION);
+    expect(DEFAULT_ANIMATION_TIMESTEP).toBeGreaterThanOrEqual(
+      MIN_ANIMATION_TIMESTEP
+    );
+    expect(DEFAULT_ANIMATION_TIMESTEP).toBeLessThanOrEqual(
+      MAX_ANIMATION_TIMESTEP
+    );
   });
 });

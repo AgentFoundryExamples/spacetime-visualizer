@@ -44,43 +44,75 @@ export const DEFAULT_GRID_RESOLUTION = 32;
 /** Default animation timestep in seconds */
 export const DEFAULT_ANIMATION_TIMESTEP = 0.016; // ~60fps
 
+/** Minimum grid resolution */
+export const MIN_GRID_RESOLUTION = 8;
+
+/** Maximum grid resolution */
+export const MAX_GRID_RESOLUTION = 256;
+
+/** Minimum animation timestep in seconds */
+export const MIN_ANIMATION_TIMESTEP = 0.001;
+
+/** Maximum animation timestep in seconds */
+export const MAX_ANIMATION_TIMESTEP = 0.1;
+
 /**
  * Parses an integer from environment variable with fallback to default
+ * and clamps to valid range
  */
-function parseEnvInt(value: string | undefined, defaultValue: number): number {
+function parseEnvInt(
+  value: string | undefined,
+  defaultValue: number,
+  min: number,
+  max: number
+): number {
   if (value === undefined || value === '') {
     return defaultValue;
   }
   const parsed = parseInt(value, 10);
-  return Number.isNaN(parsed) ? defaultValue : parsed;
+  if (Number.isNaN(parsed)) {
+    return defaultValue;
+  }
+  return Math.max(min, Math.min(parsed, max));
 }
 
 /**
  * Parses a float from environment variable with fallback to default
+ * and clamps to valid range
  */
 function parseEnvFloat(
   value: string | undefined,
-  defaultValue: number
+  defaultValue: number,
+  min: number,
+  max: number
 ): number {
   if (value === undefined || value === '') {
     return defaultValue;
   }
   const parsed = parseFloat(value);
-  return Number.isNaN(parsed) ? defaultValue : parsed;
+  if (Number.isNaN(parsed)) {
+    return defaultValue;
+  }
+  return Math.max(min, Math.min(parsed, max));
 }
 
 /**
  * Get initial configuration from environment variables with safe defaults
+ * Values are clamped to documented valid ranges
  */
 export function getInitialConfig(): SimulationConfig {
   return {
     gridResolution: parseEnvInt(
       import.meta.env.VITE_GRID_RESOLUTION,
-      DEFAULT_GRID_RESOLUTION
+      DEFAULT_GRID_RESOLUTION,
+      MIN_GRID_RESOLUTION,
+      MAX_GRID_RESOLUTION
     ),
     animationTimestep: parseEnvFloat(
       import.meta.env.VITE_ANIMATION_TIMESTEP,
-      DEFAULT_ANIMATION_TIMESTEP
+      DEFAULT_ANIMATION_TIMESTEP,
+      MIN_ANIMATION_TIMESTEP,
+      MAX_ANIMATION_TIMESTEP
     ),
   };
 }
