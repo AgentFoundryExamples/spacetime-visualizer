@@ -22,14 +22,17 @@
   └── vite.svg
 ├── src
   ├── components
+    ├── accessibility.test.tsx
     ├── CanvasWrapper.tsx
     ├── ControlsPanel.tsx
     ├── EducationPanel.tsx
     ├── Footer.tsx
     ├── index.ts
+    ├── LiveRegion.tsx
     ├── ModeSelector.tsx
     ├── ScenarioLibrary.tsx
     ├── Sidebar.tsx
+    ├── SkipLink.tsx
     ├── ThreeCanvas.tsx
     ├── webgl-utils.test.ts
     └── webgl-utils.ts
@@ -60,6 +63,7 @@
   ├── tests
     └── curvature.spec.ts
   ├── utils
+    ├── accessibility.ts
     ├── export.test.ts
     └── export.ts
   ├── visualization

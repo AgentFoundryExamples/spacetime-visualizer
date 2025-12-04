@@ -199,6 +199,15 @@
       }
     },
     {
+      "id": "src/utils/accessibility.ts",
+      "path": "src/utils/accessibility.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
       "id": "src/utils/export.test.ts",
       "path": "src/utils/export.test.ts",
       "type": "file",

@@ -4,7 +4,7 @@ Heuristic summaries of source files based on filenames, extensions, and paths.
 
 Schema Version: 2.0
 
-Total files: 37
+Total files: 38
 
 ## eslint.config.js
 **Language:** JavaScript  
@@ -20,8 +20,8 @@ Total files: 37
 **Role:** entry-point  
 **Role Justification:** common entry point name 'index'  
 **Summary:** TypeScript main entry point (role: entry-point)  
-**Size:** 1.88 KB  
-**LOC:** 29  
+**Size:** 2.12 KB  
+**LOC:** 34  
 **TODOs/FIXMEs:** 0  
 
 ## src/components/webgl-utils.test.ts
@@ -56,8 +56,8 @@ Total files: 37
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 12.19 KB  
-**LOC:** 283  
+**Size:** 12.30 KB  
+**LOC:** 285  
 **TODOs/FIXMEs:** 0  
 
 ## src/hooks/index.ts
@@ -175,6 +175,15 @@ Total files: 37
 **Summary:** TypeScript core implementation  
 **Size:** 30.48 KB  
 **LOC:** 735  
+**TODOs/FIXMEs:** 0  
+
+## src/utils/accessibility.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 1.99 KB  
+**LOC:** 38  
 **TODOs/FIXMEs:** 0  
 
 ## src/utils/export.test.ts

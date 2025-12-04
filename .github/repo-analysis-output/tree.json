@@ -104,6 +104,10 @@
           "children": [
             {
               "type": "file",
+              "name": "accessibility.test.tsx"
+            },
+            {
+              "type": "file",
               "name": "CanvasWrapper.tsx"
             },
             {
@@ -124,6 +128,10 @@
             },
             {
               "type": "file",
+              "name": "LiveRegion.tsx"
+            },
+            {
+              "type": "file",
               "name": "ModeSelector.tsx"
             },
             {
@@ -133,6 +141,10 @@
             {
               "type": "file",
               "name": "Sidebar.tsx"
+            },
+            {
+              "type": "file",
+              "name": "SkipLink.tsx"
             },
             {
               "type": "file",
@@ -270,6 +282,10 @@
           "type": "directory",
           "name": "utils",
           "children": [
+            {
+              "type": "file",
+              "name": "accessibility.ts"
+            },
             {
               "type": "file",
               "name": "export.test.ts"

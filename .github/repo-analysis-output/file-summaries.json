@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "total_files": 37,
+  "total_files": 38,
   "files": [
     {
       "schema_version": "2.0",
@@ -25,8 +25,8 @@
       "summary": "TypeScript main entry point (role: entry-point)",
       "summary_text": "TypeScript main entry point (role: entry-point)",
       "metrics": {
-        "size_bytes": 1921,
-        "loc": 29,
+        "size_bytes": 2170,
+        "loc": 34,
         "todo_count": 0
       }
     },
@@ -81,8 +81,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 12482,
-        "loc": 283,
+        "size_bytes": 12591,
+        "loc": 285,
         "todo_count": 0
       }
     },
@@ -265,6 +265,20 @@
       "metrics": {
         "size_bytes": 31211,
         "loc": 735,
+        "todo_count": 0
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "path": "src/utils/accessibility.ts",
+      "language": "TypeScript",
+      "role": "implementation",
+      "role_justification": "general implementation file (default classification)",
+      "summary": "TypeScript core implementation",
+      "summary_text": "TypeScript core implementation",
+      "metrics": {
+        "size_bytes": 2039,
+        "loc": 38,
         "todo_count": 0
       }
     },
