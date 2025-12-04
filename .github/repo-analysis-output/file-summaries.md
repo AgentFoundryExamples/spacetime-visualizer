@@ -56,8 +56,8 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 13.62 KB  
-**LOC:** 311  
+**Size:** 14.48 KB  
+**LOC:** 332  
 **TODOs/FIXMEs:** 0  
 
 ## src/hooks/index.ts
@@ -209,8 +209,8 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 9.29 KB  
-**LOC:** 217  
+**Size:** 14.16 KB  
+**LOC:** 344  
 **TODOs/FIXMEs:** 0  
 
 ## src/utils/export.ts
@@ -218,9 +218,9 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 12.44 KB  
-**LOC:** 350  
-**TODOs/FIXMEs:** 0  
+**Size:** 30.39 KB  
+**LOC:** 821  
+**TODOs/FIXMEs:** 1  
 
 ## src/visualization/index.ts
 **Language:** TypeScript  
@@ -326,8 +326,8 @@ Total files: 41
 **Role:** entry-point  
 **Role Justification:** common entry point name 'index'  
 **Summary:** TypeScript main entry point (role: entry-point)  
-**Size:** 1.00 KB  
-**LOC:** 21  
+**Size:** 2.45 KB  
+**LOC:** 80  
 **TODOs/FIXMEs:** 0  
 
 ## src/workers/physics-client.test.ts
