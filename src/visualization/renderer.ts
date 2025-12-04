@@ -88,8 +88,8 @@ export function buildCurvatureMesh(
   // For a 3D grid of resolution R, we have R³ samples ordered as [z][y][x]
   // We take the middle Z slice
   // For resolution 2: sliceZ = 1, sliceStart = 1 * 2 * 2 = 4 (valid indices 4-7)
-  const sliceZ = Math.floor(resolution / 2);
-  const sliceStart = sliceZ * resolution * resolution;
+  let sliceZ = Math.floor(resolution / 2);
+  let sliceStart = sliceZ * resolution * resolution;
 
   // Validate slice bounds for edge cases (minimum resolution is 2)
   const totalSamples = resolution * resolution * resolution;
@@ -101,6 +101,8 @@ export function buildCurvatureMesh(
     console.warn(
       `Invalid slice bounds for resolution ${resolution}, falling back to slice 0`
     );
+    sliceZ = 0;
+    sliceStart = 0;
   }
 
   // Number of vertices per axis (resolution points create resolution-1 cells)
