@@ -207,13 +207,16 @@ class WorkerPhysicsComputer implements PhysicsComputer {
       this.pendingRequests.delete(requestId);
     });
 
-    // Clean up event listeners
-    this.worker.removeEventListener('message', this.handleMessage);
-    this.worker.removeEventListener('error', this.handleError);
-
-    // Terminate the worker
+    // Send terminate message to worker for graceful shutdown
     this.worker.postMessage({ type: 'TERMINATE' });
-    this.worker.terminate();
+
+    // Give the worker a moment to gracefully shut down before force-terminating
+    setTimeout(() => {
+      // Clean up event listeners after worker has had time to process
+      this.worker.removeEventListener('message', this.handleMessage);
+      this.worker.removeEventListener('error', this.handleError);
+      this.worker.terminate();
+    }, 100);
   }
 }
 
@@ -324,10 +327,17 @@ export async function getPhysicsComputer(
   }
 
   if (!physicsComputerPromise) {
-    physicsComputerPromise = createPhysicsComputer(config).then((computer) => {
-      physicsComputerInstance = computer;
-      return computer;
-    });
+    physicsComputerPromise = createPhysicsComputer(config).then(
+      (computer) => {
+        physicsComputerInstance = computer;
+        return computer;
+      },
+      (error) => {
+        // Reset promise on failure to allow for retries
+        physicsComputerPromise = null;
+        throw error;
+      }
+    );
   }
 
   return physicsComputerPromise;

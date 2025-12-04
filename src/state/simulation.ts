@@ -267,7 +267,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
         set({ workerWarning: message });
       },
       onError: (error) => {
-        set({ error: error.message });
+        set({ error: error.message, isComputing: false });
       },
     })
       .then((computer) => {
