@@ -73,6 +73,7 @@ export function ControlsPanel({
     hasUnsavedChanges,
     orbitsEnabled,
     simulationTime,
+    waveParams,
   } = state;
 
   const {
@@ -88,10 +89,14 @@ export function ControlsPanel({
     reset,
     setOrbitsEnabled,
     resetSimulationTime,
+    setWaveParams,
   } = actions;
 
   // Check if any masses have orbital parameters defined
   const hasOrbitalMasses = config.masses.some((m) => m.orbit !== undefined);
+
+  // Check if wave controls should be shown
+  const isWaveMode = visualizationMode === 'gravitationalWaves';
 
   return (
     <div className="controls-panel" role="region" aria-label="Simulation controls" aria-busy={isComputing}>
@@ -188,6 +193,82 @@ export function ControlsPanel({
       </section>
 
       <div className="control-divider" aria-hidden="true" />
+
+      {/* Wave Settings Controls (only shown in gravitational waves mode) */}
+      {isWaveMode && (
+        <>
+          <section 
+            className="control-section" 
+            aria-labelledby="waves-heading"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <h3 id="waves-heading" className="control-section-title">{UI_STRINGS.sectionWaves}</h3>
+
+            <div className="toggle-control">
+              <span className="toggle-label" id="wave-toggle-label">{UI_STRINGS.waveEnable}</span>
+              <button
+                className={`toggle-switch ${waveParams.enabled ? 'toggle-switch--active' : ''}`}
+                onClick={() => setWaveParams({ enabled: !waveParams.enabled })}
+                aria-pressed={waveParams.enabled}
+                aria-labelledby="wave-toggle-label"
+              />
+            </div>
+
+            {waveParams.enabled && (
+              <>
+                {/* Wave Amplitude */}
+                <div className="control-group">
+                  <label className="control-label" id="wave-amplitude-label">
+                    <span>{UI_STRINGS.waveAmplitude}</span>
+                    <span className="control-value">{waveParams.amplitude.toFixed(1)}</span>
+                  </label>
+                  <input
+                    type="range"
+                    className="control-slider"
+                    min={0.1}
+                    max={2}
+                    step={0.1}
+                    value={waveParams.amplitude}
+                    onChange={(e) => setWaveParams({ amplitude: parseFloat(e.target.value) })}
+                    disabled={isComputing}
+                    aria-labelledby="wave-amplitude-label"
+                    aria-valuemin={0.1}
+                    aria-valuemax={2}
+                    aria-valuenow={waveParams.amplitude}
+                    aria-valuetext={`${waveParams.amplitude.toFixed(1)}`}
+                  />
+                </div>
+
+                {/* Wave Frequency */}
+                <div className="control-group">
+                  <label className="control-label" id="wave-frequency-label">
+                    <span>{UI_STRINGS.waveFrequency}</span>
+                    <span className="control-value">{waveParams.frequency.toFixed(1)} Hz</span>
+                  </label>
+                  <input
+                    type="range"
+                    className="control-slider"
+                    min={0.1}
+                    max={10}
+                    step={0.1}
+                    value={waveParams.frequency}
+                    onChange={(e) => setWaveParams({ frequency: parseFloat(e.target.value) })}
+                    disabled={isComputing}
+                    aria-labelledby="wave-frequency-label"
+                    aria-valuemin={0.1}
+                    aria-valuemax={10}
+                    aria-valuenow={waveParams.frequency}
+                    aria-valuetext={`${waveParams.frequency.toFixed(1)} Hertz`}
+                  />
+                </div>
+              </>
+            )}
+          </section>
+
+          <div className="control-divider" aria-hidden="true" />
+        </>
+      )}
 
       {/* Orbital Motion Controls */}
       <section className="control-section" aria-labelledby="orbits-heading">

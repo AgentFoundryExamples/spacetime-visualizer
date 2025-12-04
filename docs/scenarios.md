@@ -28,7 +28,7 @@ This document details the available visualization modes, preset scenarios, and h
 
 ## Visualization Modes
 
-The application supports three visualization modes for displaying spacetime curvature. Each mode provides a different perspective on the same underlying physics data.
+The application supports four visualization modes for displaying spacetime curvature. Each mode provides a different perspective on the same underlying physics data.
 
 ### Mode Switching Architecture
 
@@ -41,9 +41,11 @@ graph TD
     E -->|mesh| F[MeshModeRenderer]
     E -->|contour| G[ContourModeRenderer]
     E -->|fieldLines| H[FieldLinesModeRenderer]
+    E -->|gravitationalWaves| I2[GravitationalWavesModeRenderer]
     F --> I[Dispose old resources]
     G --> I
     H --> I
+    I2 --> I
     I --> J[Render new visualization]
 ```
 
@@ -82,6 +84,28 @@ Animated particles showing gravitational field direction.
 - Bilinear interpolation for smooth gradients
 
 **Best for:** Understanding gravitational force direction.
+
+### Gravitational Waves
+
+Animated ripples showing gravitational wave propagation (v0.3).
+
+**Key Features:**
+- Shader-based wave animation for smooth performance
+- Configurable amplitude and frequency
+- Concentric wave rings for visual effect
+- Automatic attenuation with distance
+
+**Controls:**
+- **Enable Waves**: Toggle wave animation on/off
+- **Wave Amplitude**: Control the strength of wave distortions (0.1 - 2.0)
+- **Wave Frequency**: Control wave oscillation speed (0.1 - 10.0 Hz)
+
+**Best for:** Understanding gravitational wave propagation from accelerating masses.
+
+**Performance notes:**
+- High frequency values (>5 Hz) may cause visual aliasing on low-resolution grids
+- Wave animation is clamped to prevent GPU instability
+- Low graphics quality mode gracefully degrades to simplified visuals
 
 ## Preset Scenarios
 
@@ -642,7 +666,7 @@ export function createModeRegistry(): ModeRegistry {
 Update `src/content/strings.ts`:
 
 ```typescript
-export type VisualizationMode = 'mesh' | 'contour' | 'fieldLines' | 'myMode';
+export type VisualizationMode = 'mesh' | 'contour' | 'fieldLines' | 'gravitationalWaves' | 'myMode';
 
 export const MODE_STRINGS: Record<VisualizationMode, ModeStrings> = {
   // ... existing modes

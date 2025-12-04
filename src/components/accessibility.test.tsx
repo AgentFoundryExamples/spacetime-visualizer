@@ -122,7 +122,7 @@ describe('Accessibility Components', () => {
         />
       );
       const radios = screen.getAllByRole('radio');
-      expect(radios).toHaveLength(3);
+      expect(radios).toHaveLength(4);
     });
 
     it('marks the current mode as checked', () => {
