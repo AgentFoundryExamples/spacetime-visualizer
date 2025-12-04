@@ -5,6 +5,59 @@ All notable changes to the Spacetime Visualizer project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-12-04
+
+### Added
+
+#### Gravitational Waves Visualization Mode
+- New visualization mode showing animated gravitational wave propagation
+- Shader-based wave animation for smooth GPU-accelerated performance
+- Configurable wave amplitude (0.1 - 2.0) and frequency (0.1 - 10.0 Hz)
+- Concentric wave rings with automatic distance attenuation
+- Controls: Enable Waves toggle, Wave Amplitude slider, Wave Frequency slider
+- See [docs/scenarios.md#gravitational-waves](docs/scenarios.md#gravitational-waves) for details
+
+#### Orbital Trails
+- Trail visualization showing recent orbital paths of moving masses
+- Fading opacity for older trail segments (older = more transparent)
+- Configurable trail length (10-500 positions)
+- Controls: Show Trails toggle, Trail Length slider, Clear Trails button
+- Automatic trail clearing on scenario switch or time reset
+- Memory-efficient circular buffer with automatic pruning
+- See [docs/scenarios.md#orbital-trails](docs/scenarios.md#orbital-trails) for details
+
+#### GIF Animation Export
+- Export animated GIF files from visualization
+- Frame-by-frame capture with configurable quality settings
+- Duration up to 10 seconds (memory-optimized)
+- Configurable FPS (default: 15 FPS) and quality (1-20 scale)
+- Environment variables: `VITE_MAX_GIF_DURATION`, `VITE_GIF_QUALITY`, `VITE_GIF_FPS`
+
+#### MP4 Video Export
+- Export MP4 video files with H.264 codec when available
+- Automatic fallback to WebM format when H.264 is unsupported
+- Duration up to 30 seconds at 30 FPS with 5 Mbps bitrate
+- Environment variables: `VITE_MAX_MP4_DURATION`, `VITE_MP4_BITRATE`
+
+### Fixed
+
+- Orbital motion now correctly preserves positions when simulation is paused
+- Worker updates propagate correctly after scenario switches
+- Frame time clamping prevents large position jumps after tab switches or slow devices
+
+### Changed
+
+- Test suite expanded from 242 to 314 tests
+- Documentation updated with v0.3 features
+- Export controls section reorganized with format selector
+
+### Known Limitations
+
+- Gravitational waves use simplified animation, not full GR wave propagation
+- GIF exports limited to 10 seconds due to memory constraints
+- MP4 H.264 codec support varies by browser and platform
+- High wave frequency values (>5 Hz) may cause visual aliasing on low-resolution grids
+
 ## [0.2.0] - 2025-12-04
 
 ### Added
@@ -123,6 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 See [docs/roadmap.md](docs/roadmap.md) for upcoming features and improvements.
 
+[0.3.0]: https://github.com/AgentFoundryExamples/spacetime-visualizer/releases/tag/v0.3.0
 [0.2.0]: https://github.com/AgentFoundryExamples/spacetime-visualizer/releases/tag/v0.2.0
 [0.1.0]: https://github.com/AgentFoundryExamples/spacetime-visualizer/releases/tag/v0.1.0
-[Unreleased]: https://github.com/AgentFoundryExamples/spacetime-visualizer/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/AgentFoundryExamples/spacetime-visualizer/compare/v0.3.0...HEAD
