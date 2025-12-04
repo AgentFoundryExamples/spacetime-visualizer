@@ -322,6 +322,10 @@
                 },
                 {
                   "type": "file",
+                  "name": "gravitationalWaves.ts"
+                },
+                {
+                  "type": "file",
                   "name": "index.ts"
                 },
                 {

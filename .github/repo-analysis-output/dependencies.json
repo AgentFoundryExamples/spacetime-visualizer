@@ -293,6 +293,17 @@
       }
     },
     {
+      "id": "src/visualization/modes/gravitationalWaves.ts",
+      "path": "src/visualization/modes/gravitationalWaves.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three"
+        ]
+      }
+    },
+    {
       "id": "src/visualization/modes/index.ts",
       "path": "src/visualization/modes/index.ts",
       "type": "file",
@@ -508,6 +519,10 @@
       "target": "src/workers/index.ts"
     },
     {
+      "source": "src/state/simulation.ts",
+      "target": "src/visualization/modes/index.ts"
+    },
+    {
       "source": "src/tests/curvature.spec.ts",
       "target": "src/physics/curvature.ts"
     },
@@ -552,6 +567,14 @@
       "target": "src/visualization/materials.ts"
     },
     {
+      "source": "src/visualization/modes/gravitationalWaves.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/gravitationalWaves.ts",
+      "target": "src/visualization/modes/types.ts"
+    },
+    {
       "source": "src/visualization/modes/index.ts",
       "target": "src/content/strings.ts"
     },
@@ -570,6 +593,10 @@
     {
       "source": "src/visualization/modes/index.ts",
       "target": "src/visualization/modes/fieldLines.ts"
+    },
+    {
+      "source": "src/visualization/modes/index.ts",
+      "target": "src/visualization/modes/gravitationalWaves.ts"
     },
     {
       "source": "src/visualization/modes/mesh.ts",

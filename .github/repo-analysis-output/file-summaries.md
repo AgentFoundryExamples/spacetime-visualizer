@@ -4,7 +4,7 @@ Heuristic summaries of source files based on filenames, extensions, and paths.
 
 Schema Version: 2.0
 
-Total files: 40
+Total files: 41
 
 ## eslint.config.js
 **Language:** JavaScript  
@@ -47,8 +47,8 @@ Total files: 40
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 8.28 KB  
-**LOC:** 181  
+**Size:** 8.63 KB  
+**LOC:** 187  
 **TODOs/FIXMEs:** 0  
 
 ## src/content/strings.ts
@@ -56,8 +56,8 @@ Total files: 40
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 12.30 KB  
-**LOC:** 285  
+**Size:** 13.40 KB  
+**LOC:** 305  
 **TODOs/FIXMEs:** 0  
 
 ## src/hooks/index.ts
@@ -101,8 +101,8 @@ Total files: 40
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 12.06 KB  
-**LOC:** 349  
+**Size:** 12.48 KB  
+**LOC:** 364  
 **TODOs/FIXMEs:** 0  
 
 ## src/physics/curvature.ts
@@ -173,8 +173,8 @@ Total files: 40
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 11.16 KB  
-**LOC:** 311  
+**Size:** 12.16 KB  
+**LOC:** 339  
 **TODOs/FIXMEs:** 0  
 
 ## src/test/setup.ts
@@ -258,13 +258,22 @@ Total files: 40
 **LOC:** 287  
 **TODOs/FIXMEs:** 0  
 
+## src/visualization/modes/gravitationalWaves.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 14.45 KB  
+**LOC:** 360  
+**TODOs/FIXMEs:** 0  
+
 ## src/visualization/modes/index.ts
 **Language:** TypeScript  
 **Role:** entry-point  
 **Role Justification:** common entry point name 'index'  
 **Summary:** TypeScript main entry point (role: entry-point)  
-**Size:** 2.41 KB  
-**LOC:** 49  
+**Size:** 2.92 KB  
+**LOC:** 65  
 **TODOs/FIXMEs:** 0  
 
 ## src/visualization/modes/mesh.ts
@@ -281,8 +290,8 @@ Total files: 40
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 8.21 KB  
-**LOC:** 186  
+**Size:** 13.60 KB  
+**LOC:** 295  
 **TODOs/FIXMEs:** 0  
 
 ## src/visualization/modes/types.ts

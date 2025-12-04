@@ -72,6 +72,7 @@
     ├── modes
       ├── contour.ts
       ├── fieldLines.ts
+      ├── gravitationalWaves.ts
       ├── index.ts
       ├── mesh.ts
       ├── modes.test.ts

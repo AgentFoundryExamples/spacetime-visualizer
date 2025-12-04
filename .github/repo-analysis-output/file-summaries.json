@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "total_files": 40,
+  "total_files": 41,
   "files": [
     {
       "schema_version": "2.0",
@@ -67,8 +67,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 8476,
-        "loc": 181,
+        "size_bytes": 8835,
+        "loc": 187,
         "todo_count": 0
       }
     },
@@ -81,8 +81,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 12591,
-        "loc": 285,
+        "size_bytes": 13719,
+        "loc": 305,
         "todo_count": 0
       }
     },
@@ -151,8 +151,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 12351,
-        "loc": 349,
+        "size_bytes": 12783,
+        "loc": 364,
         "todo_count": 0
       }
     },
@@ -263,8 +263,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 11430,
-        "loc": 311,
+        "size_bytes": 12451,
+        "loc": 339,
         "todo_count": 0
       }
     },
@@ -396,6 +396,20 @@
     },
     {
       "schema_version": "2.0",
+      "path": "src/visualization/modes/gravitationalWaves.ts",
+      "language": "TypeScript",
+      "role": "implementation",
+      "role_justification": "general implementation file (default classification)",
+      "summary": "TypeScript core implementation",
+      "summary_text": "TypeScript core implementation",
+      "metrics": {
+        "size_bytes": 14796,
+        "loc": 360,
+        "todo_count": 0
+      }
+    },
+    {
+      "schema_version": "2.0",
       "path": "src/visualization/modes/index.ts",
       "language": "TypeScript",
       "role": "entry-point",
@@ -403,8 +417,8 @@
       "summary": "TypeScript main entry point (role: entry-point)",
       "summary_text": "TypeScript main entry point (role: entry-point)",
       "metrics": {
-        "size_bytes": 2469,
-        "loc": 49,
+        "size_bytes": 2995,
+        "loc": 65,
         "todo_count": 0
       }
     },
@@ -431,8 +445,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 8409,
-        "loc": 186,
+        "size_bytes": 13926,
+        "loc": 295,
         "todo_count": 0
       }
     },
