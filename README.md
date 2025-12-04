@@ -549,6 +549,80 @@ The engine includes comprehensive validation:
 
 Invalid configurations throw `CurvatureValidationError` with descriptive messages suitable for UI display.
 
+## Manual Verification Steps
+
+Use these steps to verify the application is working correctly after installation or updates:
+
+### Quick Verification
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Run linting (should pass with no errors)
+npm run lint
+
+# 3. Run tests (should pass all 136+ tests)
+npm test
+
+# 4. Build for production (should complete without errors)
+npm run build
+```
+
+### Interactive Verification
+
+1. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
+
+2. **Open the application** at `http://localhost:5173`
+
+3. **Verify initial render**:
+   - The 3D visualization canvas should display
+   - The heightfield mesh should show curvature from the default scenario
+   - No WebGL warning should appear (if WebGL2 is supported)
+
+4. **Test mode switching**:
+   - Click on "Contour Grid" mode → should display equipotential lines
+   - Click on "Field Lines" mode → should display animated particles
+   - Click on "Heightfield Mesh" mode → should return to 3D surface
+
+5. **Test scenario switching**:
+   - Select "Binary Orbit" → should show two-mass configuration
+   - Select "Gravitational Wave" → should show quadrupole pattern
+   - Select "Single Mass" → should return to centered mass
+
+6. **Test parameter controls**:
+   - Adjust grid resolution slider → mesh detail should change
+   - Adjust mass scale slider → curvature depth should change
+
+7. **Test camera controls**:
+   - Left-click and drag → should orbit the camera
+   - Scroll wheel → should zoom in/out
+   - Click "Reset Camera" → should return to default view
+
+8. **Test playback controls**:
+   - Click Play/Pause → animation should toggle
+   - Click Refresh → should recompute curvature
+   - Click Reset All → should return to initial state
+
+### Production Build Verification
+
+```bash
+# Build and preview
+npm run build
+npm run preview
+```
+
+Open `http://localhost:4173` and repeat steps 3-8 above.
+
+## Release Documentation
+
+- [CHANGELOG.md](CHANGELOG.md) - Version history and notable changes
+- [docs/roadmap.md](docs/roadmap.md) - Future enhancements and project roadmap
+- [docs/scenarios.md](docs/scenarios.md) - Visualization modes and scenario documentation
+
 # Permanents (License, Contributing, Author)
 
 Do not change any of the below sections
