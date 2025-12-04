@@ -308,6 +308,77 @@ To verify orbital motion is working correctly:
 5. Toggle **Enable Orbits** off to pause; time display freezes
 6. Toggle back on; animation resumes from the paused position
 
+## Orbital Trails
+
+The Spacetime Visualizer can display trail histories showing the recent orbital paths of moving masses.
+
+### Trail Visualization
+
+When enabled, trails render as fading line segments behind each orbiting mass:
+
+- **Fading opacity**: Older trail segments appear more transparent
+- **Configurable length**: Adjust how many recent positions are retained
+- **Automatic pruning**: Old points are removed to prevent memory issues
+
+### Enabling Trails
+
+1. Select a scenario with orbital motion (e.g., Binary Orbit)
+2. Enable **Orbits** in the Orbital Motion section
+3. In the **Orbital Trails** section that appears, toggle **Show Trails** on
+4. Trails begin recording as masses move
+
+### Trail Controls
+
+| Control | Function |
+|---------|----------|
+| Show Trails | Toggle trail visualization on/off |
+| Trail Length | Number of positions to retain (10-500 points) |
+| Clear Trails | Erase all trail history |
+
+### Trail Behavior
+
+The trail system handles various edge cases automatically:
+
+| Condition | Behavior |
+|-----------|----------|
+| Orbits disabled | Trails section hidden (no recording) |
+| Simulation paused | Trails freeze without duplicate samples |
+| Scenario switch | All trails cleared automatically |
+| Time reset | All trails cleared automatically |
+| High-speed simulation | Reduced sampling frequency to prevent overdraw |
+
+### Memory Management
+
+Trail data is stored in a circular buffer with configurable size:
+
+- **Default**: 100 points per mass
+- **Minimum**: 10 points
+- **Maximum**: 500 points
+
+Longer trails provide more history but increase memory usage. For complex scenarios with many orbital masses, consider reducing trail length.
+
+### Sample Interval
+
+To prevent overdraw at high simulation speeds, trails sample positions at a minimum interval:
+
+- **Default interval**: 0.05 seconds (simulation time)
+- **Minimum interval**: 0.01 seconds
+
+This ensures trails remain smooth without creating excessive geometry.
+
+### Validation Steps
+
+To verify trails are working correctly:
+
+1. Load the "Binary Orbit" scenario
+2. Enable **Orbits**
+3. Enable **Show Trails**
+4. Observe trail lines forming behind masses
+5. Adjust **Trail Length** slider; line length should change accordingly
+6. Click **Clear Trails**; trails should disappear
+7. Click **Reset Time**; trails should be cleared and restart from t=0
+8. Load a different scenario; trails should be cleared
+
 ## Accessibility
 
 The Spacetime Visualizer is designed to be accessible to users of all abilities. This section documents the accessibility features and how to use them effectively.

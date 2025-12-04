@@ -96,6 +96,24 @@ Enable dynamic orbital motion for scenarios with defined orbits (e.g., Binary Or
 
 **Note:** Orbital motion is only available for scenarios with masses that have orbital parameters defined. The Binary Orbit scenario supports this feature out of the box.
 
+### Trail Controls
+
+When orbital motion is enabled, trail controls appear to show recent orbital paths:
+
+| Control | Function |
+|---------|----------|
+| Show Trails | Toggle trail visualization on/off |
+| Trail Length | Number of recent positions to display (10-500) |
+| Clear Trails | Erase all trail history |
+
+**Behavior:**
+- Trails render as fading line segments behind moving masses (older = more transparent)
+- Trails are automatically cleared when switching scenarios or resetting simulation time
+- High-speed simulations reduce sampling frequency to prevent visual clutter
+- Trail data is automatically pruned to the configured maximum length
+
+For detailed trail documentation, see [docs/scenarios.md](docs/scenarios.md#orbital-trails).
+
 ### Wave Controls
 
 When in Gravitational Waves mode, additional controls appear:

@@ -74,6 +74,7 @@ export function ControlsPanel({
     orbitsEnabled,
     simulationTime,
     waveParams,
+    trailConfig,
   } = state;
 
   const {
@@ -90,6 +91,8 @@ export function ControlsPanel({
     setOrbitsEnabled,
     resetSimulationTime,
     setWaveParams,
+    setTrailConfig,
+    clearTrails,
   } = actions;
 
   // Check if any masses have orbital parameters defined
@@ -312,6 +315,66 @@ export function ControlsPanel({
       </section>
 
       <div className="control-divider" aria-hidden="true" />
+
+      {/* Orbital Trail Controls (only shown when orbits are enabled) */}
+      {orbitsEnabled && hasOrbitalMasses && (
+        <>
+          <section className="control-section" aria-labelledby="trails-heading">
+            <h3 id="trails-heading" className="control-section-title">{UI_STRINGS.sectionTrails}</h3>
+
+            <div className="toggle-control">
+              <span className="toggle-label" id="trail-toggle-label">{UI_STRINGS.trailEnable}</span>
+              <button
+                className={`toggle-switch ${trailConfig.enabled ? 'toggle-switch--active' : ''}`}
+                onClick={() => setTrailConfig({ enabled: !trailConfig.enabled })}
+                aria-pressed={trailConfig.enabled}
+                aria-labelledby="trail-toggle-label"
+              />
+            </div>
+
+            {trailConfig.enabled && (
+              <>
+                {/* Trail Length */}
+                <div className="control-group">
+                  <label className="control-label" id="trail-length-label">
+                    <span>{UI_STRINGS.trailLength}</span>
+                    <span className="control-value">{trailConfig.maxPoints}</span>
+                  </label>
+                  <input
+                    type="range"
+                    className="control-slider"
+                    min={10}
+                    max={500}
+                    step={10}
+                    value={trailConfig.maxPoints}
+                    onChange={(e) => setTrailConfig({ maxPoints: parseInt(e.target.value, 10) })}
+                    disabled={isComputing}
+                    aria-labelledby="trail-length-label"
+                    aria-valuemin={10}
+                    aria-valuemax={500}
+                    aria-valuenow={trailConfig.maxPoints}
+                    aria-valuetext={`${trailConfig.maxPoints} points`}
+                  />
+                </div>
+
+                <div className="button-group">
+                  <button
+                    className="control-button control-button--small"
+                    onClick={clearTrails}
+                    aria-label="Clear all orbital trails"
+                  >
+                    {UI_STRINGS.trailClear}
+                  </button>
+                </div>
+              </>
+            )}
+
+            <p className="control-hint">{UI_STRINGS.trailHint}</p>
+          </section>
+
+          <div className="control-divider" aria-hidden="true" />
+        </>
+      )}
 
       {/* Camera Controls */}
       <section className="control-section" aria-labelledby="camera-heading">

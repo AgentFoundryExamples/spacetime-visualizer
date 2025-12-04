@@ -360,3 +360,147 @@ export function createGridHelper(
   grid.rotation.x = Math.PI / 2; // Rotate to XY plane
   return grid;
 }
+
+/**
+ * Trail render data for a single mass.
+ */
+export interface TrailRenderData {
+  /** Mass ID this trail belongs to */
+  massId: string;
+  /** Positions array for line geometry (Float32Array) */
+  positions: Float32Array;
+  /** Colors array with fading opacity (Float32Array) */
+  colors: Float32Array;
+  /** Number of valid points in the trail */
+  pointCount: number;
+  /** Base color for the trail */
+  color: string;
+}
+
+/**
+ * Builds trail render data from trail history.
+ * Creates line geometry data with fading colors (older = more transparent).
+ *
+ * Note: This function allocates new TypedArrays. For animation updates where
+ * point counts remain stable, use updateTrailLine() instead to reuse buffers
+ * and reduce garbage collection pressure.
+ *
+ * @param trail - Trail history for a mass
+ * @param baseColor - Base color for the trail (CSS color string)
+ * @returns Trail render data for creating line geometry
+ */
+export function buildTrailRenderData(
+  trail: { massId: string; points: Array<{ position: [number, number, number]; timestamp: number }> },
+  baseColor: string = '#ffffff'
+): TrailRenderData {
+  const pointCount = trail.points.length;
+
+  // Need at least 2 points to draw a line
+  if (pointCount < 2) {
+    return {
+      massId: trail.massId,
+      positions: new Float32Array(0),
+      colors: new Float32Array(0),
+      pointCount: 0,
+      color: baseColor,
+    };
+  }
+
+  const positions = new Float32Array(pointCount * 3);
+  const colors = new Float32Array(pointCount * 4); // RGBA for vertex colors with opacity
+
+  // Parse base color
+  const color = new THREE.Color(baseColor);
+
+  for (let i = 0; i < pointCount; i++) {
+    const point = trail.points[i];
+    const idx = i * 3;
+
+    // Position
+    positions[idx] = point.position[0];
+    positions[idx + 1] = point.position[1];
+    positions[idx + 2] = point.position[2];
+
+    // Color with fading opacity (0 = oldest, 1 = newest)
+    const alpha = i / (pointCount - 1);
+    const colorIdx = i * 4;
+    colors[colorIdx] = color.r;
+    colors[colorIdx + 1] = color.g;
+    colors[colorIdx + 2] = color.b;
+    colors[colorIdx + 3] = alpha;
+  }
+
+  return {
+    massId: trail.massId,
+    positions,
+    colors,
+    pointCount,
+    color: baseColor,
+  };
+}
+
+/**
+ * Creates a Three.js Line object from trail render data.
+ * Uses LineBasicMaterial with vertex colors for fading effect.
+ *
+ * @param trailData - Trail render data from buildTrailRenderData
+ * @returns Object containing the line and disposable resources
+ */
+export function createTrailLine(
+  trailData: TrailRenderData
+): { line: THREE.Line; geometry: THREE.BufferGeometry; material: THREE.LineBasicMaterial } | null {
+  if (trailData.pointCount < 2) {
+    return null;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(trailData.positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(trailData.colors, 4));
+
+  const material = new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 1,
+    linewidth: 1, // Note: linewidth > 1 only works on some platforms
+  });
+
+  const line = new THREE.Line(geometry, material);
+  line.name = `trail-${trailData.massId}`;
+
+  return { line, geometry, material };
+}
+
+/**
+ * Updates an existing trail line geometry with new data.
+ * More efficient than creating a new line for animations.
+ *
+ * @param line - Existing line object to update
+ * @param trailData - New trail render data
+ * @returns true if update was successful, false if full re-creation needed
+ */
+export function updateTrailLine(
+  line: THREE.Line,
+  trailData: TrailRenderData
+): boolean {
+  if (trailData.pointCount < 2) {
+    return false;
+  }
+
+  const geometry = line.geometry as THREE.BufferGeometry;
+  const positionAttr = geometry.getAttribute('position') as THREE.BufferAttribute;
+  const colorAttr = geometry.getAttribute('color') as THREE.BufferAttribute;
+
+  // Check if buffer sizes match
+  if (positionAttr.count !== trailData.pointCount) {
+    return false; // Need to recreate geometry
+  }
+
+  // Update existing buffers
+  positionAttr.set(trailData.positions);
+  positionAttr.needsUpdate = true;
+
+  colorAttr.set(trailData.colors);
+  colorAttr.needsUpdate = true;
+
+  return true;
+}

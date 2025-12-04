@@ -36,6 +36,9 @@ import {
   checkResolutionWarning,
   clampResolution,
   MAX_SAFE_RESOLUTION,
+  buildTrailRenderData,
+  createTrailLine,
+  updateTrailLine,
 } from '../visualization/renderer';
 import {
   getColorForCurvature,
@@ -322,6 +325,176 @@ describe('visualization/renderer', () => {
 
       // Radius should be proportional to cube root of mass
       expect(spheres[0].radius).toBeGreaterThan(0.2);
+    });
+  });
+
+  describe('buildTrailRenderData', () => {
+    it('should return empty data for trail with less than 2 points', () => {
+      const trail = {
+        massId: 'mass1',
+        points: [{ position: [0, 0, 0] as [number, number, number], timestamp: 0 }],
+      };
+
+      const data = buildTrailRenderData(trail);
+
+      expect(data.pointCount).toBe(0);
+      expect(data.positions.length).toBe(0);
+      expect(data.colors.length).toBe(0);
+    });
+
+    it('should create position and color data for valid trail', () => {
+      const trail = {
+        massId: 'mass1',
+        points: [
+          { position: [0, 0, 0] as [number, number, number], timestamp: 0 },
+          { position: [1, 0, 0] as [number, number, number], timestamp: 0.5 },
+          { position: [2, 0, 0] as [number, number, number], timestamp: 1.0 },
+        ],
+      };
+
+      const data = buildTrailRenderData(trail, '#ffffff');
+
+      expect(data.massId).toBe('mass1');
+      expect(data.pointCount).toBe(3);
+      expect(data.positions.length).toBe(9); // 3 points * 3 components
+      expect(data.colors.length).toBe(12); // 3 points * 4 components (RGBA)
+
+      // Check positions
+      expect(data.positions[0]).toBe(0);
+      expect(data.positions[3]).toBe(1);
+      expect(data.positions[6]).toBe(2);
+
+      // Check fading alpha (oldest = 0, newest = 1)
+      expect(data.colors[3]).toBeCloseTo(0, 5); // First point alpha (fully transparent)
+      expect(data.colors[7]).toBeCloseTo(0.5, 5); // Second point alpha
+      expect(data.colors[11]).toBeCloseTo(1, 5); // Third point alpha (newest, fully opaque)
+    });
+
+    it('should use provided base color', () => {
+      const trail = {
+        massId: 'mass1',
+        points: [
+          { position: [0, 0, 0] as [number, number, number], timestamp: 0 },
+          { position: [1, 0, 0] as [number, number, number], timestamp: 0.5 },
+        ],
+      };
+
+      const data = buildTrailRenderData(trail, '#ff0000');
+
+      expect(data.color).toBe('#ff0000');
+      // Red component should be 1, green and blue should be 0
+      expect(data.colors[0]).toBeCloseTo(1, 5); // R
+      expect(data.colors[1]).toBeCloseTo(0, 5); // G
+      expect(data.colors[2]).toBeCloseTo(0, 5); // B
+    });
+  });
+
+  describe('createTrailLine', () => {
+    it('should return null for trail with less than 2 points', () => {
+      const trail = {
+        massId: 'mass1',
+        points: [{ position: [0, 0, 0] as [number, number, number], timestamp: 0 }],
+      };
+
+      const data = buildTrailRenderData(trail);
+      const result = createTrailLine(data);
+
+      expect(result).toBeNull();
+    });
+
+    it('should create a Line object with correct geometry', () => {
+      const trail = {
+        massId: 'mass1',
+        points: [
+          { position: [0, 0, 0] as [number, number, number], timestamp: 0 },
+          { position: [1, 1, 0] as [number, number, number], timestamp: 0.5 },
+        ],
+      };
+
+      const data = buildTrailRenderData(trail);
+      const result = createTrailLine(data);
+
+      expect(result).not.toBeNull();
+      expect(result!.line).toBeInstanceOf(THREE.Line);
+      expect(result!.geometry).toBeInstanceOf(THREE.BufferGeometry);
+      expect(result!.material).toBeInstanceOf(THREE.LineBasicMaterial);
+      expect(result!.line.name).toBe('trail-mass1');
+
+      // Cleanup
+      result!.geometry.dispose();
+      result!.material.dispose();
+    });
+  });
+
+  describe('updateTrailLine', () => {
+    it('should return false when point counts do not match', () => {
+      // Create initial trail with 2 points
+      const trail1 = {
+        massId: 'mass1',
+        points: [
+          { position: [0, 0, 0] as [number, number, number], timestamp: 0 },
+          { position: [1, 0, 0] as [number, number, number], timestamp: 0.5 },
+        ],
+      };
+
+      const data1 = buildTrailRenderData(trail1);
+      const result = createTrailLine(data1);
+
+      // Try to update with 3 points
+      const trail2 = {
+        massId: 'mass1',
+        points: [
+          { position: [0, 0, 0] as [number, number, number], timestamp: 0 },
+          { position: [1, 0, 0] as [number, number, number], timestamp: 0.5 },
+          { position: [2, 0, 0] as [number, number, number], timestamp: 1.0 },
+        ],
+      };
+
+      const data2 = buildTrailRenderData(trail2);
+      const updateResult = updateTrailLine(result!.line, data2);
+
+      expect(updateResult).toBe(false);
+
+      // Cleanup
+      result!.geometry.dispose();
+      result!.material.dispose();
+    });
+
+    it('should successfully update when point counts match', () => {
+      // Create initial trail
+      const trail1 = {
+        massId: 'mass1',
+        points: [
+          { position: [0, 0, 0] as [number, number, number], timestamp: 0 },
+          { position: [1, 0, 0] as [number, number, number], timestamp: 0.5 },
+        ],
+      };
+
+      const data1 = buildTrailRenderData(trail1);
+      const result = createTrailLine(data1);
+
+      // Update with same number of points but different positions
+      const trail2 = {
+        massId: 'mass1',
+        points: [
+          { position: [1, 0, 0] as [number, number, number], timestamp: 0.5 },
+          { position: [2, 0, 0] as [number, number, number], timestamp: 1.0 },
+        ],
+      };
+
+      const data2 = buildTrailRenderData(trail2);
+      const updateResult = updateTrailLine(result!.line, data2);
+
+      expect(updateResult).toBe(true);
+
+      // Verify positions were updated
+      const positions = result!.geometry.getAttribute('position') as THREE.BufferAttribute;
+      expect(positions.getX(0)).toBe(1);
+      expect(positions.getX(1)).toBe(2);
+
+      // Cleanup
+      result!.geometry.dispose();
+      result!.material.dispose();
     });
   });
 });

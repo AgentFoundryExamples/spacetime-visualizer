@@ -319,6 +319,14 @@ export const UI_STRINGS = {
   waveHint:
     'Wave controls are only available in Gravitational Waves mode.',
 
+  // Trail controls
+  sectionTrails: 'Orbital Trails',
+  trailEnable: 'Show Trails',
+  trailClear: 'Clear Trails',
+  trailLength: 'Trail Length',
+  trailHint:
+    'Trails show the recent orbital path history of moving masses.',
+
   // Camera controls
   cameraAutoRotate: 'Auto-Rotate',
   cameraReset: 'Reset Camera',
