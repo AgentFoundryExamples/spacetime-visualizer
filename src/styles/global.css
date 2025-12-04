@@ -81,7 +81,13 @@ body {
   text-decoration: none;
   font-weight: 600;
   border-radius: 0 0 4px 0;
-  transition: top 0.2s ease;
+}
+
+/* Skip link transition - only when motion is allowed */
+@media (prefers-reduced-motion: no-preference) {
+  .skip-link {
+    transition: top 0.2s ease;
+  }
 }
 
 .skip-link:focus {
