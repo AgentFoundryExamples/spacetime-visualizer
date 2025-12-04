@@ -35,3 +35,5 @@ export {
   MAX_MASS_SCALE,
 } from './useSimulation';
 export type { UseSimulationState, UseSimulationActions } from './useSimulation';
+
+export { useOrbitAnimation } from './useOrbitAnimation';

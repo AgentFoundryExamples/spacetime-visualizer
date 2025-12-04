@@ -219,7 +219,26 @@ The Spacetime Visualizer supports animated orbital motion for masses with define
 1. Select a scenario that supports orbital motion (e.g., Binary Orbit)
 2. In the Controls panel, find the **Orbital Motion** section
 3. Toggle **Enable Orbits** to start the animation
-4. The curvature visualization updates in real-time as masses move
+4. The simulation clock begins running automatically
+5. The curvature visualization updates in real-time as masses move
+
+When orbits are enabled:
+- The simulation clock starts immediately (timeScale = 1)
+- Mass positions update continuously based on Keplerian orbital mechanics
+- The curvature grid recomputes after each position update
+- The renderer displays the updated visualization in real-time
+
+### Time Scale Behavior
+
+The orbit animation respects the following time scale rules:
+
+| Condition | Time Scale | Behavior |
+|-----------|------------|----------|
+| Orbits enabled | 1.0 (or previous value) | Animation runs at normal speed |
+| Orbits disabled | Unchanged | Animation stops, time scale preserved |
+| User pauses | 0 | Animation freezes, positions retained |
+| User resumes | 1.0 (or previous value) | Animation resumes from paused position |
+| Scenario switch | N/A | Time resets to 0, animation continues if enabled |
 
 ### Orbital Parameters
 
@@ -238,8 +257,8 @@ Each mass can have the following orbital parameters:
 
 | Control | Function |
 |---------|----------|
-| Enable Orbits | Toggle orbital motion on/off |
-| Reset Time | Reset simulation time to t=0 |
+| Enable Orbits | Toggle orbital motion on/off; starts simulation clock when enabled |
+| Reset Time | Reset simulation time to t=0; masses return to initial positions |
 | Time display | Shows current simulation time |
 
 ### Physics Notes
@@ -248,6 +267,22 @@ Each mass can have the following orbital parameters:
 - The simulation time step is clamped (0.001-0.1s) to prevent numerical instability
 - For binary systems, both masses orbit around their common center of mass
 - Extremely high mass ratios may cause numerical issues and are clamped
+- Frame time is clamped to prevent large position jumps after tab switches or slow devices
+- Worker updates propagate correctly after scenario switches or pauses
+
+### Validation Steps
+
+To verify orbital motion is working correctly:
+
+1. Load the "Binary Orbit" scenario
+2. Toggle **Enable Orbits** on
+3. Observe:
+   - Simulation time advances automatically
+   - Mass positions update smoothly
+   - Curvature visualization updates in real-time
+4. Click **Reset Time** to return masses to initial positions
+5. Toggle **Enable Orbits** off to pause; time display freezes
+6. Toggle back on; animation resumes from the paused position
 
 ## Accessibility
 
