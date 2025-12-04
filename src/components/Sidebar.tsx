@@ -14,19 +14,36 @@
  * limitations under the License.
  */
 
+import { ControlsPanel } from './ControlsPanel';
+import type { UseSimulationState, UseSimulationActions } from '../hooks';
+
 /**
- * Sidebar component providing placeholder UI for simulation controls
+ * Props for Sidebar component.
  */
-export function Sidebar() {
+export interface SidebarProps {
+  /** Simulation state from useSimulation hook */
+  state?: UseSimulationState;
+  /** Simulation actions from useSimulation hook */
+  actions?: UseSimulationActions;
+}
+
+/**
+ * Sidebar component providing UI for simulation controls.
+ */
+export function Sidebar({ state, actions }: SidebarProps) {
   return (
     <aside className="sidebar">
       <header className="sidebar-header">
         <h2 className="sidebar-title">Controls</h2>
       </header>
       <div className="sidebar-content">
-        <p className="sidebar-placeholder">
-          Simulation controls will appear here.
-        </p>
+        {state && actions ? (
+          <ControlsPanel state={state} actions={actions} />
+        ) : (
+          <p className="sidebar-placeholder">
+            Simulation controls will appear here.
+          </p>
+        )}
       </div>
     </aside>
   );

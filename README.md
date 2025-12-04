@@ -17,12 +17,53 @@ graph TD
 ## Features
 
 - **Interactive 3D Visualization**: Powered by Three.js and React Three Fiber
+- **Curvature Heightfield Mesh**: Real-time visualization of spacetime curvature with color encoding
 - **Simplified Spacetime Curvature**: Physics engine approximating Einstein field equations
 - **Responsive Layout**: Adapts to desktop and mobile viewports
 - **Configurable Parameters**: Customize grid resolution and animation timestep via environment variables
 - **State Management**: Global simulation state with Zustand
 - **WebGL2 Detection**: Graceful degradation with warning banner for unsupported browsers
 - **Preset Scenarios**: Single mass, binary orbit, triple system, and cluster configurations
+- **Camera Controls**: Orbit, zoom, pan, and auto-rotate with desktop/mobile support
+- **Debounced Updates**: Performance-optimized parameter changes to prevent physics thrash
+
+## Interactive Controls
+
+### Scenario Selection
+
+Select from preset scenarios to explore different gravitational configurations:
+
+| Scenario | Description |
+|----------|-------------|
+| Single Mass | Single centered mass demonstrating spherical symmetry |
+| Binary System | Two masses in orbital configuration |
+| Triple System | Three-body system with complex superposition |
+| Mass Cluster | Multiple masses showing aggregate curvature |
+
+### Parameter Controls
+
+| Control | Range | Description |
+|---------|-------|-------------|
+| Grid Resolution | 8-128 | Higher values = smoother mesh but slower performance |
+| Mass Scale | 0.1x-5x | Multiplier for all mass values |
+
+### Camera Controls
+
+| Action | Desktop | Mobile |
+|--------|---------|--------|
+| Orbit | Left-click + drag | One finger drag |
+| Zoom | Scroll wheel | Pinch gesture |
+| Pan | Right-click + drag | Two finger drag |
+| Reset | "Reset Camera" button | "Reset Camera" button |
+| Auto-Rotate | Toggle switch | Toggle switch |
+
+### Playback Controls
+
+| Button | Function |
+|--------|----------|
+| Play/Pause | Toggle animation |
+| Refresh | Force recompute curvature |
+| Reset All | Reset to initial state |
 
 ## Requirements
 
@@ -123,31 +164,39 @@ cp .env.example .env
 ```
 spacetime-visualizer/
 ├── src/
-│   ├── components/         # React components
-│   │   ├── Footer.tsx      # Status footer
-│   │   ├── Sidebar.tsx     # Control sidebar
-│   │   ├── ThreeCanvas.tsx # Three.js canvas wrapper
-│   │   └── webgl-utils.ts  # WebGL detection utilities
-│   ├── physics/            # Physics engine
-│   │   ├── types.ts        # MassSource, CurvatureSample types
-│   │   ├── curvature.ts    # Curvature computation engine
-│   │   └── scenarios.ts    # Preset scenarios and seeding
+│   ├── components/           # React components
+│   │   ├── CanvasWrapper.tsx # Three.js canvas with WebGL handling
+│   │   ├── ControlsPanel.tsx # Interactive controls UI
+│   │   ├── Footer.tsx        # Status footer
+│   │   ├── Sidebar.tsx       # Control sidebar
+│   │   ├── ThreeCanvas.tsx   # Legacy Three.js canvas wrapper
+│   │   └── webgl-utils.ts    # WebGL detection utilities
+│   ├── hooks/                # React hooks
+│   │   └── useSimulation.ts  # Debounced simulation controls
+│   ├── physics/              # Physics engine
+│   │   ├── types.ts          # MassSource, CurvatureSample types
+│   │   ├── curvature.ts      # Curvature computation engine
+│   │   └── scenarios.ts      # Preset scenarios and seeding
 │   ├── state/
-│   │   ├── config.ts       # Zustand store for simulation config
-│   │   └── simulation.ts   # Physics simulation state
+│   │   ├── config.ts         # Zustand store for simulation config
+│   │   └── simulation.ts     # Physics simulation state
 │   ├── styles/
-│   │   ├── global.css      # Global reset and variables
-│   │   └── layout.css      # Layout component styles
+│   │   ├── controls.css      # Control panel styles
+│   │   ├── global.css        # Global reset and variables
+│   │   └── layout.css        # Layout component styles
+│   ├── visualization/        # Three.js visualization
+│   │   ├── materials.ts      # Color mapping and materials
+│   │   └── renderer.ts       # Curvature mesh generation
 │   ├── test/
-│   │   └── setup.ts        # Test setup configuration
+│   │   └── setup.ts          # Test setup configuration
 │   ├── tests/
 │   │   └── curvature.spec.ts # Physics engine tests
-│   ├── App.tsx             # Main application component
-│   └── main.tsx            # Application entry point
-├── .env.example            # Example environment configuration
-├── vite.config.ts          # Vite configuration
-├── tsconfig.json           # TypeScript configuration
-└── package.json            # Dependencies and scripts
+│   ├── App.tsx               # Main application component
+│   └── main.tsx              # Application entry point
+├── .env.example              # Example environment configuration
+├── vite.config.ts            # Vite configuration
+├── tsconfig.json             # TypeScript configuration
+└── package.json              # Dependencies and scripts
 ```
 
 ## Development Workflow
@@ -189,6 +238,111 @@ If the build fails:
 1. Clear node_modules and reinstall: `rm -rf node_modules && npm install`
 2. Clear Vite cache: `rm -rf node_modules/.vite`
 3. Ensure Node.js 18+ is installed: `node --version`
+
+### Performance Issues
+
+If the visualization is slow or stuttering:
+
+1. **Lower grid resolution**: Use 32 or less for smooth interaction (default is recommended)
+2. **Reduce mass count**: Fewer masses = faster computation
+3. **Close other GPU-intensive applications**: Browser GPU resources are shared
+4. **Check hardware acceleration**: Ensure your browser is using the GPU
+
+### WebGL Context Loss
+
+The application automatically attempts to restore the WebGL context if it's lost. If this happens frequently:
+
+1. Check for GPU driver updates
+2. Close other WebGL/3D applications
+3. Reduce browser tab count
+4. Consider using a dedicated GPU if available
+
+## Performance Tips
+
+### Recommended Settings by Device
+
+| Device Type | Resolution | Notes |
+|-------------|------------|-------|
+| High-end desktop | 64-128 | Full detail, smooth |
+| Mid-range desktop | 32-64 | Good balance |
+| Laptop/Mobile | 16-32 | Best performance |
+
+### Performance Characteristics
+
+| Resolution | Vertices | Expected Compute Time |
+|------------|----------|----------------------|
+| 16 | 256 | ~1ms |
+| 32 | 1,024 | ~10ms |
+| 64 | 4,096 | ~50-100ms |
+| 128 | 16,384 | ~500ms+ |
+
+> **Warning**: Resolutions above 64 may cause noticeable lag during parameter changes. The UI will display a warning when high resolution is selected.
+
+### Best Practices
+
+1. **Start with lower resolution**: Explore scenarios at resolution 16-32 first
+2. **Use presets**: Preset scenarios are optimized for visualization
+3. **Pause during adjustments**: Pause animation when adjusting parameters for smoother experience
+4. **Batch parameter changes**: The UI automatically debounces rapid changes to prevent excessive recomputation
+
+## Known GPU/Browser Constraints
+
+### Browser-Specific Notes
+
+| Browser | Notes |
+|---------|-------|
+| Chrome | Recommended. Best WebGL2 performance and compatibility |
+| Firefox | Good support. May have slightly different rendering |
+| Safari | WebGL2 support from version 15+. Metal backend may affect performance |
+| Edge | Chromium-based, similar to Chrome |
+
+### GPU Requirements
+
+- **Minimum**: Any GPU with WebGL2 support (OpenGL ES 3.0 equivalent)
+- **Recommended**: Dedicated GPU with 2GB+ VRAM
+- **Integrated graphics**: Supported but may require lower resolution settings
+
+### Known Limitations
+
+1. **Mobile devices**: Touch controls work but performance may be limited
+2. **Virtual machines**: WebGL may not work correctly in some VM environments
+3. **Remote desktop**: GPU acceleration is often disabled over RDP
+4. **High-DPI displays**: May require more GPU resources for higher canvas resolution
+
+## Rendering Architecture
+
+```mermaid
+graph TD
+    A[Simulation Store] -->|CurvatureGridResult| B[Renderer Module]
+    B -->|Mesh Data| C[BufferGeometry]
+    C --> D[Three.js Scene]
+    D --> E[WebGL2 Renderer]
+    E --> F[Canvas]
+    
+    G[Controls Panel] -->|Parameters| H[useSimulation Hook]
+    H -->|Debounced Updates| A
+    
+    subgraph "Visualization Pipeline"
+        B
+        C
+        D
+    end
+    
+    subgraph "UI Layer"
+        G
+        H
+    end
+```
+
+### Module Structure
+
+| Module | Purpose |
+|--------|---------|
+| `visualization/renderer.ts` | Converts curvature data to Three.js geometry |
+| `visualization/materials.ts` | Color mapping and material definitions |
+| `components/CanvasWrapper.tsx` | React Three Fiber integration |
+| `components/ControlsPanel.tsx` | UI controls for parameters |
+| `hooks/useSimulation.ts` | Debounced state management |
 
 ## Physics Engine
 

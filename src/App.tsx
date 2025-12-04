@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
-import { ThreeCanvas, Sidebar, Footer, isWebGL2Supported } from './components';
+import { useMemo, useCallback, useRef, useEffect } from 'react';
+import {
+  Sidebar,
+  Footer,
+  isWebGL2Supported,
+  CanvasWrapper,
+} from './components';
+import { useSimulation } from './hooks';
+import { useSimulationStore } from './state/simulation';
 import './styles/layout.css';
 
 /**
@@ -23,9 +30,28 @@ import './styles/layout.css';
  * Renders the spacetime visualizer with sidebar controls and status footer
  */
 function App() {
-  // Check WebGL2 support once on mount - this is a synchronous check
-  // so we use useMemo to avoid recalculating on every render
+  // Check WebGL2 support once on mount
   const webglSupported = useMemo(() => isWebGL2Supported(), []);
+
+  // Ref for camera reset function
+  const resetCameraRef = useRef<(() => void) | null>(null);
+
+  const handleResetCameraRef = useCallback((resetFn: () => void) => {
+    resetCameraRef.current = resetFn;
+  }, []);
+
+  const handleResetCamera = useCallback(() => {
+    resetCameraRef.current?.();
+  }, []);
+
+  // Use simulation hook
+  const [state, actions] = useSimulation(handleResetCamera);
+
+  // Load default scenario on mount
+  const loadScenario = useSimulationStore((s) => s.loadScenario);
+  useEffect(() => {
+    loadScenario('single-mass');
+  }, [loadScenario]);
 
   return (
     <div className="app-container">
@@ -36,9 +62,15 @@ function App() {
         </div>
       )}
       <main className="app-main">
-        <Sidebar />
+        <Sidebar state={state} actions={actions} />
         <div className="canvas-container">
-          {webglSupported && <ThreeCanvas />}
+          {webglSupported && (
+            <CanvasWrapper
+              autoRotate={state.autoRotate}
+              isPaused={state.isPaused}
+              onResetCameraRef={handleResetCameraRef}
+            />
+          )}
         </div>
       </main>
       <Footer />
