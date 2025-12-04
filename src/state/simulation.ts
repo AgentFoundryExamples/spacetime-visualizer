@@ -584,15 +584,13 @@ function sampleTrails(
       timestamp,
     };
 
-    // Optimize array operations based on current size
-    let newPoints: TrailPoint[];
-    if (existingPoints.length >= maxPoints) {
-      // At max capacity: shift out oldest and push new (avoid creating intermediate array)
-      newPoints = existingPoints.slice(1);
-      newPoints.push(newPoint);
-    } else {
-      // Under capacity: just append
-      newPoints = [...existingPoints, newPoint];
+    // Optimize array operations by mutating a copy
+    const newPoints = [...existingPoints];
+    newPoints.push(newPoint);
+
+    // Prune if over capacity
+    if (newPoints.length > maxPoints) {
+      newPoints.shift(); // Remove the oldest point
     }
 
     return {

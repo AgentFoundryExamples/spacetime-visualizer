@@ -422,7 +422,7 @@ export function buildTrailRenderData(
     positions[idx + 2] = point.position[2];
 
     // Color with fading opacity (0 = oldest, 1 = newest)
-    const alpha = (i + 1) / pointCount;
+    const alpha = i / (pointCount - 1);
     const colorIdx = i * 4;
     colors[colorIdx] = color.r;
     colors[colorIdx + 1] = color.g;

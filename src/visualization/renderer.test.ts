@@ -364,10 +364,10 @@ describe('visualization/renderer', () => {
       expect(data.positions[3]).toBe(1);
       expect(data.positions[6]).toBe(2);
 
-      // Check fading alpha (oldest = lower, newest = 1)
-      expect(data.colors[3]).toBeCloseTo(1/3, 5); // First point alpha
-      expect(data.colors[7]).toBeCloseTo(2/3, 5); // Second point alpha
-      expect(data.colors[11]).toBeCloseTo(1, 5); // Third point alpha (newest)
+      // Check fading alpha (oldest = 0, newest = 1)
+      expect(data.colors[3]).toBeCloseTo(0, 5); // First point alpha (fully transparent)
+      expect(data.colors[7]).toBeCloseTo(0.5, 5); // Second point alpha
+      expect(data.colors[11]).toBeCloseTo(1, 5); // Third point alpha (newest, fully opaque)
     });
 
     it('should use provided base color', () => {
