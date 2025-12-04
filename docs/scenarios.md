@@ -14,6 +14,10 @@ This document details the available visualization modes, preset scenarios, and h
   - [Gravitational Wave](#gravitational-wave)
   - [Triple System](#triple-system)
   - [Mass Cluster](#mass-cluster)
+  - [Gravitational Lensing](#gravitational-lensing) (v0.2)
+  - [Extreme Mass Ratio](#extreme-mass-ratio) (v0.2)
+  - [Hierarchical Triple](#hierarchical-triple) (v0.2)
+  - [Black Hole Inspiral](#black-hole-inspiral) (v0.2)
 - [Custom Presets](#custom-presets)
 - [Physics Worker Architecture](#physics-worker-architecture)
 - [Adding New Modes](#adding-new-modes)
@@ -139,6 +143,70 @@ Multiple masses distributed in a cluster.
 | Radius | ~3 units |
 
 **Physics:** Shows aggregate curvature and shell theorem principles.
+
+### Gravitational Lensing
+
+A single massive object demonstrating deep spacetime curvature (v0.2).
+
+| Property | Value |
+|----------|-------|
+| Mass Count | 1 |
+| Mass Value | ~200 (with variation) |
+| Position | Center (0, 0, 0) |
+| Orbital Motion | N/A |
+
+**Physics:** Demonstrates light bending due to extreme curvature. In full GR, photon paths curve around massive objects, creating lensing effects used to detect dark matter.
+
+**Limitations:** This is a visualization of curvature depth, not actual ray-traced lensing.
+
+### Extreme Mass Ratio
+
+A binary system with vastly different masses (~100:1 ratio) (v0.2).
+
+| Property | Value |
+|----------|-------|
+| Mass Count | 2 |
+| Primary Mass | ~150 |
+| Secondary Mass | ~1.5 |
+| Mass Ratio | ~100:1 |
+| Orbital Motion | Supported (secondary only) |
+
+**Physics:** Similar to EMRI (Extreme Mass Ratio Inspiral) systems detected by LISA. The secondary barely perturbs the primary's gravitational field.
+
+**Limitations:** Orbital evolution (inspiral) is not simulated; orbits are static Keplerian.
+
+### Hierarchical Triple
+
+A close inner binary orbiting a more massive outer body (v0.2).
+
+| Property | Value |
+|----------|-------|
+| Mass Count | 3 |
+| Tertiary Mass | ~120 |
+| Inner Binary Masses | ~40 each |
+| Outer Radius | ~3 units |
+| Inner Separation | ~0.8-1.1 units |
+| Orbital Motion | N/A (static configuration) |
+
+**Physics:** Demonstrates two-scale gravitational dynamics. Kozai-Lidov oscillations can occur in such systems, exchanging eccentricity and inclination over long timescales.
+
+**Limitations:** Full three-body dynamics with orbital evolution is not implemented.
+
+### Black Hole Inspiral
+
+Two equal masses in tight orbit, simulating pre-merger dynamics (v0.2).
+
+| Property | Value |
+|----------|-------|
+| Mass Count | 2 |
+| Mass 1 | ~80 |
+| Mass 2 | ~72-88 |
+| Separation | ~1.2-1.5 units |
+| Orbital Motion | Supported |
+
+**Physics:** Represents the late inspiral phase of binary black hole mergers, like those detected by LIGO/Virgo. Energy is radiated as gravitational waves, causing orbital decay.
+
+**Limitations:** Orbital decay (Peters-Mathews formalism) and merger are not simulated.
 
 ## Orbital Motion
 

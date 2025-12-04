@@ -82,6 +82,10 @@ describe('content/strings', () => {
         'gravitational-wave',
         'triple-system',
         'cluster',
+        'gravitational-lensing',
+        'extreme-mass-ratio',
+        'hierarchical-triple',
+        'black-hole-inspiral',
       ];
 
       scenarios.forEach((scenario) => {
@@ -105,6 +109,34 @@ describe('content/strings', () => {
       expect(gravWave.name).toBe('Gravitational Wave');
       expect(gravWave.description).toContain('ripple');
       expect(gravWave.educationalText).toContain('gravitational waves');
+    });
+
+    it('should have appropriate content for gravitational-lensing scenario', () => {
+      const lensing = SCENARIO_STRINGS['gravitational-lensing'];
+      expect(lensing.name).toBe('Gravitational Lensing');
+      expect(lensing.description).toContain('curvature');
+      expect(lensing.educationalText).toContain('Light bends');
+    });
+
+    it('should have appropriate content for extreme-mass-ratio scenario', () => {
+      const emri = SCENARIO_STRINGS['extreme-mass-ratio'];
+      expect(emri.name).toBe('Extreme Mass Ratio');
+      expect(emri.description).toContain('star-planet');
+      expect(emri.educationalText).toContain('EMRI');
+    });
+
+    it('should have appropriate content for hierarchical-triple scenario', () => {
+      const triple = SCENARIO_STRINGS['hierarchical-triple'];
+      expect(triple.name).toBe('Hierarchical Triple');
+      expect(triple.description).toContain('close binary');
+      expect(triple.educationalText).toContain('Kozai-Lidov');
+    });
+
+    it('should have appropriate content for black-hole-inspiral scenario', () => {
+      const inspiral = SCENARIO_STRINGS['black-hole-inspiral'];
+      expect(inspiral.name).toBe('Black Hole Inspiral');
+      expect(inspiral.description).toContain('close orbit');
+      expect(inspiral.educationalText).toContain('LIGO');
     });
   });
 
