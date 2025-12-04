@@ -29,6 +29,18 @@ graph TD
 
 ## Interactive Controls
 
+### Visualization Modes
+
+Switch between different visualization modes to explore spacetime curvature from different perspectives:
+
+| Mode | Description |
+|------|-------------|
+| Heightfield Mesh | 3D surface showing curvature depth as height displacement |
+| Contour Grid | Equipotential lines showing gravitational field strength |
+| Field Lines | Animated particles showing gravitational field direction |
+
+For detailed information about modes and how to add new ones, see [docs/scenarios.md](docs/scenarios.md).
+
 ### Scenario Selection
 
 Select from preset scenarios to explore different gravitational configurations:
@@ -36,9 +48,12 @@ Select from preset scenarios to explore different gravitational configurations:
 | Scenario | Description |
 |----------|-------------|
 | Single Mass | Single centered mass demonstrating spherical symmetry |
-| Binary System | Two masses in orbital configuration |
+| Binary Orbit | Two masses in orbital configuration |
+| Gravitational Wave | Quadrupole pattern simulating wave propagation |
 | Triple System | Three-body system with complex superposition |
 | Mass Cluster | Multiple masses showing aggregate curvature |
+
+**Custom Presets:** You can save your current configuration as a custom preset and load it later. Custom presets are stored in browser local storage.
 
 ### Parameter Controls
 
@@ -64,6 +79,14 @@ Select from preset scenarios to explore different gravitational configurations:
 | Play/Pause | Toggle animation |
 | Refresh | Force recompute curvature |
 | Reset All | Reset to initial state |
+
+### Educational Panel
+
+The expandable educational panel explains the current visualization mode and scenario, helping users understand the physics being displayed. It includes:
+
+- Explanation of the current mode's visualization approach
+- Key concepts and physics principles
+- Links to relevant documentation
 
 ## Requirements
 
@@ -163,14 +186,21 @@ cp .env.example .env
 
 ```
 spacetime-visualizer/
+├── docs/
+│   └── scenarios.md          # Documentation for modes and scenarios
 ├── src/
 │   ├── components/           # React components
 │   │   ├── CanvasWrapper.tsx # Three.js canvas with WebGL handling
 │   │   ├── ControlsPanel.tsx # Interactive controls UI
+│   │   ├── EducationPanel.tsx # Educational content panel
 │   │   ├── Footer.tsx        # Status footer
+│   │   ├── ModeSelector.tsx  # Visualization mode selector
+│   │   ├── ScenarioLibrary.tsx # Scenario presets and custom saves
 │   │   ├── Sidebar.tsx       # Control sidebar
 │   │   ├── ThreeCanvas.tsx   # Legacy Three.js canvas wrapper
 │   │   └── webgl-utils.ts    # WebGL detection utilities
+│   ├── content/
+│   │   └── strings.ts        # Localized UI strings
 │   ├── hooks/                # React hooks
 │   │   └── useSimulation.ts  # Debounced simulation controls
 │   ├── physics/              # Physics engine
@@ -183,8 +213,15 @@ spacetime-visualizer/
 │   ├── styles/
 │   │   ├── controls.css      # Control panel styles
 │   │   ├── global.css        # Global reset and variables
-│   │   └── layout.css        # Layout component styles
+│   │   ├── layout.css        # Layout component styles
+│   │   └── panels.css        # Mode/scenario panel styles
 │   ├── visualization/        # Three.js visualization
+│   │   ├── modes/            # Visualization mode renderers
+│   │   │   ├── mesh.ts       # Heightfield mesh mode
+│   │   │   ├── contour.ts    # Contour grid mode
+│   │   │   ├── fieldLines.ts # Field lines mode
+│   │   │   ├── types.ts      # Mode interface definitions
+│   │   │   └── index.ts      # Mode registry and exports
 │   │   ├── materials.ts      # Color mapping and materials
 │   │   └── renderer.ts       # Curvature mesh generation
 │   ├── test/

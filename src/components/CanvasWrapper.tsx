@@ -20,13 +20,16 @@ import { OrbitControls } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import * as THREE from 'three';
 import { useSimulationStore } from '../state/simulation';
+import type { VisualizationMode } from '../content/strings';
 import {
-  buildCurvatureMesh,
-  createBufferGeometry,
-  createCurvatureMaterial,
   createAxesHelper,
   createGridHelper,
 } from '../visualization';
+import {
+  getModeRenderer,
+  disposeResources,
+  type DisposableResources,
+} from '../visualization/modes';
 
 /**
  * Props for CanvasWrapper component.
@@ -46,50 +49,83 @@ export interface CanvasWrapperProps {
 const DEFAULT_CAMERA_POSITION: [number, number, number] = [10, 10, 10];
 
 /**
- * Inner scene component that handles Three.js rendering.
+ * Inner scene component that handles Three.js rendering with mode support.
  */
-function SpacetimeMesh({ isPaused }: { isPaused: boolean }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const geometryRef = useRef<THREE.BufferGeometry | null>(null);
+function SpacetimeVisualization({
+  isPaused,
+  mode,
+}: {
+  isPaused: boolean;
+  mode: VisualizationMode;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  const currentObjectRef = useRef<THREE.Object3D | null>(null);
+  const resourcesRef = useRef<DisposableResources | null>(null);
+  const currentModeRef = useRef<VisualizationMode>(mode);
 
   // Get simulation result from store
   const result = useSimulationStore((state) => state.result);
 
-  // Create material (memoized)
-  const material = useMemo(() => createCurvatureMaterial(), []);
+  // Get the renderer for the current mode
+  const renderer = useMemo(() => getModeRenderer(mode), [mode]);
 
-  // Build geometry from curvature data
+  // Build/update visualization when result or mode changes
   useEffect(() => {
-    if (!result || !meshRef.current) return;
+    if (!result || !groupRef.current) return;
 
-    const meshData = buildCurvatureMesh(result);
-    const newGeometry = createBufferGeometry(meshData);
+    const modeChanged = currentModeRef.current !== mode;
+    currentModeRef.current = mode;
 
-    // Dispose old geometry
-    if (geometryRef.current) {
-      geometryRef.current.dispose();
+    // If mode changed or no current object, do a full render
+    if (modeChanged || !currentObjectRef.current) {
+      // Dispose old resources
+      if (resourcesRef.current) {
+        disposeResources(resourcesRef.current);
+      }
+      if (currentObjectRef.current && groupRef.current) {
+        groupRef.current.remove(currentObjectRef.current);
+      }
+
+      // Render new visualization
+      const { object, resources } = renderer.render(result);
+      currentObjectRef.current = object;
+      resourcesRef.current = resources;
+      groupRef.current.add(object);
+    } else {
+      // Try to update existing visualization
+      const updateSuccessful = renderer.update(result, currentObjectRef.current);
+      if (!updateSuccessful) {
+        // Update failed, need full re-render
+        if (resourcesRef.current) {
+          disposeResources(resourcesRef.current);
+        }
+        if (currentObjectRef.current && groupRef.current) {
+          groupRef.current.remove(currentObjectRef.current);
+        }
+
+        const { object, resources } = renderer.render(result);
+        currentObjectRef.current = object;
+        resourcesRef.current = resources;
+        groupRef.current.add(object);
+      }
     }
-
-    geometryRef.current = newGeometry;
-    meshRef.current.geometry = newGeometry;
-  }, [result]);
+  }, [result, mode, renderer]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (geometryRef.current) {
-        geometryRef.current.dispose();
+      if (resourcesRef.current) {
+        disposeResources(resourcesRef.current);
       }
-      material.dispose();
     };
-  }, [material]);
+  }, []);
 
   // Simple animation (gentle oscillation when not paused)
   useFrame(() => {
-    if (!isPaused && meshRef.current) {
+    if (!isPaused && groupRef.current) {
       // Subtle breathing animation
       const time = performance.now() * 0.001;
-      meshRef.current.position.z = Math.sin(time) * 0.1;
+      groupRef.current.position.z = Math.sin(time) * 0.1;
     }
   });
 
@@ -97,11 +133,7 @@ function SpacetimeMesh({ isPaused }: { isPaused: boolean }) {
     return null;
   }
 
-  return (
-    <mesh ref={meshRef} material={material}>
-      <bufferGeometry />
-    </mesh>
-  );
+  return <group ref={groupRef} />;
 }
 
 /**
@@ -238,6 +270,9 @@ export function CanvasWrapper({
   const [key, setKey] = useState(0);
   const [restoreAttempts, setRestoreAttempts] = useState(0);
 
+  // Get visualization mode from store
+  const visualizationMode = useSimulationStore((state) => state.visualizationMode);
+
   const handleContextLost = useCallback(() => {
     setContextLost(true);
     setRestoreAttempts((prev) => {
@@ -303,7 +338,7 @@ export function CanvasWrapper({
       <pointLight position={[0, 10, 0]} intensity={0.3} />
 
       {/* Scene content */}
-      <SpacetimeMesh isPaused={isPaused} />
+      <SpacetimeVisualization isPaused={isPaused} mode={visualizationMode} />
       <MassSpheres />
       <SceneHelpers />
 

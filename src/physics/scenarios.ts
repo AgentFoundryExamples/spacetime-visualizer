@@ -35,6 +35,7 @@ import type { MassSource, CurvatureGridConfig } from './types';
 export type ScenarioPreset =
   | 'single-mass'
   | 'binary-orbit'
+  | 'gravitational-wave'
   | 'triple-system'
   | 'cluster';
 
@@ -65,6 +66,13 @@ export const SCENARIO_PRESETS: ScenarioDescription[] = [
     description:
       'Two masses in orbital configuration, showing gravitational interaction.',
     massCount: 2,
+  },
+  {
+    id: 'gravitational-wave',
+    name: 'Gravitational Wave',
+    description:
+      'Animated ripple pattern simulating gravitational wave propagation.',
+    massCount: 4,
   },
   {
     id: 'triple-system',
@@ -286,6 +294,51 @@ export function generateClusterScenario(
 }
 
 /**
+ * Generates a gravitational wave toy scenario configuration.
+ * Places masses in a quadrupole pattern to approximate wave effects.
+ *
+ * @param seed - Random seed for deterministic generation
+ * @returns CurvatureGridConfig for a gravitational wave scenario
+ */
+export function generateGravitationalWaveScenario(
+  seed: number = 42
+): CurvatureGridConfig {
+  const random = createSeededRandom(seed);
+
+  // Create a quadrupole pattern with oscillating masses
+  const baseRadius = 2.5;
+  const baseMass = 50;
+  const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf'];
+
+  const masses: MassSource[] = [];
+
+  // Four masses at cardinal positions to create quadrupole pattern
+  for (let i = 0; i < 4; i++) {
+    const angle = (i * Math.PI) / 2 + random() * 0.1;
+    const radiusVariation = 0.9 + random() * 0.2;
+
+    masses.push({
+      id: `wave-mass-${i + 1}`,
+      position: [
+        baseRadius * radiusVariation * Math.cos(angle),
+        baseRadius * radiusVariation * Math.sin(angle),
+        0,
+      ],
+      mass: baseMass * (0.8 + random() * 0.4),
+      radius: 0.3,
+      color: colors[i],
+    });
+  }
+
+  return {
+    resolution: DEFAULT_RESOLUTION,
+    bounds: DEFAULT_BOUNDS,
+    timeStep: DEFAULT_TIME_STEP,
+    masses,
+  };
+}
+
+/**
  * Gets a scenario configuration by preset name.
  *
  * @param preset - The scenario preset identifier
@@ -301,6 +354,8 @@ export function getScenarioConfig(
       return generateSingleMassScenario(seed);
     case 'binary-orbit':
       return generateBinaryScenario(seed);
+    case 'gravitational-wave':
+      return generateGravitationalWaveScenario(seed);
     case 'triple-system':
       return generateTripleScenario(seed);
     case 'cluster':

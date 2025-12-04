@@ -44,6 +44,7 @@ import {
   DEFAULT_TIME_STEP,
   DEFAULT_RESOLUTION,
 } from '../physics/scenarios';
+import type { VisualizationMode } from '../content/strings';
 
 /**
  * Simulation state and actions.
@@ -58,6 +59,9 @@ export interface SimulationState {
   /** Current scenario preset (null for custom) */
   currentPreset: ScenarioPreset | null;
 
+  /** Current visualization mode */
+  visualizationMode: VisualizationMode;
+
   /** Seed for deterministic scenario generation */
   seed: number;
 
@@ -69,6 +73,12 @@ export interface SimulationState {
 
   /** Load a preset scenario */
   loadScenario: (preset: ScenarioPreset, seed?: number) => void;
+
+  /** Load a custom configuration */
+  loadCustomConfig: (config: CurvatureGridConfig) => void;
+
+  /** Set visualization mode */
+  setVisualizationMode: (mode: VisualizationMode) => void;
 
   /** Update masses in the current configuration */
   setMasses: (masses: MassSource[]) => void;
@@ -118,6 +128,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   config: getInitialConfig(),
   result: null,
   currentPreset: null,
+  visualizationMode: 'mesh',
   seed: 42,
   isComputing: false,
   error: null,
@@ -135,6 +146,21 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 
     // Auto-compute after loading
     get().compute();
+  },
+
+  loadCustomConfig: (config: CurvatureGridConfig) => {
+    set({
+      config: { ...config },
+      currentPreset: null,
+      error: null,
+    });
+
+    // Auto-compute after loading
+    get().compute();
+  },
+
+  setVisualizationMode: (mode: VisualizationMode) => {
+    set({ visualizationMode: mode });
   },
 
   setMasses: (masses: MassSource[]) => {
@@ -228,6 +254,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       config: getInitialConfig(),
       result: null,
       currentPreset: null,
+      visualizationMode: 'mesh',
       seed: 42,
       isComputing: false,
       error: null,
@@ -245,3 +272,4 @@ export type {
 export type { ScenarioPreset, ScenarioDescription } from '../physics/scenarios';
 export { SCENARIO_PRESETS } from '../physics/scenarios';
 export { CurvatureValidationError } from '../physics/curvature';
+export type { VisualizationMode } from '../content/strings';
