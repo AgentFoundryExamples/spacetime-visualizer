@@ -31,3 +31,7 @@ export { ThreeCanvas } from './ThreeCanvas';
 export { Sidebar } from './Sidebar';
 export { Footer } from './Footer';
 export { isWebGL2Supported } from './webgl-utils';
+export { ControlsPanel } from './ControlsPanel';
+export type { ControlsPanelProps } from './ControlsPanel';
+export { CanvasWrapper } from './CanvasWrapper';
+export type { CanvasWrapperProps } from './CanvasWrapper';
