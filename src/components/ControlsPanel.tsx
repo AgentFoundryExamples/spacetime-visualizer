@@ -602,7 +602,7 @@ export function ControlsPanel({
             <button
               className="control-button"
               onClick={() => onExportVideo?.(videoDuration)}
-              disabled={isComputing || exportState?.isExporting}
+              disabled={isComputing || exportState?.isExporting || !onExportVideo}
               aria-label={`Record ${videoDuration} second video and download as WebM`}
             >
               {exportState?.isExporting && exportState.format === 'webm'
@@ -614,7 +614,7 @@ export function ControlsPanel({
             <button
               className="control-button"
               onClick={() => onExportGif?.(gifDuration)}
-              disabled={isComputing || exportState?.isExporting}
+              disabled={isComputing || exportState?.isExporting || !onExportGif}
               aria-label={`Record ${gifDuration} second animation and download as GIF`}
             >
               {exportState?.isExporting && exportState.format === 'gif'
@@ -626,7 +626,7 @@ export function ControlsPanel({
             <button
               className="control-button"
               onClick={() => onExportMp4?.(videoDuration)}
-              disabled={isComputing || exportState?.isExporting}
+              disabled={isComputing || exportState?.isExporting || !onExportMp4}
               aria-label={`Record ${videoDuration} second video and download as MP4`}
             >
               {exportState?.isExporting && exportState.format === 'mp4'

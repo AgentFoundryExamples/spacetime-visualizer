@@ -659,9 +659,13 @@ export class SimpleGifEncoder {
 
 /**
  * Captures a GIF from a canvas element.
- * Uses frame-by-frame capture to create an animated GIF.
+ * Uses frame-by-frame capture to create a GIF export.
  *
- * Note: GIF encoding is computationally intensive. For long durations,
+ * **Note:** The current implementation uses a placeholder encoder that exports
+ * the first captured frame as a static image. For true animated GIF support,
+ * integrate a proper GIF encoder library (e.g., gif.js).
+ *
+ * GIF encoding is computationally intensive. For long durations,
  * consider using a Web Worker for encoding.
  */
 export async function captureGif(
@@ -726,7 +730,7 @@ export async function captureGif(
       onProgress?.(progress, `Capturing frame ${i + 1}/${totalFrames}...`);
     }
 
-    onProgress?.(82, 'Encoding GIF...');
+    onProgress?.(82, 'Encoding GIF (static preview)...');
 
     // Encode the GIF
     const blob = await encoder.encode();
@@ -736,7 +740,7 @@ export async function captureGif(
     // Download the GIF
     downloadBlob(blob, filename);
 
-    onProgress?.(100, 'GIF saved!');
+    onProgress?.(100, 'GIF saved (static preview - animated GIF requires gif.js)!');
 
     return { success: true, filename };
   } catch (error) {
@@ -771,8 +775,7 @@ export async function captureMp4(
     }, mp4MimeType, onProgress);
   }
 
-  // Fallback to WebM capture with .mp4 extension
-  // Note: The file is actually WebM, but many players can handle it
+  // Fallback to WebM capture with correct .webm extension
   const webmMimeType = getSupportedVideoMimeType();
   if (!webmMimeType) {
     return {
@@ -781,10 +784,11 @@ export async function captureMp4(
     };
   }
 
-  // Capture as WebM but save with .mp4 extension
-  // Note: This is a compatibility workaround - the actual format is WebM
-  const filename = options.filename ?? generateExportFilename('mp4');
-  onProgress?.(0, 'MP4 not directly supported. Recording as WebM...');
+  // Capture as WebM and save with .webm extension to avoid format/extension mismatch
+  const filename = options.filename
+    ? options.filename.replace(/\.mp4$/i, '.webm')
+    : generateExportFilename('webm');
+  onProgress?.(0, 'MP4 not directly supported. Recording as WebM instead...');
 
   return captureVideoWithMimeType(canvas, {
     ...options,
