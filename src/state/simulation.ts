@@ -33,10 +33,7 @@ import type {
   CurvatureGridConfig,
   CurvatureGridResult,
 } from '../physics/types';
-import {
-  computeCurvatureGrid,
-  CurvatureValidationError,
-} from '../physics/curvature';
+import { CurvatureValidationError } from '../physics/curvature';
 import type { ScenarioPreset } from '../physics/scenarios';
 import {
   getScenarioConfig,
@@ -46,6 +43,10 @@ import {
 } from '../physics/scenarios';
 import { updateMassPositions, ORBITAL_CONSTRAINTS } from '../physics/orbit';
 import type { VisualizationMode } from '../content/strings';
+import {
+  getPhysicsComputer,
+  terminatePhysicsComputer,
+} from '../workers';
 
 /**
  * Simulation state and actions.
@@ -77,6 +78,12 @@ export interface SimulationState {
 
   /** Current simulation time for orbital motion */
   simulationTime: number;
+
+  /** Whether physics computation is using a Web Worker */
+  isUsingWorker: boolean;
+
+  /** Warning message about worker status (null if no warning) */
+  workerWarning: string | null;
 
   /** Load a preset scenario */
   loadScenario: (preset: ScenarioPreset, seed?: number) => void;
@@ -150,6 +157,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   error: null,
   orbitsEnabled: false,
   simulationTime: 0,
+  isUsingWorker: false,
+  workerWarning: null,
 
   loadScenario: (preset: ScenarioPreset, seed?: number) => {
     const newSeed = seed ?? get().seed;
@@ -252,12 +261,24 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 
     set({ isComputing: true, error: null });
 
-    // Use setTimeout to allow the UI to update before the synchronous, blocking computation
-    setTimeout(() => {
-      try {
-        const result = computeCurvatureGrid(config);
+    // Use Web Worker for computation when available
+    getPhysicsComputer({
+      onWarning: (message) => {
+        set({ workerWarning: message });
+      },
+      onError: (error) => {
+        set({ error: error.message });
+      },
+    })
+      .then((computer) => {
+        // Update worker status
+        set({ isUsingWorker: computer.isWorkerBased });
+        return computer.compute(config);
+      })
+      .then((result) => {
         set({ result, isComputing: false, error: null });
-      } catch (err) {
+      })
+      .catch((err) => {
         const message =
           err instanceof CurvatureValidationError
             ? err.message
@@ -265,11 +286,12 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
               ? err.message
               : 'Unknown error during computation';
         set({ result: null, isComputing: false, error: message });
-      }
-    }, 0);
+      });
   },
 
   reset: () => {
+    // Terminate the physics worker on reset
+    terminatePhysicsComputer();
     set({
       config: getInitialConfig(),
       result: null,
@@ -280,6 +302,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       error: null,
       orbitsEnabled: false,
       simulationTime: 0,
+      isUsingWorker: false,
+      workerWarning: null,
     });
   },
 
@@ -360,3 +384,4 @@ export type { ScenarioPreset, ScenarioDescription } from '../physics/scenarios';
 export { SCENARIO_PRESETS } from '../physics/scenarios';
 export { CurvatureValidationError } from '../physics/curvature';
 export type { VisualizationMode } from '../content/strings';
+export { isWorkerSupported, isUsingWorker } from '../workers';
