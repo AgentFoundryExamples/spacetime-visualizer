@@ -38,11 +38,16 @@ export interface EducationPanelProps {
 /**
  * Converts simple markdown to HTML for rendering.
  * Supports: headers, bold, lists, links, code.
+ * 
+ * Note: This is safe for XSS because:
+ * 1. Input comes only from our own strings.ts (not user input)
+ * 2. HTML entities are escaped before processing
+ * 3. Link hrefs are sanitized to prevent javascript: protocol
  */
 function parseMarkdown(text: string): string {
   let html = text;
 
-  // Escape HTML entities first
+  // Escape HTML entities first to prevent XSS
   html = html
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -58,8 +63,17 @@ function parseMarkdown(text: string): string {
   // Code (inline)
   html = html.replace(/`(.+?)`/g, '<code>$1</code>');
 
-  // Links
-  html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+  // Links - sanitize href to prevent dangerous protocol attacks
+  html = html.replace(/\[(.+?)\]\((.+?)\)/g, (_, linkText, href) => {
+    // Block dangerous protocols (case-insensitive check)
+    const lowerHref = href.toLowerCase().trim();
+    const isDangerous =
+      lowerHref.startsWith('javascript:') ||
+      lowerHref.startsWith('data:') ||
+      lowerHref.startsWith('vbscript:');
+    const sanitizedHref = isDangerous ? '#' : href;
+    return `<a href="${sanitizedHref}">${linkText}</a>`;
+  });
 
   // Lists (unordered)
   html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
