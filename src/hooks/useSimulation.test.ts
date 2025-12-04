@@ -249,4 +249,147 @@ describe('useSimulation hook', () => {
       expect(computeSpy.mock.calls.length).toBeLessThanOrEqual(2);
     });
   });
+
+  describe('trail controls', () => {
+    it('should return trail state from store', () => {
+      const { result } = renderHook(() => useSimulation());
+      const [state] = result.current;
+
+      expect(state.trailConfig).toBeDefined();
+      expect(state.trailConfig.enabled).toBe(false);
+      expect(state.trailConfig.maxPoints).toBe(100);
+      expect(state.trails).toEqual([]);
+    });
+
+    it('should have trail action functions', () => {
+      const { result } = renderHook(() => useSimulation());
+      const [, actions] = result.current;
+
+      expect(typeof actions.setTrailConfig).toBe('function');
+      expect(typeof actions.clearTrails).toBe('function');
+    });
+
+    it('should toggle trail enabled state', () => {
+      const { result } = renderHook(() => useSimulation());
+      const [, actions] = result.current;
+
+      expect(result.current[0].trailConfig.enabled).toBe(false);
+
+      act(() => {
+        actions.setTrailConfig({ enabled: true });
+      });
+
+      expect(result.current[0].trailConfig.enabled).toBe(true);
+
+      act(() => {
+        actions.setTrailConfig({ enabled: false });
+      });
+
+      expect(result.current[0].trailConfig.enabled).toBe(false);
+    });
+
+    it('should update trail maxPoints within bounds', () => {
+      const { result } = renderHook(() => useSimulation());
+      const [, actions] = result.current;
+
+      act(() => {
+        actions.setTrailConfig({ maxPoints: 200 });
+      });
+
+      expect(result.current[0].trailConfig.maxPoints).toBe(200);
+
+      // Test clamping to max
+      act(() => {
+        actions.setTrailConfig({ maxPoints: 1000 });
+      });
+
+      expect(result.current[0].trailConfig.maxPoints).toBe(500);
+
+      // Test clamping to min
+      act(() => {
+        actions.setTrailConfig({ maxPoints: 5 });
+      });
+
+      expect(result.current[0].trailConfig.maxPoints).toBe(10);
+    });
+
+    it('should clear trails', () => {
+      const { result } = renderHook(() => useSimulation());
+      const [, actions] = result.current;
+
+      // First enable trails and add some data directly to store
+      act(() => {
+        actions.setTrailConfig({ enabled: true });
+      });
+
+      // Manually add some trail data to store
+      act(() => {
+        useSimulationStore.setState({
+          trails: [
+            {
+              massId: 'mass1',
+              points: [
+                { position: [0, 0, 0], timestamp: 0 },
+                { position: [1, 0, 0], timestamp: 0.5 },
+              ],
+            },
+          ],
+        });
+      });
+
+      expect(result.current[0].trails.length).toBe(1);
+
+      act(() => {
+        actions.clearTrails();
+      });
+
+      expect(result.current[0].trails).toEqual([]);
+    });
+
+    it('should clear trails when loading a new scenario', async () => {
+      const { result } = renderHook(() => useSimulation());
+      const [, actions] = result.current;
+
+      // Add some trail data
+      act(() => {
+        useSimulationStore.setState({
+          trails: [{ massId: 'mass1', points: [{ position: [0, 0, 0], timestamp: 0 }] }],
+        });
+      });
+
+      expect(result.current[0].trails.length).toBe(1);
+
+      // Load a new scenario
+      act(() => {
+        actions.loadScenario('single-mass');
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(DEFAULT_DEBOUNCE_MS + 100);
+      });
+
+      expect(result.current[0].trails).toEqual([]);
+    });
+
+    it('should clear trails when resetting simulation', async () => {
+      const { result } = renderHook(() => useSimulation());
+      const [, actions] = result.current;
+
+      // Add some trail data
+      act(() => {
+        useSimulationStore.setState({
+          trails: [{ massId: 'mass1', points: [{ position: [0, 0, 0], timestamp: 0 }] }],
+        });
+      });
+
+      expect(result.current[0].trails.length).toBe(1);
+
+      act(() => {
+        actions.reset();
+      });
+
+      expect(result.current[0].trails).toEqual([]);
+      expect(result.current[0].trailConfig.enabled).toBe(false);
+    });
+  });
 });

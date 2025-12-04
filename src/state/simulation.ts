@@ -55,6 +55,67 @@ import {
 } from '../visualization/modes';
 
 /**
+ * A single position sample in a trail.
+ */
+export interface TrailPoint {
+  /** Position at this sample [x, y, z] */
+  position: [number, number, number];
+  /** Simulation time when this sample was taken */
+  timestamp: number;
+}
+
+/**
+ * Trail history for a single mass.
+ */
+export interface MassTrail {
+  /** ID of the mass this trail belongs to */
+  massId: string;
+  /** Trail position history (newest last) */
+  points: TrailPoint[];
+}
+
+/**
+ * Configuration for trail visualization.
+ */
+export interface TrailConfig {
+  /** Whether trail visualization is enabled */
+  enabled: boolean;
+  /** Maximum number of trail points to keep per mass */
+  maxPoints: number;
+  /** Minimum time between trail samples (seconds) */
+  sampleInterval: number;
+}
+
+/**
+ * Default trail configuration.
+ */
+export const DEFAULT_TRAIL_CONFIG: TrailConfig = {
+  enabled: false,
+  maxPoints: 100,
+  sampleInterval: 0.05,
+};
+
+/**
+ * Minimum trail sample interval (seconds) to avoid overdraw at high speeds.
+ */
+export const MIN_TRAIL_SAMPLE_INTERVAL = 0.01;
+
+/**
+ * Maximum trail sample interval (seconds).
+ */
+export const MAX_TRAIL_SAMPLE_INTERVAL = 1.0;
+
+/**
+ * Minimum number of trail points.
+ */
+export const MIN_TRAIL_POINTS = 10;
+
+/**
+ * Maximum number of trail points to prevent memory issues.
+ */
+export const MAX_TRAIL_POINTS = 500;
+
+/**
  * Simulation state and actions.
  */
 export interface SimulationState {
@@ -96,6 +157,15 @@ export interface SimulationState {
 
   /** Wave parameters for gravitational wave mode */
   waveParams: WaveParameters;
+
+  /** Trail configuration */
+  trailConfig: TrailConfig;
+
+  /** Trail history for each mass */
+  trails: MassTrail[];
+
+  /** Last time a trail sample was taken */
+  lastTrailSampleTime: number;
 
   /** Load a preset scenario */
   loadScenario: (preset: ScenarioPreset, seed?: number) => void;
@@ -147,6 +217,12 @@ export interface SimulationState {
 
   /** Set wave parameters */
   setWaveParams: (params: Partial<WaveParameters>) => void;
+
+  /** Set trail configuration */
+  setTrailConfig: (config: Partial<TrailConfig>) => void;
+
+  /** Clear all trail data */
+  clearTrails: () => void;
 }
 
 /**
@@ -179,6 +255,9 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   isUsingWorker: false,
   workerWarning: null,
   waveParams: { ...DEFAULT_WAVE_PARAMETERS },
+  trailConfig: { ...DEFAULT_TRAIL_CONFIG },
+  trails: [],
+  lastTrailSampleTime: 0,
 
   loadScenario: (preset: ScenarioPreset, seed?: number) => {
     const newSeed = seed ?? get().seed;
@@ -190,6 +269,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       seed: newSeed,
       error: null,
       simulationTime: 0, // Reset simulation time when loading a new scenario
+      trails: [], // Clear trails when loading a new scenario
+      lastTrailSampleTime: 0,
     });
 
     // Auto-compute after loading
@@ -202,6 +283,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       currentPreset: null,
       error: null,
       simulationTime: 0,
+      trails: [], // Clear trails when loading custom config
+      lastTrailSampleTime: 0,
     });
 
     // Auto-compute after loading
@@ -326,6 +409,9 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       isUsingWorker: false,
       workerWarning: null,
       waveParams: { ...DEFAULT_WAVE_PARAMETERS },
+      trailConfig: { ...DEFAULT_TRAIL_CONFIG },
+      trails: [],
+      lastTrailSampleTime: 0,
     });
   },
 
@@ -352,7 +438,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     // atomic updates. The guard checks and subsequent set() are safe because
     // if state changes between get() and set(), the next animation frame
     // will correctly read the updated state.
-    const { config, orbitsEnabled, simulationTime, timeScale, isComputing } = get();
+    const { config, orbitsEnabled, simulationTime, timeScale, isComputing, trailConfig, trails, lastTrailSampleTime } = get();
 
     // Don't advance if orbits are disabled, timeScale is zero, or already computing
     if (!orbitsEnabled || timeScale === 0 || isComputing) {
@@ -373,12 +459,22 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     // Update mass positions based on orbital parameters
     const updatedMasses = updateMassPositions(config.masses, newTime);
 
+    // Sample trails if enabled and enough time has passed
+    let newTrails = trails;
+    let newLastSampleTime = lastTrailSampleTime;
+    if (trailConfig.enabled && newTime - lastTrailSampleTime >= trailConfig.sampleInterval) {
+      newTrails = sampleTrails(trails, updatedMasses, newTime, trailConfig.maxPoints);
+      newLastSampleTime = newTime;
+    }
+
     set({
       simulationTime: newTime,
       config: {
         ...config,
         masses: updatedMasses,
       },
+      trails: newTrails,
+      lastTrailSampleTime: newLastSampleTime,
     });
 
     // Trigger curvature recomputation
@@ -403,6 +499,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
         ...initialConfig,
         masses: updatedMasses,
       },
+      trails: [], // Clear trails when resetting simulation time
+      lastTrailSampleTime: 0,
     });
 
     // Trigger curvature recomputation
@@ -424,7 +522,73 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       return { waveParams: newParams };
     });
   },
+
+  setTrailConfig: (config: Partial<TrailConfig>) => {
+    set((state) => {
+      const newConfig = { ...state.trailConfig };
+      if (config.enabled !== undefined) {
+        newConfig.enabled = config.enabled;
+      }
+      if (config.maxPoints !== undefined) {
+        newConfig.maxPoints = Math.max(
+          MIN_TRAIL_POINTS,
+          Math.min(MAX_TRAIL_POINTS, config.maxPoints)
+        );
+      }
+      if (config.sampleInterval !== undefined) {
+        newConfig.sampleInterval = Math.max(
+          MIN_TRAIL_SAMPLE_INTERVAL,
+          Math.min(MAX_TRAIL_SAMPLE_INTERVAL, config.sampleInterval)
+        );
+      }
+      return { trailConfig: newConfig };
+    });
+  },
+
+  clearTrails: () => {
+    set({
+      trails: [],
+      lastTrailSampleTime: 0,
+    });
+  },
 }));
+
+/**
+ * Samples current mass positions and adds them to trail history.
+ * Prunes old points if buffer exceeds maxPoints.
+ */
+function sampleTrails(
+  currentTrails: MassTrail[],
+  masses: MassSource[],
+  timestamp: number,
+  maxPoints: number
+): MassTrail[] {
+  // Only sample masses that have orbital parameters (moving masses)
+  const orbitalMasses = masses.filter((m) => m.orbit !== undefined);
+
+  return orbitalMasses.map((mass) => {
+    // Find existing trail for this mass or create new
+    const existingTrail = currentTrails.find((t) => t.massId === mass.id);
+    const existingPoints = existingTrail?.points ?? [];
+
+    // Add new point
+    const newPoint: TrailPoint = {
+      position: [...mass.position] as [number, number, number],
+      timestamp,
+    };
+
+    // Prune to maxPoints (keep newest)
+    const allPoints = [...existingPoints, newPoint];
+    const prunedPoints = allPoints.length > maxPoints
+      ? allPoints.slice(allPoints.length - maxPoints)
+      : allPoints;
+
+    return {
+      massId: mass.id,
+      points: prunedPoints,
+    };
+  });
+}
 
 // Re-export types for UI convenience
 export type {

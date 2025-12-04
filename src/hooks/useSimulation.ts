@@ -35,6 +35,8 @@ import type {
   VisualizationMode,
   CurvatureGridConfig,
   WaveParameters,
+  TrailConfig,
+  MassTrail,
 } from '../state/simulation';
 import { checkResolutionWarning, clampResolution } from '../visualization';
 
@@ -98,6 +100,10 @@ export interface UseSimulationState {
   workerWarning: string | null;
   /** Wave parameters for gravitational wave mode */
   waveParams: WaveParameters;
+  /** Trail configuration */
+  trailConfig: TrailConfig;
+  /** Trail history for each mass */
+  trails: MassTrail[];
 }
 
 /**
@@ -136,6 +142,10 @@ export interface UseSimulationActions {
   resetSimulationTime: () => void;
   /** Set wave parameters */
   setWaveParams: (params: Partial<WaveParameters>) => void;
+  /** Set trail configuration */
+  setTrailConfig: (config: Partial<TrailConfig>) => void;
+  /** Clear all trail data */
+  clearTrails: () => void;
 }
 
 /**
@@ -180,6 +190,8 @@ export function useSimulation(
     isUsingWorker,
     workerWarning,
     waveParams,
+    trailConfig,
+    trails,
     loadScenario: storeLoadScenario,
     loadCustomConfig: storeLoadCustomConfig,
     setVisualizationMode: storeSetVisualizationMode,
@@ -192,6 +204,8 @@ export function useSimulation(
     advanceSimulationTime: storeAdvanceSimulationTime,
     resetSimulationTime: storeResetSimulationTime,
     setWaveParams: storeSetWaveParams,
+    setTrailConfig: storeSetTrailConfig,
+    clearTrails: storeClearTrails,
   } = useSimulationStore();
 
   // Calculate resolution warning
@@ -386,6 +400,17 @@ export function useSimulation(
     [storeSetWaveParams]
   );
 
+  const setTrailConfig = useCallback(
+    (config: Partial<TrailConfig>) => {
+      storeSetTrailConfig(config);
+    },
+    [storeSetTrailConfig]
+  );
+
+  const clearTrails = useCallback(() => {
+    storeClearTrails();
+  }, [storeClearTrails]);
+
   const state: UseSimulationState = {
     isComputing,
     error,
@@ -404,6 +429,8 @@ export function useSimulation(
     isUsingWorker,
     workerWarning,
     waveParams,
+    trailConfig,
+    trails,
   };
 
   const actions: UseSimulationActions = {
@@ -423,6 +450,8 @@ export function useSimulation(
     advanceSimulationTime,
     resetSimulationTime,
     setWaveParams,
+    setTrailConfig,
+    clearTrails,
   };
 
   return [state, actions];
