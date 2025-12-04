@@ -101,13 +101,13 @@ graph LR
 
 ### Deferred Features
 
-The following features were originally planned for v0.3.0 but have been deferred to allow focus on core functionality:
+The following features were originally planned for earlier versions but have been deferred to allow focus on core functionality. See the v0.5.0 section below for their current placement:
 
 | Feature | Original Target | New Target | Reason |
 |---------|-----------------|------------|--------|
-| VR/AR support | v0.4.0 | v0.5.0+ | Requires WebXR infrastructure |
-| Multi-user collaboration | v0.4.0 | v0.5.0+ | Backend development needed |
-| Internationalization | v0.4.0 | v0.5.0+ | Lower priority than core features |
+| VR/AR support | v0.4.0 | v0.5.0 | Requires WebXR infrastructure |
+| Multi-user collaboration | v0.4.0 | v0.5.0 | Backend development needed |
+| Internationalization | v0.4.0 | v0.5.0 | Lower priority than core features |
 
 ### Medium-term (v0.5.0)
 
