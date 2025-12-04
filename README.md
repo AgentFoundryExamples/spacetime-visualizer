@@ -693,7 +693,7 @@ npm install
 # 2. Run linting (should pass with no errors)
 npm run lint
 
-# 3. Run tests (should pass all 136 tests)
+# 3. Run tests (should pass all 242 tests)
 npm test
 
 # 4. Build for production (should complete without errors)
