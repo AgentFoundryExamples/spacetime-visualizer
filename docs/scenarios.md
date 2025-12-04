@@ -512,28 +512,37 @@ graph TD
     A[Export Controls] -->|Trigger| B{Export Type}
     B -->|PNG| C[Canvas toDataURL]
     B -->|WebM| D[MediaRecorder API]
-    C --> E[Download Blob]
-    D --> F[Stream Capture]
-    F --> G[Collect Chunks]
-    G --> E
-    E --> H[Browser Download]
+    B -->|GIF| E[Frame Capture]
+    B -->|MP4| F[H.264 or WebM Fallback]
+    C --> G[Download Blob]
+    D --> H[Stream Capture]
+    E --> I[GIF Encoder]
+    F --> J[MediaRecorder MP4/WebM]
+    H --> K[Collect Chunks]
+    I --> G
+    J --> K
+    K --> G
+    G --> L[Browser Download]
     
     subgraph "Progress Tracking"
-        I[Export Queue Manager]
-        J[Progress Callback]
+        M[Export Queue Manager]
+        N[Progress Callback]
     end
     
-    A --> I
-    I --> J
+    A --> M
+    M --> N
 ```
 
 ### Supported Formats
 
-| Format | Type | Browser Support |
-|--------|------|-----------------|
-| PNG | Screenshot | All modern browsers |
-| WebM (VP9) | Video | Chrome, Firefox, Edge |
-| WebM (VP8) | Video | Chrome, Firefox, Edge, Safari 16.4+ |
+| Format | Type | Max Duration | Browser Support |
+|--------|------|--------------|-----------------|
+| PNG | Screenshot | N/A | All modern browsers |
+| WebM (VP9) | Video | 30 seconds | Chrome, Firefox, Edge |
+| WebM (VP8) | Video | 30 seconds | Chrome, Firefox, Edge, Safari 16.4+ |
+| GIF | Animation | 10 seconds | All modern browsers |
+| MP4 (H.264) | Video | 30 seconds | Chrome (some versions), Edge |
+| MP4 (WebM fallback) | Video | 30 seconds | Chrome, Firefox, Edge |
 
 ### Screenshot Export (PNG)
 
@@ -549,16 +558,58 @@ graph TD
 ### Video Recording (WebM)
 
 1. Navigate to the **Export** section in the Controls panel
-2. Adjust the **Duration** slider (1-30 seconds)
-3. Click **🎬 Record Video**
-4. The recording captures the live canvas for the specified duration
-5. When complete, the video file downloads automatically
+2. Select **WebM Video** from the format selector
+3. Adjust the **Duration** slider (1-30 seconds)
+4. Click **🎬 Record Video**
+5. The recording captures the live canvas for the specified duration
+6. When complete, the video file downloads automatically
 
 **Features:**
 - Records at 30 FPS with 5 Mbps bitrate
 - Shows real-time progress indicator
 - Captures animations, orbital motion, and camera movements
 - Uses browser-native MediaRecorder API (no external dependencies)
+
+### GIF Animation Export
+
+1. Navigate to the **Export** section in the Controls panel
+2. Select **GIF Animation** from the format selector
+3. Adjust the **Duration** slider (1-10 seconds)
+4. Click **🎞️ Record GIF**
+5. Frames are captured and encoded into an animated GIF
+6. When complete, the GIF file downloads automatically
+
+**Features:**
+- Frame-by-frame capture for consistent quality
+- Configurable FPS (default: 15 FPS)
+- Adjustable quality setting
+- Memory-efficient for short animations
+
+**Limitations:**
+- Maximum 10 seconds due to memory constraints
+- Larger file sizes compared to video formats
+- Lower frame rate than video formats
+
+### MP4 Video Export
+
+1. Navigate to the **Export** section in the Controls panel
+2. Select **MP4 Video** from the format selector
+3. Adjust the **Duration** slider (1-30 seconds)
+4. Click **🎬 Record MP4**
+5. The recording captures the live canvas for the specified duration
+6. When complete, the MP4 file downloads automatically
+
+**Features:**
+- Uses native H.264 codec when available
+- Falls back to WebM with .mp4 extension when H.264 is unsupported
+- Compatible with most video players and platforms
+- Records at 30 FPS with 5 Mbps bitrate
+
+**Browser Notes:**
+- Chrome: H.264 support varies by platform
+- Firefox: Uses WebM fallback
+- Safari: Uses WebM fallback (with limited support)
+- Edge: H.264 often available
 
 ### Progress Indicators
 
@@ -576,6 +627,9 @@ During export operations:
 | Export during computation | Allowed, captures current state |
 | Large resolution export | Clamped to 4096×4096 max |
 | Video duration > 30s | Clamped to 30 seconds |
+| GIF duration > 10s | Clamped to 10 seconds |
+| Missing encoder config | Shows actionable error message |
+| Concurrent exports | Queued to prevent corruption |
 
 ### Browser Compatibility
 
@@ -584,6 +638,23 @@ During export operations:
 | PNG Screenshots | ✅ | ✅ | ✅ | ✅ |
 | WebM Video (VP9) | ✅ | ✅ | ❌ | ✅ |
 | WebM Video (VP8) | ✅ | ✅ | ✅ 16.4+ | ✅ |
+| GIF Animation | ✅ | ✅ | ✅ | ✅ |
+| MP4 (H.264) | ⚠️ | ❌ | ❌ | ⚠️ |
+| MP4 (WebM fallback) | ✅ | ✅ | ✅ 16.4+ | ✅ |
+
+Legend: ✅ Supported | ⚠️ Partial/Platform-dependent | ❌ Not supported
+
+### Configuration
+
+Export behavior can be configured via environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_EXPORT_ENCODER_PATH` | Path to external encoder | - |
+| `VITE_USE_EXPORT_WORKER` | Use worker for encoding | `true` |
+| `VITE_MAX_GIF_DURATION` | Max GIF duration (seconds) | `10` |
+| `VITE_GIF_QUALITY` | GIF quality (1-20) | `10` |
+| `VITE_GIF_FPS` | GIF frames per second | `15` |
 
 ### Troubleshooting
 
@@ -593,6 +664,9 @@ During export operations:
 | Video not recording | Check browser supports MediaRecorder API |
 | Download blocked | Allow downloads from the site in browser settings |
 | Memory issues | Reduce recording duration or canvas size |
+| GIF too large | Reduce duration or lower quality setting |
+| MP4 not supported | Browser will fall back to WebM format |
+| Export encoder missing | Check VITE_EXPORT_ENCODER_PATH configuration |
 
 ## Physics Worker Architecture
 

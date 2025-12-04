@@ -24,11 +24,21 @@ import { UI_STRINGS } from '../content/strings';
 import type { ExportState } from '../utils/export';
 import {
   isVideoExportSupported,
+  isGifExportSupported,
+  isMp4ExportSupported,
   DEFAULT_VIDEO_DURATION,
+  DEFAULT_GIF_DURATION,
   MAX_VIDEO_DURATION,
+  MAX_GIF_DURATION,
+  MAX_MP4_DURATION,
 } from '../utils/export';
 import '../styles/controls.css';
 import '../styles/panels.css';
+
+/**
+ * Animated export format type for use in the UI.
+ */
+export type AnimatedExportFormat = 'webm' | 'gif' | 'mp4';
 
 /**
  * Props for ControlsPanel component.
@@ -44,6 +54,10 @@ export interface ControlsPanelProps {
   onExportPng?: () => void;
   /** Handler for video recording export */
   onExportVideo?: (duration: number) => void;
+  /** Handler for GIF export */
+  onExportGif?: (duration: number) => void;
+  /** Handler for MP4 export */
+  onExportMp4?: (duration: number) => void;
 }
 
 /**
@@ -56,8 +70,12 @@ export function ControlsPanel({
   exportState,
   onExportPng,
   onExportVideo,
+  onExportGif,
+  onExportMp4,
 }: ControlsPanelProps) {
   const [videoDuration, setVideoDuration] = useState(DEFAULT_VIDEO_DURATION);
+  const [gifDuration, setGifDuration] = useState(DEFAULT_GIF_DURATION);
+  const [selectedExportFormat, setSelectedExportFormat] = useState<AnimatedExportFormat>('webm');
 
   const {
     isComputing,
@@ -474,47 +492,150 @@ export function ControlsPanel({
           </button>
         </div>
 
-        {/* Video Recording */}
-        {isVideoExportSupported() ? (
-          <>
-            <div className="control-group">
-              <label className="control-label" id="video-duration-label">
-                <span>{UI_STRINGS.exportDuration}</span>
-                <span className="control-value">
-                  {videoDuration}
-                  {UI_STRINGS.exportDurationUnit}
-                </span>
+        {/* Format Selection for Animated Exports */}
+        <div className="control-group">
+          <label className="control-label" id="export-format-label">
+            <span>{UI_STRINGS.exportFormatLabel}</span>
+          </label>
+          <div className="export-format-selector" role="radiogroup" aria-labelledby="export-format-label">
+            {isVideoExportSupported() && (
+              <label className="export-format-option">
+                <input
+                  type="radio"
+                  name="export-format"
+                  value="webm"
+                  checked={selectedExportFormat === 'webm'}
+                  onChange={() => setSelectedExportFormat('webm')}
+                  disabled={exportState?.isExporting}
+                />
+                <span>{UI_STRINGS.exportFormatWebm}</span>
               </label>
-              <input
-                type="range"
-                className="control-slider"
-                min={1}
-                max={MAX_VIDEO_DURATION}
-                step={1}
-                value={videoDuration}
-                onChange={(e) => setVideoDuration(parseInt(e.target.value, 10))}
-                disabled={exportState?.isExporting}
-                aria-labelledby="video-duration-label"
-                aria-valuemin={1}
-                aria-valuemax={MAX_VIDEO_DURATION}
-                aria-valuenow={videoDuration}
-                aria-valuetext={`${videoDuration} seconds`}
-              />
-            </div>
-            <div className="button-group">
-              <button
-                className="control-button"
-                onClick={() => onExportVideo?.(videoDuration)}
-                disabled={isComputing || exportState?.isExporting}
-                aria-label={`Record ${videoDuration} second video and download as WebM`}
-              >
-                {exportState?.isExporting && exportState.format === 'webm'
-                  ? UI_STRINGS.exportRecording
-                  : UI_STRINGS.exportVideo}
-              </button>
-            </div>
-          </>
+            )}
+            {isGifExportSupported() && (
+              <label className="export-format-option">
+                <input
+                  type="radio"
+                  name="export-format"
+                  value="gif"
+                  checked={selectedExportFormat === 'gif'}
+                  onChange={() => setSelectedExportFormat('gif')}
+                  disabled={exportState?.isExporting}
+                />
+                <span>{UI_STRINGS.exportFormatGif}</span>
+              </label>
+            )}
+            {isMp4ExportSupported() && (
+              <label className="export-format-option">
+                <input
+                  type="radio"
+                  name="export-format"
+                  value="mp4"
+                  checked={selectedExportFormat === 'mp4'}
+                  onChange={() => setSelectedExportFormat('mp4')}
+                  disabled={exportState?.isExporting}
+                />
+                <span>{UI_STRINGS.exportFormatMp4}</span>
+              </label>
+            )}
+          </div>
+        </div>
+
+        {/* Duration Slider - changes based on format */}
+        {selectedExportFormat === 'gif' ? (
+          <div className="control-group">
+            <label className="control-label" id="gif-duration-label">
+              <span>{UI_STRINGS.exportDuration}</span>
+              <span className="control-value">
+                {gifDuration}
+                {UI_STRINGS.exportDurationUnit}
+              </span>
+            </label>
+            <input
+              type="range"
+              className="control-slider"
+              min={1}
+              max={MAX_GIF_DURATION}
+              step={1}
+              value={gifDuration}
+              onChange={(e) => setGifDuration(parseInt(e.target.value, 10))}
+              disabled={exportState?.isExporting}
+              aria-labelledby="gif-duration-label"
+              aria-valuemin={1}
+              aria-valuemax={MAX_GIF_DURATION}
+              aria-valuenow={gifDuration}
+              aria-valuetext={`${gifDuration} seconds`}
+            />
+            <p className="control-hint">{UI_STRINGS.exportDurationLimitGif}</p>
+          </div>
         ) : (
+          <div className="control-group">
+            <label className="control-label" id="video-duration-label">
+              <span>{UI_STRINGS.exportDuration}</span>
+              <span className="control-value">
+                {videoDuration}
+                {UI_STRINGS.exportDurationUnit}
+              </span>
+            </label>
+            <input
+              type="range"
+              className="control-slider"
+              min={1}
+              max={selectedExportFormat === 'mp4' ? MAX_MP4_DURATION : MAX_VIDEO_DURATION}
+              step={1}
+              value={videoDuration}
+              onChange={(e) => setVideoDuration(parseInt(e.target.value, 10))}
+              disabled={exportState?.isExporting}
+              aria-labelledby="video-duration-label"
+              aria-valuemin={1}
+              aria-valuemax={selectedExportFormat === 'mp4' ? MAX_MP4_DURATION : MAX_VIDEO_DURATION}
+              aria-valuenow={videoDuration}
+              aria-valuetext={`${videoDuration} seconds`}
+            />
+          </div>
+        )}
+
+        {/* Export Button - changes based on format */}
+        <div className="button-group">
+          {selectedExportFormat === 'webm' && isVideoExportSupported() && (
+            <button
+              className="control-button"
+              onClick={() => onExportVideo?.(videoDuration)}
+              disabled={isComputing || exportState?.isExporting}
+              aria-label={`Record ${videoDuration} second video and download as WebM`}
+            >
+              {exportState?.isExporting && exportState.format === 'webm'
+                ? UI_STRINGS.exportRecording
+                : UI_STRINGS.exportVideo}
+            </button>
+          )}
+          {selectedExportFormat === 'gif' && isGifExportSupported() && (
+            <button
+              className="control-button"
+              onClick={() => onExportGif?.(gifDuration)}
+              disabled={isComputing || exportState?.isExporting}
+              aria-label={`Record ${gifDuration} second animation and download as GIF`}
+            >
+              {exportState?.isExporting && exportState.format === 'gif'
+                ? UI_STRINGS.exportRecording
+                : UI_STRINGS.exportGif}
+            </button>
+          )}
+          {selectedExportFormat === 'mp4' && isMp4ExportSupported() && (
+            <button
+              className="control-button"
+              onClick={() => onExportMp4?.(videoDuration)}
+              disabled={isComputing || exportState?.isExporting}
+              aria-label={`Record ${videoDuration} second video and download as MP4`}
+            >
+              {exportState?.isExporting && exportState.format === 'mp4'
+                ? UI_STRINGS.exportRecording
+                : UI_STRINGS.exportMp4}
+            </button>
+          )}
+        </div>
+
+        {/* Unsupported format warnings */}
+        {!isVideoExportSupported() && !isGifExportSupported() && !isMp4ExportSupported() && (
           <p className="control-hint">{UI_STRINGS.exportVideoUnsupported}</p>
         )}
       </section>

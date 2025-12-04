@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * Web Worker exports for physics computation.
+ * Web Worker exports for physics computation and export encoding.
  *
  * @module workers
  */
@@ -36,3 +36,70 @@ export {
   isWorkerSupported,
   isUsingWorker,
 } from './physics-client';
+
+/**
+ * Export worker message types for GIF/MP4 encoding.
+ */
+export type ExportWorkerMessageType = 'INIT' | 'ENCODE_FRAME' | 'FINISH' | 'CANCEL';
+
+/**
+ * Export worker response types.
+ */
+export type ExportWorkerResponseType = 'READY' | 'PROGRESS' | 'COMPLETE' | 'ERROR';
+
+/**
+ * Message to send a frame for encoding.
+ */
+export interface EncodeFrameMessage {
+  type: 'ENCODE_FRAME';
+  requestId: string;
+  frameData: ImageData;
+  frameIndex: number;
+}
+
+/**
+ * Message to finish encoding and get the result.
+ */
+export interface FinishEncodingMessage {
+  type: 'FINISH';
+  requestId: string;
+}
+
+/**
+ * Export encoding progress response.
+ */
+export interface ExportProgressResponse {
+  type: 'PROGRESS';
+  requestId: string;
+  percent: number;
+  framesProcessed: number;
+  totalFrames: number;
+}
+
+/**
+ * Export encoding complete response.
+ */
+export interface ExportCompleteResponse {
+  type: 'COMPLETE';
+  requestId: string;
+  blob: Blob;
+  format: 'gif' | 'mp4';
+}
+
+/**
+ * Union of export worker messages.
+ */
+export type ExportWorkerMessage =
+  | { type: 'INIT'; format: 'gif' | 'mp4'; width: number; height: number; fps: number; quality?: number }
+  | EncodeFrameMessage
+  | FinishEncodingMessage
+  | { type: 'CANCEL'; requestId: string };
+
+/**
+ * Union of export worker responses.
+ */
+export type ExportWorkerResponse =
+  | { type: 'READY' }
+  | ExportProgressResponse
+  | ExportCompleteResponse
+  | { type: 'ERROR'; requestId?: string; message: string };

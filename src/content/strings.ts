@@ -358,15 +358,36 @@ export const UI_STRINGS = {
   sectionExport: 'Export',
   exportScreenshot: '📷 Screenshot (PNG)',
   exportVideo: '🎬 Record Video',
+  exportGif: '🎞️ Record GIF',
+  exportMp4: '🎬 Record MP4',
+  exportFormatLabel: 'Format',
+  exportFormatPng: 'PNG Screenshot',
+  exportFormatWebm: 'WebM Video',
+  exportFormatGif: 'GIF Animation',
+  exportFormatMp4: 'MP4 Video',
   exportDuration: 'Duration',
   exportDurationUnit: 's',
+  exportQuality: 'Quality',
+  exportResolution: 'Resolution',
+  exportResolutionOriginal: 'Original',
+  exportResolution720p: '720p',
+  exportResolution1080p: '1080p',
   exportProgress: 'Exporting...',
   exportSuccess: 'Export complete!',
   exportError: 'Export failed',
   exportVideoUnsupported:
     'Video recording is not supported in this browser. Try Chrome or Firefox.',
+  exportGifUnsupported:
+    'GIF export is not available in this environment.',
+  exportMp4Unsupported:
+    'MP4 export requires a compatible browser with H.264 or WebM support.',
   exportRecording: 'Recording...',
   exportProcessing: 'Processing...',
+  exportEncodingFrames: 'Encoding frames...',
+  exportDurationLimitGif: 'GIF duration limited to 10 seconds',
+  exportDurationLimitVideo: 'Video duration limited to 30 seconds',
+  exportEncoderMissing:
+    'Export encoder not configured. Check VITE_EXPORT_ENCODER_PATH in your environment.',
 
   // Accessibility
   skipToMain: 'Skip to main content',
