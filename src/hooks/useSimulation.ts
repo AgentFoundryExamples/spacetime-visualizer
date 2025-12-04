@@ -89,6 +89,10 @@ export interface UseSimulationState {
   orbitsEnabled: boolean;
   /** Current simulation time */
   simulationTime: number;
+  /** Whether physics computation is using a Web Worker */
+  isUsingWorker: boolean;
+  /** Warning message about worker status (null if no warning) */
+  workerWarning: string | null;
 }
 
 /**
@@ -163,6 +167,8 @@ export function useSimulation(
     visualizationMode,
     orbitsEnabled,
     simulationTime,
+    isUsingWorker,
+    workerWarning,
     loadScenario: storeLoadScenario,
     loadCustomConfig: storeLoadCustomConfig,
     setVisualizationMode: storeSetVisualizationMode,
@@ -367,6 +373,8 @@ export function useSimulation(
     hasUnsavedChanges,
     orbitsEnabled,
     simulationTime,
+    isUsingWorker,
+    workerWarning,
   };
 
   const actions: UseSimulationActions = {
