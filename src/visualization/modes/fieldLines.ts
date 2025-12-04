@@ -209,40 +209,49 @@ export class FieldLinesModeRenderer implements VisualizationModeRenderer {
         let gradX = 0;
         let gradY = 0;
 
+        // Minimum position difference to avoid division by zero
+        const MIN_POSITION_DIFF = 1e-10;
+
         if (ix > 0 && ix < resolution - 1) {
           const left = samples[idx - 1];
           const right = samples[idx + 1];
-          gradX =
-            (right.metricDeviation - left.metricDeviation) /
-            (right.position[0] - left.position[0]);
+          const posDiff = right.position[0] - left.position[0];
+          if (Math.abs(posDiff) > MIN_POSITION_DIFF) {
+            gradX = (right.metricDeviation - left.metricDeviation) / posDiff;
+          }
         } else if (ix === 0) {
           const right = samples[idx + 1];
-          gradX =
-            (right.metricDeviation - sample.metricDeviation) /
-            (right.position[0] - sample.position[0]);
+          const posDiff = right.position[0] - sample.position[0];
+          if (Math.abs(posDiff) > MIN_POSITION_DIFF) {
+            gradX = (right.metricDeviation - sample.metricDeviation) / posDiff;
+          }
         } else {
           const left = samples[idx - 1];
-          gradX =
-            (sample.metricDeviation - left.metricDeviation) /
-            (sample.position[0] - left.position[0]);
+          const posDiff = sample.position[0] - left.position[0];
+          if (Math.abs(posDiff) > MIN_POSITION_DIFF) {
+            gradX = (sample.metricDeviation - left.metricDeviation) / posDiff;
+          }
         }
 
         if (iy > 0 && iy < resolution - 1) {
           const bottom = samples[idx - resolution];
           const top = samples[idx + resolution];
-          gradY =
-            (top.metricDeviation - bottom.metricDeviation) /
-            (top.position[1] - bottom.position[1]);
+          const posDiff = top.position[1] - bottom.position[1];
+          if (Math.abs(posDiff) > MIN_POSITION_DIFF) {
+            gradY = (top.metricDeviation - bottom.metricDeviation) / posDiff;
+          }
         } else if (iy === 0) {
           const top = samples[idx + resolution];
-          gradY =
-            (top.metricDeviation - sample.metricDeviation) /
-            (top.position[1] - sample.position[1]);
+          const posDiff = top.position[1] - sample.position[1];
+          if (Math.abs(posDiff) > MIN_POSITION_DIFF) {
+            gradY = (top.metricDeviation - sample.metricDeviation) / posDiff;
+          }
         } else {
           const bottom = samples[idx - resolution];
-          gradY =
-            (sample.metricDeviation - bottom.metricDeviation) /
-            (sample.position[1] - bottom.position[1]);
+          const posDiff = sample.position[1] - bottom.position[1];
+          if (Math.abs(posDiff) > MIN_POSITION_DIFF) {
+            gradY = (sample.metricDeviation - bottom.metricDeviation) / posDiff;
+          }
         }
 
         gradients.push({ x: gradX, y: gradY });

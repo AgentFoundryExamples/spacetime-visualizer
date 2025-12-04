@@ -51,6 +51,43 @@ function isStorageAvailable(): boolean {
 }
 
 /**
+ * Validates that a parsed preset has the expected structure.
+ */
+function isValidPreset(preset: unknown): preset is CustomPreset {
+  if (typeof preset !== 'object' || preset === null) return false;
+  const p = preset as Record<string, unknown>;
+  
+  // Validate required fields
+  if (typeof p.id !== 'string' || !p.id) return false;
+  if (typeof p.name !== 'string' || !p.name) return false;
+  if (typeof p.createdAt !== 'number') return false;
+  
+  // Validate config object
+  if (typeof p.config !== 'object' || p.config === null) return false;
+  const config = p.config as Record<string, unknown>;
+  
+  // Validate config structure
+  if (typeof config.resolution !== 'number') return false;
+  if (!Array.isArray(config.bounds) || config.bounds.length !== 6) return false;
+  if (!Array.isArray(config.masses)) return false;
+  
+  // Validate bounds are all numbers
+  if (!config.bounds.every((b: unknown) => typeof b === 'number')) return false;
+  
+  // Validate each mass has required structure
+  for (const mass of config.masses) {
+    if (typeof mass !== 'object' || mass === null) return false;
+    const m = mass as Record<string, unknown>;
+    if (typeof m.id !== 'string') return false;
+    if (typeof m.mass !== 'number') return false;
+    if (!Array.isArray(m.position) || m.position.length !== 3) return false;
+    if (!m.position.every((p: unknown) => typeof p === 'number')) return false;
+  }
+  
+  return true;
+}
+
+/**
  * Loads custom presets from local storage.
  */
 function loadCustomPresets(): CustomPreset[] {
@@ -59,7 +96,25 @@ function loadCustomPresets(): CustomPreset[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return [];
-    return JSON.parse(stored) as CustomPreset[];
+    
+    const parsed = JSON.parse(stored);
+    
+    // Validate array structure
+    if (!Array.isArray(parsed)) {
+      console.warn('Invalid preset data structure in localStorage');
+      return [];
+    }
+    
+    // Filter and validate each preset
+    const validPresets = parsed.filter((preset: unknown) => {
+      if (!isValidPreset(preset)) {
+        console.warn('Skipping invalid preset in localStorage');
+        return false;
+      }
+      return true;
+    });
+    
+    return validPresets;
   } catch {
     console.warn('Failed to load custom presets from local storage');
     return [];

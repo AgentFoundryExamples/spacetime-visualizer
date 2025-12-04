@@ -63,16 +63,30 @@ function parseMarkdown(text: string): string {
   // Code (inline)
   html = html.replace(/`(.+?)`/g, '<code>$1</code>');
 
-  // Links - sanitize href to prevent dangerous protocol attacks
+  // Links - sanitize href using protocol whitelist approach
   html = html.replace(/\[(.+?)\]\((.+?)\)/g, (_, linkText, href) => {
-    // Block dangerous protocols (case-insensitive check)
-    const lowerHref = href.toLowerCase().trim();
-    const isDangerous =
-      lowerHref.startsWith('javascript:') ||
-      lowerHref.startsWith('data:') ||
-      lowerHref.startsWith('vbscript:');
-    const sanitizedHref = isDangerous ? '#' : href;
-    return `<a href="${sanitizedHref}">${linkText}</a>`;
+    // Whitelist of allowed protocols
+    const allowedProtocols = ['https:', 'http:', 'mailto:'];
+    
+    // Handle relative URLs (starting with # or /)
+    const trimmedHref = href.trim();
+    if (trimmedHref.startsWith('#') || trimmedHref.startsWith('/')) {
+      // Escape quotes in href to prevent attribute injection
+      const sanitizedHref = trimmedHref.replace(/"/g, '&quot;');
+      return `<a href="${sanitizedHref}">${linkText}</a>`;
+    }
+    
+    // For absolute URLs, validate protocol
+    try {
+      const url = new URL(trimmedHref, 'https://example.com');
+      const isAllowed = allowedProtocols.includes(url.protocol);
+      // Escape quotes in href to prevent attribute injection
+      const sanitizedHref = isAllowed ? trimmedHref.replace(/"/g, '&quot;') : '#';
+      return `<a href="${sanitizedHref}">${linkText}</a>`;
+    } catch {
+      // Invalid URL, replace with safe fallback
+      return `<a href="#">${linkText}</a>`;
+    }
   });
 
   // Lists (unordered)
