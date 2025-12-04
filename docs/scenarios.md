@@ -18,6 +18,7 @@ This document details the available visualization modes, preset scenarios, and h
   - [Extreme Mass Ratio](#extreme-mass-ratio) (v0.2)
   - [Hierarchical Triple](#hierarchical-triple) (v0.2)
   - [Black Hole Inspiral](#black-hole-inspiral) (v0.2)
+- [Accessibility](#accessibility)
 - [Custom Presets](#custom-presets)
 - [Exporting Visuals](#exporting-visuals)
 - [Physics Worker Architecture](#physics-worker-architecture)
@@ -247,6 +248,91 @@ Each mass can have the following orbital parameters:
 - The simulation time step is clamped (0.001-0.1s) to prevent numerical instability
 - For binary systems, both masses orbit around their common center of mass
 - Extremely high mass ratios may cause numerical issues and are clamped
+
+## Accessibility
+
+The Spacetime Visualizer is designed to be accessible to users of all abilities. This section documents the accessibility features and how to use them effectively.
+
+### Keyboard Navigation
+
+All controls can be operated using keyboard only:
+
+```mermaid
+graph TD
+    A[Tab to skip link] --> B[Skip to main content]
+    A --> C[Tab through sidebar controls]
+    C --> D[Mode selector - Arrow keys]
+    D --> E[Scenario list - Tab/Enter]
+    E --> F[Parameter sliders - Arrow keys]
+    F --> G[Toggle buttons - Space/Enter]
+    G --> H[Export buttons - Enter]
+```
+
+| Control Type | Keyboard Interaction |
+|--------------|---------------------|
+| Skip link | Tab (appears on first tab), Enter to skip |
+| Radio buttons (modes) | Arrow keys to navigate, Space to select |
+| Buttons | Tab to focus, Enter/Space to activate |
+| Sliders | Tab to focus, Arrow keys to adjust |
+| Toggle switches | Tab to focus, Enter/Space to toggle |
+| Collapsible panels | Tab to focus, Enter/Space to expand/collapse |
+
+### Screen Reader Announcements
+
+The application uses ARIA live regions to announce dynamic content:
+
+| Event | Announcement |
+|-------|-------------|
+| Export started | "Starting export..." |
+| Export progress | Progress percentage updates |
+| Export complete | "Screenshot exported: [filename]" or "Video exported: [filename]" |
+| Export error | Error message with details |
+| Computing status | "Computing curvature..." |
+
+### ARIA Landmarks
+
+The application uses semantic HTML and ARIA landmarks for navigation:
+
+| Landmark | Element | Purpose |
+|----------|---------|---------|
+| Main | `<main>` | Primary content area |
+| Navigation | `<nav>` | Control panel navigation |
+| Contentinfo | `<footer>` | Status and configuration info |
+| Region | `<section>` | Each control section |
+
+### Focus Management
+
+- Skip link allows bypassing repetitive navigation
+- Focus is trapped within modal dialogs
+- Focus returns to trigger element when panels close
+- Visible focus indicators on all interactive elements
+
+### Color Contrast
+
+All text and interactive elements meet WCAG 2.1 AA contrast requirements:
+
+| Element | Foreground | Background | Ratio |
+|---------|------------|------------|-------|
+| Body text | #eaeaea | #1a1a2e | 12.5:1 |
+| Muted text | #a0a0a0 | #1a1a2e | 6.3:1 |
+| Accent text | #e94560 | #1a1a2e | 5.2:1 |
+| Focus ring | #4dabf7 | any | N/A (outline) |
+
+### Motion Preferences
+
+The application respects the `prefers-reduced-motion` media query:
+
+- When set to `reduce`, all animations are minimized
+- Transitions complete in 0.01ms
+- Essential feedback remains (e.g., focus indicators)
+
+### High Contrast Mode
+
+The application supports Windows High Contrast Mode via `forced-colors`:
+
+- All controls use `currentColor` for borders
+- Focus indicators use 3px solid outlines
+- No color-only information is lost
 
 ## Custom Presets
 

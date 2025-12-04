@@ -45,11 +45,11 @@ export function Sidebar({
   onExportVideo,
 }: SidebarProps) {
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" aria-label="Simulation controls sidebar">
       <header className="sidebar-header">
         <h2 className="sidebar-title">Controls</h2>
       </header>
-      <div className="sidebar-content">
+      <nav className="sidebar-content" aria-label="Control panels">
         {state && actions ? (
           <ControlsPanel
             state={state}
@@ -63,7 +63,7 @@ export function Sidebar({
             Simulation controls will appear here.
           </p>
         )}
-      </div>
+      </nav>
     </aside>
   );
 }

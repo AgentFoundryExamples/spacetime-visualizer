@@ -33,6 +33,7 @@
   --color-warning-bg: #ffc107;
   --color-warning-text: #1a1a1a;
   --color-border: #2a2a4a;
+  --color-focus: #4dabf7;
 
   --sidebar-width: 280px;
   --footer-height: 40px;
@@ -60,4 +61,67 @@ body {
 #root {
   height: 100%;
   width: 100%;
+}
+
+/* Accessibility: Focus visible styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-accent);
+  color: var(--color-text);
+  padding: var(--spacing-sm) var(--spacing-md);
+  z-index: 1000;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 0 0 4px 0;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Live region for screen reader announcements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .control-button,
+  .toggle-switch,
+  .mode-option,
+  .scenario-library__item-button {
+    border: 2px solid currentColor;
+  }
+
+  *:focus-visible {
+    outline: 3px solid currentColor;
+  }
 }

@@ -20,6 +20,9 @@ import {
   Footer,
   isWebGL2Supported,
   CanvasWrapper,
+  SkipLink,
+  LiveRegion,
+  announceToScreenReader,
 } from './components';
 import { useSimulation } from './hooks';
 import { useSimulationStore } from './state/simulation';
@@ -98,6 +101,7 @@ function App() {
           format: 'png',
           error: null,
         });
+        announceToScreenReader(`Screenshot exported: ${result.filename}`);
         // Clear success message after 3 seconds
         setTimeout(() => {
           setExportState((prevState) => {
@@ -116,6 +120,7 @@ function App() {
           format: 'png',
           error: result.error ?? 'Unknown error',
         });
+        announceToScreenReader(`Screenshot export failed: ${result.error ?? 'Unknown error'}`);
       }
     });
   }, []);
@@ -155,6 +160,7 @@ function App() {
           format: 'webm',
           error: null,
         });
+        announceToScreenReader(`Video exported: ${result.filename}`);
         // Clear success message after 3 seconds
         setTimeout(() => {
           setExportState((prevState) => {
@@ -173,6 +179,7 @@ function App() {
           format: 'webm',
           error: result.error ?? 'Unknown error',
         });
+        announceToScreenReader(`Video export failed: ${result.error ?? 'Unknown error'}`);
       }
     });
   }, []);
@@ -188,13 +195,15 @@ function App() {
 
   return (
     <div className="app-container">
+      <SkipLink targetId="main-content">Skip to main content</SkipLink>
+      <LiveRegion />
       {!webglSupported && (
         <div className="app-warning" role="alert">
           WebGL2 is not supported in your browser. The visualization may not
           work correctly.
         </div>
       )}
-      <main className="app-main">
+      <main className="app-main" id="main-content" tabIndex={-1}>
         <Sidebar
           state={state}
           actions={actions}
@@ -202,7 +211,11 @@ function App() {
           onExportPng={handleExportPng}
           onExportVideo={handleExportVideo}
         />
-        <div className="canvas-container">
+        <div
+          className="canvas-container"
+          role="img"
+          aria-label="3D spacetime curvature visualization canvas"
+        >
           {webglSupported && (
             <CanvasWrapper
               autoRotate={state.autoRotate}

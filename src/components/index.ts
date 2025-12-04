@@ -41,3 +41,8 @@ export { ScenarioLibrary } from './ScenarioLibrary';
 export type { ScenarioLibraryProps, CustomPreset } from './ScenarioLibrary';
 export { EducationPanel } from './EducationPanel';
 export type { EducationPanelProps } from './EducationPanel';
+export { SkipLink } from './SkipLink';
+export type { SkipLinkProps } from './SkipLink';
+export { LiveRegion } from './LiveRegion';
+export type { LiveRegionProps } from './LiveRegion';
+export { announceToScreenReader } from '../utils/accessibility';

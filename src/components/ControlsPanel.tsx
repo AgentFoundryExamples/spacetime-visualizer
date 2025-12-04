@@ -94,24 +94,24 @@ export function ControlsPanel({
   const hasOrbitalMasses = config.masses.some((m) => m.orbit !== undefined);
 
   return (
-    <div className="controls-panel">
+    <div className="controls-panel" role="region" aria-label="Simulation controls">
       {/* Status indicators */}
       {isComputing && (
-        <div className="computing-indicator">
-          <div className="computing-spinner" />
+        <div className="computing-indicator" role="status" aria-live="polite">
+          <div className="computing-spinner" aria-hidden="true" />
           <span>{UI_STRINGS.statusComputing}</span>
         </div>
       )}
 
-      {error && <div className="control-error">{error}</div>}
+      {error && <div className="control-error" role="alert">{error}</div>}
 
       {resolutionWarning && (
-        <div className="control-warning">{resolutionWarning}</div>
+        <div className="control-warning" role="alert">{resolutionWarning}</div>
       )}
 
       {/* Visualization Mode Selection */}
-      <section className="control-section">
-        <h3 className="control-section-title">{UI_STRINGS.sectionModes}</h3>
+      <section className="control-section" aria-labelledby="modes-heading">
+        <h3 id="modes-heading" className="control-section-title">{UI_STRINGS.sectionModes}</h3>
         <ModeSelector
           currentMode={visualizationMode}
           onModeChange={setVisualizationMode}
@@ -119,11 +119,11 @@ export function ControlsPanel({
         />
       </section>
 
-      <div className="control-divider" />
+      <div className="control-divider" aria-hidden="true" />
 
       {/* Scenario Selection */}
-      <section className="control-section">
-        <h3 className="control-section-title">{UI_STRINGS.sectionScenarios}</h3>
+      <section className="control-section" aria-labelledby="scenarios-heading">
+        <h3 id="scenarios-heading" className="control-section-title">{UI_STRINGS.sectionScenarios}</h3>
         <ScenarioLibrary
           currentPreset={currentPreset}
           currentConfig={config}
@@ -134,15 +134,15 @@ export function ControlsPanel({
         />
       </section>
 
-      <div className="control-divider" />
+      <div className="control-divider" aria-hidden="true" />
 
       {/* Parameters */}
-      <section className="control-section">
-        <h3 className="control-section-title">{UI_STRINGS.sectionParameters}</h3>
+      <section className="control-section" aria-labelledby="params-heading">
+        <h3 id="params-heading" className="control-section-title">{UI_STRINGS.sectionParameters}</h3>
 
         {/* Grid Resolution */}
         <div className="control-group">
-          <label className="control-label">
+          <label className="control-label" id="grid-resolution-label">
             <span>{UI_STRINGS.paramGridResolution}</span>
             <span className="control-value">{gridResolution}</span>
           </label>
@@ -155,12 +155,17 @@ export function ControlsPanel({
             value={gridResolution}
             onChange={(e) => setResolution(parseInt(e.target.value, 10))}
             disabled={isComputing}
+            aria-labelledby="grid-resolution-label"
+            aria-valuemin={8}
+            aria-valuemax={128}
+            aria-valuenow={gridResolution}
+            aria-valuetext={`${gridResolution} cells`}
           />
         </div>
 
         {/* Mass Scale */}
         <div className="control-group">
-          <label className="control-label">
+          <label className="control-label" id="mass-scale-label">
             <span>{UI_STRINGS.paramMassScale}</span>
             <span className="control-value">{massScale.toFixed(1)}x</span>
           </label>
@@ -173,23 +178,29 @@ export function ControlsPanel({
             value={massScale}
             onChange={(e) => setMassScale(parseFloat(e.target.value))}
             disabled={isComputing}
+            aria-labelledby="mass-scale-label"
+            aria-valuemin={0.1}
+            aria-valuemax={5}
+            aria-valuenow={massScale}
+            aria-valuetext={`${massScale.toFixed(1)} times`}
           />
         </div>
       </section>
 
-      <div className="control-divider" />
+      <div className="control-divider" aria-hidden="true" />
 
       {/* Orbital Motion Controls */}
-      <section className="control-section">
-        <h3 className="control-section-title">{UI_STRINGS.sectionOrbits}</h3>
+      <section className="control-section" aria-labelledby="orbits-heading">
+        <h3 id="orbits-heading" className="control-section-title">{UI_STRINGS.sectionOrbits}</h3>
 
         <div className="toggle-control">
-          <span className="toggle-label">{UI_STRINGS.orbitEnable}</span>
+          <span className="toggle-label" id="orbit-toggle-label">{UI_STRINGS.orbitEnable}</span>
           <button
             className={`toggle-switch ${orbitsEnabled ? 'toggle-switch--active' : ''}`}
             onClick={() => setOrbitsEnabled(!orbitsEnabled)}
             aria-pressed={orbitsEnabled}
-            aria-label="Toggle orbital motion"
+            aria-labelledby="orbit-toggle-label"
+            aria-describedby={!hasOrbitalMasses ? 'orbit-hint' : undefined}
             disabled={!hasOrbitalMasses}
           />
         </div>
@@ -199,13 +210,14 @@ export function ControlsPanel({
             <div className="control-group">
               <label className="control-label">
                 <span>{UI_STRINGS.orbitTimeLabel}</span>
-                <span className="control-value">{simulationTime.toFixed(2)}s</span>
+                <span className="control-value" aria-live="polite">{simulationTime.toFixed(2)}s</span>
               </label>
             </div>
             <div className="button-group">
               <button
                 className="control-button control-button--small"
                 onClick={resetSimulationTime}
+                aria-label="Reset simulation time to zero"
               >
                 {UI_STRINGS.orbitResetTime}
               </button>
@@ -214,23 +226,23 @@ export function ControlsPanel({
         )}
 
         {!hasOrbitalMasses && (
-          <p className="control-hint">{UI_STRINGS.orbitHint}</p>
+          <p id="orbit-hint" className="control-hint">{UI_STRINGS.orbitHint}</p>
         )}
       </section>
 
-      <div className="control-divider" />
+      <div className="control-divider" aria-hidden="true" />
 
       {/* Camera Controls */}
-      <section className="control-section">
-        <h3 className="control-section-title">{UI_STRINGS.sectionCamera}</h3>
+      <section className="control-section" aria-labelledby="camera-heading">
+        <h3 id="camera-heading" className="control-section-title">{UI_STRINGS.sectionCamera}</h3>
 
         <div className="toggle-control">
-          <span className="toggle-label">{UI_STRINGS.cameraAutoRotate}</span>
+          <span className="toggle-label" id="autorotate-toggle-label">{UI_STRINGS.cameraAutoRotate}</span>
           <button
             className={`toggle-switch ${autoRotate ? 'toggle-switch--active' : ''}`}
             onClick={toggleAutoRotate}
             aria-pressed={autoRotate}
-            aria-label="Toggle auto-rotate"
+            aria-labelledby="autorotate-toggle-label"
           />
         </div>
 
@@ -238,21 +250,24 @@ export function ControlsPanel({
           <button
             className="control-button control-button--small"
             onClick={resetCamera}
+            aria-label="Reset camera to default position"
           >
             {UI_STRINGS.cameraReset}
           </button>
         </div>
       </section>
 
-      <div className="control-divider" />
+      <div className="control-divider" aria-hidden="true" />
 
       {/* Playback Controls */}
-      <section className="control-section">
-        <h3 className="control-section-title">{UI_STRINGS.sectionPlayback}</h3>
-        <div className="button-group">
+      <section className="control-section" aria-labelledby="playback-heading">
+        <h3 id="playback-heading" className="control-section-title">{UI_STRINGS.sectionPlayback}</h3>
+        <div className="button-group" role="group" aria-label="Playback controls">
           <button
             className={`control-button ${isPaused ? '' : 'control-button--active'}`}
             onClick={togglePause}
+            aria-pressed={!isPaused}
+            aria-label={isPaused ? 'Play animation' : 'Pause animation'}
           >
             {isPaused ? UI_STRINGS.playbackPlay : UI_STRINGS.playbackPause}
           </button>
@@ -260,22 +275,30 @@ export function ControlsPanel({
             className="control-button"
             onClick={recompute}
             disabled={isComputing}
+            aria-label="Refresh and recompute curvature"
           >
             {UI_STRINGS.playbackRefresh}
           </button>
         </div>
       </section>
 
-      <div className="control-divider" />
+      <div className="control-divider" aria-hidden="true" />
 
       {/* Export Controls */}
-      <section className="control-section">
-        <h3 className="control-section-title">{UI_STRINGS.sectionExport}</h3>
+      <section className="control-section" aria-labelledby="export-heading">
+        <h3 id="export-heading" className="control-section-title">{UI_STRINGS.sectionExport}</h3>
 
         {/* Export Progress */}
         {exportState?.isExporting && (
-          <div className="export-progress">
-            <div className="export-progress-bar">
+          <div className="export-progress" role="status" aria-live="polite">
+            <div
+              className="export-progress-bar"
+              role="progressbar"
+              aria-valuenow={exportState.progress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Export progress"
+            >
               <div
                 className="export-progress-fill"
                 style={{ width: `${exportState.progress}%` }}
@@ -287,12 +310,12 @@ export function ControlsPanel({
 
         {/* Export Success */}
         {!exportState?.isExporting && exportState?.progress === 100 && !exportState?.error && (
-          <div className="export-success">{UI_STRINGS.exportSuccess}</div>
+          <div className="export-success" role="status">{UI_STRINGS.exportSuccess}</div>
         )}
 
         {/* Export Error */}
         {!exportState?.isExporting && exportState?.error && (
-          <div className="control-error">{exportState.error}</div>
+          <div className="control-error" role="alert">{exportState.error}</div>
         )}
 
         {/* Screenshot Button */}
@@ -301,6 +324,7 @@ export function ControlsPanel({
             className="control-button"
             onClick={onExportPng}
             disabled={isComputing || exportState?.isExporting}
+            aria-label="Take screenshot and download as PNG image"
           >
             {UI_STRINGS.exportScreenshot}
           </button>
@@ -310,7 +334,7 @@ export function ControlsPanel({
         {isVideoExportSupported() ? (
           <>
             <div className="control-group">
-              <label className="control-label">
+              <label className="control-label" id="video-duration-label">
                 <span>{UI_STRINGS.exportDuration}</span>
                 <span className="control-value">
                   {videoDuration}
@@ -326,6 +350,11 @@ export function ControlsPanel({
                 value={videoDuration}
                 onChange={(e) => setVideoDuration(parseInt(e.target.value, 10))}
                 disabled={exportState?.isExporting}
+                aria-labelledby="video-duration-label"
+                aria-valuemin={1}
+                aria-valuemax={MAX_VIDEO_DURATION}
+                aria-valuenow={videoDuration}
+                aria-valuetext={`${videoDuration} seconds`}
               />
             </div>
             <div className="button-group">
@@ -333,6 +362,7 @@ export function ControlsPanel({
                 className="control-button"
                 onClick={() => onExportVideo?.(videoDuration)}
                 disabled={isComputing || exportState?.isExporting}
+                aria-label={`Record ${videoDuration} second video and download as WebM`}
               >
                 {exportState?.isExporting && exportState.format === 'webm'
                   ? UI_STRINGS.exportRecording
@@ -345,11 +375,11 @@ export function ControlsPanel({
         )}
       </section>
 
-      <div className="control-divider" />
+      <div className="control-divider" aria-hidden="true" />
 
       {/* Education Panel */}
-      <section className="control-section">
-        <h3 className="control-section-title">{UI_STRINGS.sectionEducation}</h3>
+      <section className="control-section" aria-labelledby="education-heading">
+        <h3 id="education-heading" className="control-section-title">{UI_STRINGS.sectionEducation}</h3>
         <EducationPanel
           currentMode={visualizationMode}
           currentScenario={currentPreset}
@@ -357,14 +387,15 @@ export function ControlsPanel({
         />
       </section>
 
-      <div className="control-divider" />
+      <div className="control-divider" aria-hidden="true" />
 
       {/* Reset */}
-      <section className="control-section">
+      <section className="control-section" aria-label="Reset simulation">
         <button
           className="control-button"
           onClick={reset}
           disabled={isComputing}
+          aria-label="Reset all settings to initial state"
         >
           {UI_STRINGS.playbackReset}
         </button>
