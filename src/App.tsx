@@ -24,7 +24,7 @@ import {
   LiveRegion,
   announceToScreenReader,
 } from './components';
-import { useSimulation } from './hooks';
+import { useSimulation, useOrbitAnimation } from './hooks';
 import { useSimulationStore } from './state/simulation';
 import {
   capturePng,
@@ -186,6 +186,9 @@ function App() {
 
   // Use simulation hook
   const [state, actions] = useSimulation(handleResetCamera);
+
+  // Enable orbit animation loop
+  useOrbitAnimation();
 
   // Load default scenario on mount
   const loadScenario = useSimulationStore((s) => s.loadScenario);

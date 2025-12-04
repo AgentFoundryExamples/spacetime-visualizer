@@ -89,6 +89,8 @@ export interface UseSimulationState {
   orbitsEnabled: boolean;
   /** Current simulation time */
   simulationTime: number;
+  /** Time scale multiplier for orbital motion (0 = paused, 1 = normal speed) */
+  timeScale: number;
   /** Whether physics computation is using a Web Worker */
   isUsingWorker: boolean;
   /** Warning message about worker status (null if no warning) */
@@ -123,6 +125,8 @@ export interface UseSimulationActions {
   reset: () => void;
   /** Enable or disable orbital motion */
   setOrbitsEnabled: (enabled: boolean) => void;
+  /** Set time scale for orbital motion (0 = paused, 1 = normal speed) */
+  setTimeScale: (scale: number) => void;
   /** Advance simulation time for orbital motion */
   advanceSimulationTime: (deltaTime: number) => void;
   /** Reset simulation time to zero */
@@ -167,6 +171,7 @@ export function useSimulation(
     visualizationMode,
     orbitsEnabled,
     simulationTime,
+    timeScale,
     isUsingWorker,
     workerWarning,
     loadScenario: storeLoadScenario,
@@ -177,6 +182,7 @@ export function useSimulation(
     compute: storeCompute,
     reset: storeReset,
     setOrbitsEnabled: storeSetOrbitsEnabled,
+    setTimeScale: storeSetTimeScale,
     advanceSimulationTime: storeAdvanceSimulationTime,
     resetSimulationTime: storeResetSimulationTime,
   } = useSimulationStore();
@@ -348,6 +354,13 @@ export function useSimulation(
     [storeSetOrbitsEnabled]
   );
 
+  const setTimeScale = useCallback(
+    (scale: number) => {
+      storeSetTimeScale(scale);
+    },
+    [storeSetTimeScale]
+  );
+
   const advanceSimulationTime = useCallback(
     (deltaTime: number) => {
       storeAdvanceSimulationTime(deltaTime);
@@ -373,6 +386,7 @@ export function useSimulation(
     hasUnsavedChanges,
     orbitsEnabled,
     simulationTime,
+    timeScale,
     isUsingWorker,
     workerWarning,
   };
@@ -390,6 +404,7 @@ export function useSimulation(
     recompute,
     reset,
     setOrbitsEnabled,
+    setTimeScale,
     advanceSimulationTime,
     resetSimulationTime,
   };

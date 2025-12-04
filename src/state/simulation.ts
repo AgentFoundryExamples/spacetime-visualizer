@@ -79,6 +79,9 @@ export interface SimulationState {
   /** Current simulation time for orbital motion */
   simulationTime: number;
 
+  /** Time scale multiplier for orbital motion (0 = paused, 1 = normal speed) */
+  timeScale: number;
+
   /** Whether physics computation is using a Web Worker */
   isUsingWorker: boolean;
 
@@ -124,6 +127,9 @@ export interface SimulationState {
   /** Enable or disable orbital motion */
   setOrbitsEnabled: (enabled: boolean) => void;
 
+  /** Set time scale for orbital motion (0 = paused, 1 = normal speed) */
+  setTimeScale: (scale: number) => void;
+
   /** Update simulation time and advance orbits */
   advanceSimulationTime: (deltaTime: number) => void;
 
@@ -157,6 +163,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   error: null,
   orbitsEnabled: false,
   simulationTime: 0,
+  timeScale: 1,
   isUsingWorker: false,
   workerWarning: null,
 
@@ -302,6 +309,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       error: null,
       orbitsEnabled: false,
       simulationTime: 0,
+      timeScale: 1,
       isUsingWorker: false,
       workerWarning: null,
     });
@@ -310,6 +318,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   setOrbitsEnabled: (enabled: boolean) => {
     set((state) => ({
       orbitsEnabled: enabled,
+      // When enabling orbits, ensure timeScale is non-zero to start animation
+      timeScale: enabled ? (state.timeScale === 0 ? 1 : state.timeScale) : state.timeScale,
       config: {
         ...state.config,
         orbitsEnabled: enabled,
@@ -317,17 +327,30 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     }));
   },
 
-  advanceSimulationTime: (deltaTime: number) => {
-    const { config, orbitsEnabled, simulationTime, isComputing } = get();
+  setTimeScale: (scale: number) => {
+    // Clamp timeScale between 0 and 10 to prevent numerical instability
+    // and unrealistic simulation speeds that could break the physics model
+    set({ timeScale: Math.max(0, Math.min(10, scale)) });
+  },
 
-    // Don't advance if orbits are disabled or already computing
-    if (!orbitsEnabled || isComputing) {
+  advanceSimulationTime: (deltaTime: number) => {
+    // Note: Zustand's get() provides atomic state reads, and set() performs
+    // atomic updates. The guard checks and subsequent set() are safe because
+    // if state changes between get() and set(), the next animation frame
+    // will correctly read the updated state.
+    const { config, orbitsEnabled, simulationTime, timeScale, isComputing } = get();
+
+    // Don't advance if orbits are disabled, timeScale is zero, or already computing
+    if (!orbitsEnabled || timeScale === 0 || isComputing) {
       return;
     }
 
+    // Apply time scale to delta time
+    const scaledDelta = deltaTime * timeScale;
+
     // Clamp delta time to prevent numerical instability
     const clampedDelta = Math.min(
-      Math.max(deltaTime, ORBITAL_CONSTRAINTS.minTimeStep),
+      Math.max(scaledDelta, ORBITAL_CONSTRAINTS.minTimeStep),
       ORBITAL_CONSTRAINTS.maxTimeStep
     );
 

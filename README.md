@@ -82,9 +82,16 @@ Enable dynamic orbital motion for scenarios with defined orbits (e.g., Binary Or
 
 | Control | Function |
 |---------|----------|
-| Enable Orbits | Toggle orbital motion on/off |
-| Reset Time | Reset simulation time to t=0 |
-| Time | Displays current simulation time |
+| Enable Orbits | Toggle orbital motion on/off; automatically starts simulation clock |
+| Reset Time | Reset simulation time to t=0; masses return to initial positions |
+| Time | Displays current simulation time (advances automatically when orbits are enabled) |
+
+**Behavior:**
+- When **Enable Orbits** is toggled on, the simulation clock starts immediately
+- Mass positions update smoothly based on Keplerian orbital mechanics  
+- The curvature visualization updates in real-time as masses move
+- Pausing freezes time but preserves positions; resuming continues from where it left off
+- Switching scenarios resets time to zero but maintains the running state if orbits are enabled
 
 **Note:** Orbital motion is only available for scenarios with masses that have orbital parameters defined. The Binary Orbit scenario supports this feature out of the box.
 
