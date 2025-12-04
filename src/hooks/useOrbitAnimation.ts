@@ -65,7 +65,7 @@ export function useOrbitAnimation(): void {
         const deltaTime = Math.min(rawDelta, MAX_FRAME_TIME);
 
         // Only advance if we have a reasonable delta (skip first frame)
-        if (deltaTime > 0 && deltaTime < MAX_FRAME_TIME) {
+        if (deltaTime > 0) {
           advanceSimulationTime(deltaTime);
         }
       }
@@ -87,5 +87,3 @@ export function useOrbitAnimation(): void {
     };
   }, [orbitsEnabled, timeScale, advanceSimulationTime]);
 }
-
-export default useOrbitAnimation;
