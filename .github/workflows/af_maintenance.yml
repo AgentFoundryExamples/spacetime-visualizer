@@ -46,7 +46,7 @@ jobs:
           mkdir -p .github/af-config
           cat << 'EOF' > .github/af-config/repo-analyzer.config.json
           {
-            "output_dir": "repo-analysis-output",
+            "output_dir": ".github/repo-analysis-output",
             "dry_run": false,
             "tree_config": {
               "max_depth": null,
