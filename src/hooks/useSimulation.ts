@@ -32,6 +32,16 @@ export const DEFAULT_DEBOUNCE_MS = 100;
 export const MIN_COMPUTE_INTERVAL_MS = 50;
 
 /**
+ * Minimum allowed mass scale multiplier.
+ */
+export const MIN_MASS_SCALE = 0.1;
+
+/**
+ * Maximum allowed mass scale multiplier.
+ */
+export const MAX_MASS_SCALE = 10;
+
+/**
  * Hook state returned by useSimulation.
  */
 export interface UseSimulationState {
@@ -191,12 +201,17 @@ export function useSimulation(
 
   const setMassScale = useCallback(
     (scale: number) => {
-      const clampedScale = Math.max(0.1, Math.min(10, scale));
+      const clampedScale = Math.max(
+        MIN_MASS_SCALE,
+        Math.min(MAX_MASS_SCALE, scale)
+      );
       setMassScaleLocal(clampedScale);
 
       // Update all masses with the new scale
+      // Use safe division, treating massScale < MIN_MASS_SCALE as 1.0 for base calculation
+      const safePreviousScale = massScale >= MIN_MASS_SCALE ? massScale : 1.0;
       config.masses.forEach((mass) => {
-        const baseMass = mass.mass / massScale; // Get base mass
+        const baseMass = mass.mass / safePreviousScale; // Get base mass
         pendingMassUpdatesRef.current.set(mass.id, {
           mass: baseMass * clampedScale,
         });

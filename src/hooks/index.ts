@@ -18,5 +18,7 @@ export {
   useSimulation,
   DEFAULT_DEBOUNCE_MS,
   MIN_COMPUTE_INTERVAL_MS,
+  MIN_MASS_SCALE,
+  MAX_MASS_SCALE,
 } from './useSimulation';
 export type { UseSimulationState, UseSimulationActions } from './useSimulation';
