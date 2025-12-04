@@ -26,6 +26,12 @@ import { useSimulationStore } from '../state/simulation';
 const MAX_FRAME_TIME = 0.1;
 
 /**
+ * Flag to track if an animation loop is currently active.
+ * Prevents multiple concurrent loops from starting during rapid state changes.
+ */
+let isAnimationLoopActive = false;
+
+/**
  * Hook that animates orbital motion by advancing simulation time each frame.
  *
  * This hook manages a requestAnimationFrame loop that:
@@ -52,9 +58,16 @@ export function useOrbitAnimation(): void {
   useEffect(() => {
     // Only run animation when orbits are enabled and time scale is non-zero
     if (!orbitsEnabled || timeScale === 0) {
+      // Reset lastTimeRef when animation stops so next start has fresh timing
       lastTimeRef.current = null;
       return;
     }
+
+    // Prevent multiple concurrent animation loops during rapid state changes
+    if (isAnimationLoopActive) {
+      return;
+    }
+    isAnimationLoopActive = true;
 
     const animate = (currentTime: number) => {
       if (lastTimeRef.current !== null) {
@@ -83,7 +96,11 @@ export function useOrbitAnimation(): void {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
       }
-      lastTimeRef.current = null;
+      isAnimationLoopActive = false;
+      // Only reset lastTimeRef if the animation is stopping
+      if (!orbitsEnabled || timeScale === 0) {
+        lastTimeRef.current = null;
+      }
     };
   }, [orbitsEnabled, timeScale, advanceSimulationTime]);
 }

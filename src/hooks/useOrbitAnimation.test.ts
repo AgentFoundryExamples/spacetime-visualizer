@@ -356,6 +356,22 @@ describe('orbit enable/disable flows', () => {
     expect(useSimulationStore.getState().timeScale).toBe(1);
   });
 
+  it('should clamp timeScale to maximum of 10', () => {
+    act(() => {
+      useSimulationStore.getState().setTimeScale(100);
+    });
+
+    expect(useSimulationStore.getState().timeScale).toBe(10);
+  });
+
+  it('should clamp negative timeScale to 0', () => {
+    act(() => {
+      useSimulationStore.getState().setTimeScale(-5);
+    });
+
+    expect(useSimulationStore.getState().timeScale).toBe(0);
+  });
+
   it('should not advance time when timeScale is 0', () => {
     useSimulationStore.setState({ orbitsEnabled: true, timeScale: 0 });
 

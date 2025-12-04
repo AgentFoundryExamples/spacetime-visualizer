@@ -328,10 +328,16 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   },
 
   setTimeScale: (scale: number) => {
-    set({ timeScale: Math.max(0, scale) });
+    // Clamp timeScale between 0 and 10 to prevent numerical instability
+    // and unrealistic simulation speeds that could break the physics model
+    set({ timeScale: Math.max(0, Math.min(10, scale)) });
   },
 
   advanceSimulationTime: (deltaTime: number) => {
+    // Note: Zustand's get() provides atomic state reads, and set() performs
+    // atomic updates. The guard checks and subsequent set() are safe because
+    // if state changes between get() and set(), the next animation frame
+    // will correctly read the updated state.
     const { config, orbitsEnabled, simulationTime, timeScale, isComputing } = get();
 
     // Don't advance if orbits are disabled, timeScale is zero, or already computing
