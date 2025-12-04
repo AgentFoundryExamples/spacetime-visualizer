@@ -1,0 +1,488 @@
+{
+  "nodes": [
+    {
+      "id": "eslint.config.js",
+      "path": "eslint.config.js",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "@eslint/js",
+          "eslint-plugin-react-hooks",
+          "eslint-plugin-react-refresh",
+          "globals",
+          "typescript-eslint"
+        ]
+      }
+    },
+    {
+      "id": "src/components/index.ts",
+      "path": "src/components/index.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/components/webgl-utils.test.ts",
+      "path": "src/components/webgl-utils.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/components/webgl-utils.ts",
+      "path": "src/components/webgl-utils.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/content/strings.test.ts",
+      "path": "src/content/strings.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/content/strings.ts",
+      "path": "src/content/strings.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/hooks/index.ts",
+      "path": "src/hooks/index.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/hooks/useSimulation.test.ts",
+      "path": "src/hooks/useSimulation.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "@testing-library/react",
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/hooks/useSimulation.ts",
+      "path": "src/hooks/useSimulation.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "react"
+        ]
+      }
+    },
+    {
+      "id": "src/physics/curvature.ts",
+      "path": "src/physics/curvature.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/physics/scenarios.ts",
+      "path": "src/physics/scenarios.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/physics/types.ts",
+      "path": "src/physics/types.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/state/config.test.ts",
+      "path": "src/state/config.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/state/config.ts",
+      "path": "src/state/config.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "zustand"
+        ]
+      }
+    },
+    {
+      "id": "src/state/simulation.ts",
+      "path": "src/state/simulation.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "zustand"
+        ]
+      }
+    },
+    {
+      "id": "src/test/setup.ts",
+      "path": "src/test/setup.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "@testing-library/jest-dom"
+        ]
+      }
+    },
+    {
+      "id": "src/tests/curvature.spec.ts",
+      "path": "src/tests/curvature.spec.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/visualization/index.ts",
+      "path": "src/visualization/index.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/visualization/materials.ts",
+      "path": "src/visualization/materials.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three"
+        ]
+      }
+    },
+    {
+      "id": "src/visualization/modes/contour.ts",
+      "path": "src/visualization/modes/contour.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three"
+        ]
+      }
+    },
+    {
+      "id": "src/visualization/modes/fieldLines.ts",
+      "path": "src/visualization/modes/fieldLines.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three"
+        ]
+      }
+    },
+    {
+      "id": "src/visualization/modes/index.ts",
+      "path": "src/visualization/modes/index.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/visualization/modes/mesh.ts",
+      "path": "src/visualization/modes/mesh.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three"
+        ]
+      }
+    },
+    {
+      "id": "src/visualization/modes/modes.test.ts",
+      "path": "src/visualization/modes/modes.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three",
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/visualization/modes/types.ts",
+      "path": "src/visualization/modes/types.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three"
+        ]
+      }
+    },
+    {
+      "id": "src/visualization/renderer.test.ts",
+      "path": "src/visualization/renderer.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three",
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/visualization/renderer.ts",
+      "path": "src/visualization/renderer.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "three"
+        ]
+      }
+    },
+    {
+      "id": "vite.config.ts",
+      "path": "vite.config.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "@vitejs/plugin-react",
+          "vite"
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "src/components/webgl-utils.test.ts",
+      "target": "src/components/webgl-utils.ts"
+    },
+    {
+      "source": "src/content/strings.test.ts",
+      "target": "src/content/strings.ts"
+    },
+    {
+      "source": "src/hooks/useSimulation.test.ts",
+      "target": "src/hooks/useSimulation.ts"
+    },
+    {
+      "source": "src/hooks/useSimulation.test.ts",
+      "target": "src/state/simulation.ts"
+    },
+    {
+      "source": "src/hooks/useSimulation.ts",
+      "target": "src/state/simulation.ts"
+    },
+    {
+      "source": "src/hooks/useSimulation.ts",
+      "target": "src/visualization/index.ts"
+    },
+    {
+      "source": "src/physics/curvature.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/physics/scenarios.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/state/config.test.ts",
+      "target": "src/state/config.ts"
+    },
+    {
+      "source": "src/state/simulation.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/state/simulation.ts",
+      "target": "src/physics/curvature.ts"
+    },
+    {
+      "source": "src/state/simulation.ts",
+      "target": "src/physics/scenarios.ts"
+    },
+    {
+      "source": "src/state/simulation.ts",
+      "target": "src/content/strings.ts"
+    },
+    {
+      "source": "src/tests/curvature.spec.ts",
+      "target": "src/physics/curvature.ts"
+    },
+    {
+      "source": "src/tests/curvature.spec.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/tests/curvature.spec.ts",
+      "target": "src/physics/scenarios.ts"
+    },
+    {
+      "source": "src/tests/curvature.spec.ts",
+      "target": "src/state/simulation.ts"
+    },
+    {
+      "source": "src/visualization/modes/contour.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/contour.ts",
+      "target": "src/visualization/modes/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/contour.ts",
+      "target": "src/visualization/materials.ts"
+    },
+    {
+      "source": "src/visualization/modes/fieldLines.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/fieldLines.ts",
+      "target": "src/visualization/modes/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/fieldLines.ts",
+      "target": "src/visualization/materials.ts"
+    },
+    {
+      "source": "src/visualization/modes/index.ts",
+      "target": "src/content/strings.ts"
+    },
+    {
+      "source": "src/visualization/modes/index.ts",
+      "target": "src/visualization/modes/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/index.ts",
+      "target": "src/visualization/modes/mesh.ts"
+    },
+    {
+      "source": "src/visualization/modes/index.ts",
+      "target": "src/visualization/modes/contour.ts"
+    },
+    {
+      "source": "src/visualization/modes/index.ts",
+      "target": "src/visualization/modes/fieldLines.ts"
+    },
+    {
+      "source": "src/visualization/modes/mesh.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/mesh.ts",
+      "target": "src/visualization/modes/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/mesh.ts",
+      "target": "src/visualization/renderer.ts"
+    },
+    {
+      "source": "src/visualization/modes/mesh.ts",
+      "target": "src/visualization/materials.ts"
+    },
+    {
+      "source": "src/visualization/modes/modes.test.ts",
+      "target": "src/visualization/modes/index.ts"
+    },
+    {
+      "source": "src/visualization/modes/modes.test.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/types.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/visualization/modes/types.ts",
+      "target": "src/content/strings.ts"
+    },
+    {
+      "source": "src/visualization/renderer.test.ts",
+      "target": "src/visualization/renderer.ts"
+    },
+    {
+      "source": "src/visualization/renderer.test.ts",
+      "target": "src/visualization/materials.ts"
+    },
+    {
+      "source": "src/visualization/renderer.test.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/visualization/renderer.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/visualization/renderer.ts",
+      "target": "src/visualization/materials.ts"
+    }
+  ],
+  "external_dependencies_summary": {
+    "stdlib": [],
+    "third-party": [
+      "@eslint/js",
+      "@testing-library/jest-dom",
+      "@testing-library/react",
+      "@vitejs/plugin-react",
+      "eslint-plugin-react-hooks",
+      "eslint-plugin-react-refresh",
+      "globals",
+      "react",
+      "three",
+      "typescript-eslint",
+      "vite",
+      "vitest",
+      "zustand"
+    ],
+    "stdlib_count": 0,
+    "third-party_count": 13
+  }
+}
