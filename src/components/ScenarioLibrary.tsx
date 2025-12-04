@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ScenarioPreset } from '../physics/scenarios';
 import { SCENARIO_PRESETS } from '../physics/scenarios';
 import type { CurvatureGridConfig } from '../physics/types';
@@ -173,6 +173,16 @@ export function ScenarioLibrary({
   );
   const [showOverwriteWarning, setShowOverwriteWarning] = useState(false);
   const [pendingLoad, setPendingLoad] = useState<CurvatureGridConfig | null>(null);
+  
+  // Ref for the cancel button in the alert dialog for focus management
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Focus the cancel button when the overwrite warning dialog opens
+  useEffect(() => {
+    if (showOverwriteWarning && cancelButtonRef.current) {
+      cancelButtonRef.current.focus();
+    }
+  }, [showOverwriteWarning]);
 
   const handleSaveCustom = useCallback(() => {
     const name = prompt(UI_STRINGS.scenarioSavePrompt);
@@ -247,8 +257,17 @@ export function ScenarioLibrary({
       )}
 
       {showOverwriteWarning && (
-        <div className="scenario-library__warning" role="alertdialog" aria-labelledby="overwrite-warning">
+        <div 
+          className="scenario-library__warning" 
+          role="alertdialog" 
+          aria-modal="true"
+          aria-labelledby="overwrite-warning"
+          aria-describedby="overwrite-warning-desc"
+        >
           <p id="overwrite-warning">{UI_STRINGS.scenarioOverwriteWarning}</p>
+          <p id="overwrite-warning-desc" className="sr-only">
+            Choose Continue to load the preset and discard your changes, or Cancel to keep editing.
+          </p>
           <div className="scenario-library__actions">
             <button
               className="scenario-library__action-btn"
@@ -258,6 +277,7 @@ export function ScenarioLibrary({
               Continue
             </button>
             <button
+              ref={cancelButtonRef}
               className="scenario-library__action-btn"
               onClick={handleCancelLoad}
               aria-label="Cancel and keep current changes"

@@ -36,26 +36,46 @@ describe('Accessibility Components', () => {
       expect(link).toHaveClass('skip-link');
     });
 
-    it('focuses target element on click', () => {
-      // Create target element with mocked scrollIntoView
+    it('focuses first focusable element within target on click', () => {
+      // Create target element with a focusable child
       const container = document.createElement('div');
       const target = document.createElement('main');
-      target.id = 'main';
+      target.id = 'main-content';
       target.tabIndex = -1;
       target.scrollIntoView = vi.fn();
+      
+      // Add a focusable button inside
+      const button = document.createElement('button');
+      button.textContent = 'First button';
+      target.appendChild(button);
+      
       container.appendChild(target);
       document.body.appendChild(container);
 
-      render(<SkipLink targetId="main">Skip to main content</SkipLink>);
+      render(<SkipLink targetId="main-content">Skip to main content</SkipLink>);
       const link = screen.getByRole('link', { name: 'Skip to main content' });
       
       fireEvent.click(link);
       
-      expect(document.activeElement).toBe(target);
+      // Should focus the first focusable element (button) instead of the target
+      expect(document.activeElement).toBe(button);
       expect(target.scrollIntoView).toHaveBeenCalled();
 
       // Cleanup
       document.body.removeChild(container);
+    });
+
+    it('validates target ID and rejects invalid IDs', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      
+      render(<SkipLink targetId="<script>alert(1)</script>">Skip link</SkipLink>);
+      const link = screen.getByRole('link', { name: 'Skip link' });
+      
+      fireEvent.click(link);
+      
+      expect(consoleSpy).toHaveBeenCalledWith('SkipLink: Invalid target ID provided');
+      
+      consoleSpy.mockRestore();
     });
   });
 

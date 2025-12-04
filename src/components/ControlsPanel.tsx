@@ -94,10 +94,10 @@ export function ControlsPanel({
   const hasOrbitalMasses = config.masses.some((m) => m.orbit !== undefined);
 
   return (
-    <div className="controls-panel" role="region" aria-label="Simulation controls">
+    <div className="controls-panel" role="region" aria-label="Simulation controls" aria-busy={isComputing}>
       {/* Status indicators */}
       {isComputing && (
-        <div className="computing-indicator" role="status" aria-live="polite">
+        <div className="computing-indicator" role="status" aria-live="polite" aria-busy="true">
           <div className="computing-spinner" aria-hidden="true" />
           <span>{UI_STRINGS.statusComputing}</span>
         </div>
@@ -106,7 +106,7 @@ export function ControlsPanel({
       {error && <div className="control-error" role="alert">{error}</div>}
 
       {resolutionWarning && (
-        <div className="control-warning" role="alert">{resolutionWarning}</div>
+        <div className="control-warning" role="status" aria-live="polite">{resolutionWarning}</div>
       )}
 
       {/* Visualization Mode Selection */}

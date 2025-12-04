@@ -15,6 +15,11 @@
  */
 
 /**
+ * Maximum message length to prevent potential abuse.
+ */
+const MAX_MESSAGE_LENGTH = 500;
+
+/**
  * Type for the window object with the announcer function.
  */
 type WindowWithAnnouncer = Window & { announceToScreenReader?: (text: string) => void };
@@ -25,8 +30,16 @@ type WindowWithAnnouncer = Window & { announceToScreenReader?: (text: string) =>
  * @param message - The message to announce
  */
 export function announceToScreenReader(message: string): void {
+  // Validate input
+  if (typeof message !== 'string' || !message.trim()) {
+    return;
+  }
+  
+  // Sanitize and limit message length
+  const sanitizedMessage = message.trim().slice(0, MAX_MESSAGE_LENGTH);
+  
   const announcer = (window as WindowWithAnnouncer).announceToScreenReader;
   if (announcer) {
-    announcer(message);
+    announcer(sanitizedMessage);
   }
 }

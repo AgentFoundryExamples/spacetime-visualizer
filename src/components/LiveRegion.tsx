@@ -30,9 +30,26 @@ export interface LiveRegionProps {
 const DEBOUNCE_DELAY_MS = 500;
 
 /**
+ * Maximum message length to prevent potential abuse.
+ */
+const MAX_MESSAGE_LENGTH = 500;
+
+/**
  * Type for the window object with the announcer function.
  */
 type WindowWithAnnouncer = Window & { announceToScreenReader?: (text: string) => void };
+
+/**
+ * Sanitizes a message string by trimming and limiting length.
+ * @param text - The input text to sanitize
+ * @returns Sanitized text safe for display
+ */
+function sanitizeMessage(text: string): string {
+  if (typeof text !== 'string') {
+    return '';
+  }
+  return text.trim().slice(0, MAX_MESSAGE_LENGTH);
+}
 
 /**
  * Live region component for screen reader announcements.
@@ -41,12 +58,22 @@ type WindowWithAnnouncer = Window & { announceToScreenReader?: (text: string) =>
 export function LiveRegion({ className = '' }: LiveRegionProps) {
   const [message, setMessage] = useState('');
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   // Debounced announcement function
   const announce = useCallback((text: string) => {
-    // Clear any pending announcements
+    // Sanitize input
+    const sanitizedText = sanitizeMessage(text);
+    if (!sanitizedText) {
+      return;
+    }
+
+    // Clear any pending announcements (both timeout and RAF)
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+    }
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
     }
 
     // Debounce rapid updates
@@ -54,8 +81,8 @@ export function LiveRegion({ className = '' }: LiveRegionProps) {
       // Clear first to ensure screen readers detect the change
       setMessage('');
       // Use requestAnimationFrame to ensure the DOM update is processed
-      requestAnimationFrame(() => {
-        setMessage(text);
+      rafRef.current = requestAnimationFrame(() => {
+        setMessage(sanitizedText);
       });
     }, DEBOUNCE_DELAY_MS);
   }, []);
@@ -67,6 +94,9 @@ export function LiveRegion({ className = '' }: LiveRegionProps) {
       delete (window as WindowWithAnnouncer).announceToScreenReader;
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+      }
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
       }
     };
   }, [announce]);
