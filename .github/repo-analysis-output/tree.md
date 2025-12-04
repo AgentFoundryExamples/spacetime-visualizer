@@ -71,6 +71,12 @@
     ├── materials.ts
     ├── renderer.test.ts
     └── renderer.ts
+  ├── workers
+    ├── index.ts
+    ├── physics-client.test.ts
+    ├── physics-client.ts
+    ├── physics.worker.ts
+    └── types.ts
   ├── App.tsx
   └── main.tsx
 ├── .env.example

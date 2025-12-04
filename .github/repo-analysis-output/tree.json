@@ -319,6 +319,32 @@
           ]
         },
         {
+          "type": "directory",
+          "name": "workers",
+          "children": [
+            {
+              "type": "file",
+              "name": "index.ts"
+            },
+            {
+              "type": "file",
+              "name": "physics-client.test.ts"
+            },
+            {
+              "type": "file",
+              "name": "physics-client.ts"
+            },
+            {
+              "type": "file",
+              "name": "physics.worker.ts"
+            },
+            {
+              "type": "file",
+              "name": "types.ts"
+            }
+          ]
+        },
+        {
           "type": "file",
           "name": "App.tsx"
         },

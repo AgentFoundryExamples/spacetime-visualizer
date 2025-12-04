@@ -4,7 +4,7 @@ Heuristic summaries of source files based on filenames, extensions, and paths.
 
 Schema Version: 2.0
 
-Total files: 30
+Total files: 35
 
 ## eslint.config.js
 **Language:** JavaScript  
@@ -83,8 +83,8 @@ Total files: 30
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 11.39 KB  
-**LOC:** 327  
+**Size:** 11.64 KB  
+**LOC:** 335  
 **TODOs/FIXMEs:** 0  
 
 ## src/physics/curvature.ts
@@ -155,8 +155,8 @@ Total files: 30
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 9.36 KB  
-**LOC:** 279  
+**Size:** 10.10 KB  
+**LOC:** 300  
 **TODOs/FIXMEs:** 0  
 
 ## src/test/setup.ts
@@ -265,6 +265,51 @@ Total files: 30
 **Summary:** TypeScript core implementation  
 **Size:** 11.56 KB  
 **LOC:** 280  
+**TODOs/FIXMEs:** 0  
+
+## src/workers/index.ts
+**Language:** TypeScript  
+**Role:** entry-point  
+**Role Justification:** common entry point name 'index'  
+**Summary:** TypeScript main entry point (role: entry-point)  
+**Size:** 1.00 KB  
+**LOC:** 21  
+**TODOs/FIXMEs:** 0  
+
+## src/workers/physics-client.test.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 6.95 KB  
+**LOC:** 175  
+**TODOs/FIXMEs:** 0  
+
+## src/workers/physics-client.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 10.96 KB  
+**LOC:** 293  
+**TODOs/FIXMEs:** 0  
+
+## src/workers/physics.worker.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 3.25 KB  
+**LOC:** 95  
+**TODOs/FIXMEs:** 0  
+
+## src/workers/types.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 4.44 KB  
+**LOC:** 141  
 **TODOs/FIXMEs:** 0  
 
 ## vite.config.ts

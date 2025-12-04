@@ -307,6 +307,53 @@
       }
     },
     {
+      "id": "src/workers/index.ts",
+      "path": "src/workers/index.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/workers/physics-client.test.ts",
+      "path": "src/workers/physics-client.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/workers/physics-client.ts",
+      "path": "src/workers/physics-client.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/workers/physics.worker.ts",
+      "path": "src/workers/physics.worker.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
+      "id": "src/workers/types.ts",
+      "path": "src/workers/types.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
       "id": "vite.config.ts",
       "path": "vite.config.ts",
       "type": "file",
@@ -391,6 +438,10 @@
     {
       "source": "src/state/simulation.ts",
       "target": "src/content/strings.ts"
+    },
+    {
+      "source": "src/state/simulation.ts",
+      "target": "src/workers/index.ts"
     },
     {
       "source": "src/tests/curvature.spec.ts",
@@ -503,6 +554,42 @@
     {
       "source": "src/visualization/renderer.ts",
       "target": "src/visualization/materials.ts"
+    },
+    {
+      "source": "src/workers/physics-client.test.ts",
+      "target": "src/workers/types.ts"
+    },
+    {
+      "source": "src/workers/physics-client.test.ts",
+      "target": "src/workers/physics-client.ts"
+    },
+    {
+      "source": "src/workers/physics-client.test.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/workers/physics-client.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/workers/physics-client.ts",
+      "target": "src/physics/curvature.ts"
+    },
+    {
+      "source": "src/workers/physics-client.ts",
+      "target": "src/workers/types.ts"
+    },
+    {
+      "source": "src/workers/physics.worker.ts",
+      "target": "src/physics/curvature.ts"
+    },
+    {
+      "source": "src/workers/physics.worker.ts",
+      "target": "src/workers/types.ts"
+    },
+    {
+      "source": "src/workers/types.ts",
+      "target": "src/physics/types.ts"
     }
   ],
   "external_dependencies_summary": {
