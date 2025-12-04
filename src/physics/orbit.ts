@@ -66,6 +66,11 @@ const MAX_KEPLER_ITERATIONS = 30;
 const KEPLER_TOLERANCE = 1e-10;
 
 /**
+ * Fallback step size when Newton-Raphson derivative is near zero.
+ */
+const KEPLER_BISECTION_STEP = 0.1;
+
+/**
  * Validation error for orbital parameters.
  */
 export class OrbitalValidationError extends Error {
@@ -241,6 +246,9 @@ export function trueToMeanAnomaly(
  * Solves Kepler's equation to find eccentric anomaly from mean anomaly.
  * Uses Newton-Raphson iteration: M = E - e*sin(E)
  *
+ * For high eccentricity orbits (e > 0.8), convergence may be slower.
+ * If solver doesn't converge, returns best estimate with a warning logged.
+ *
  * @param meanAnomaly - Mean anomaly in radians
  * @param eccentricity - Orbital eccentricity (0 to <1)
  * @returns Eccentric anomaly in radians
@@ -254,27 +262,43 @@ export function solveKeplerEquation(
     return meanAnomaly;
   }
 
-  // Initial guess
+  // Initial guess using improved starting point for better convergence.
+  // For high eccentricity orbits, M + e*sin(M) provides a closer initial
+  // approximation than just M or π, reducing iterations needed to converge.
   let E = meanAnomaly;
   if (eccentricity > 0.8) {
-    E = Math.PI; // Better initial guess for high eccentricity
+    E = meanAnomaly + eccentricity * Math.sin(meanAnomaly);
   }
+
+  let converged = false;
 
   // Newton-Raphson iteration
   for (let i = 0; i < MAX_KEPLER_ITERATIONS; i++) {
     const f = E - eccentricity * Math.sin(E) - meanAnomaly;
     const fPrime = 1 - eccentricity * Math.cos(E);
 
+    // Check for near-zero derivative (shouldn't happen for e < 1)
     if (Math.abs(fPrime) < 1e-15) {
-      break; // Avoid division by zero
+      // Fallback: use bisection-like step instead of Newton step
+      E += Math.sign(f) * KEPLER_BISECTION_STEP;
+      continue;
     }
 
     const dE = f / fPrime;
     E -= dE;
 
     if (Math.abs(dE) < KEPLER_TOLERANCE) {
+      converged = true;
       break;
     }
+  }
+
+  // Validate convergence - if not converged, the result may be inaccurate
+  // This can happen for eccentricities very close to 1
+  if (!converged && import.meta.env.DEV) {
+    console.warn(
+      `Kepler equation solver did not converge for e=${eccentricity}, M=${meanAnomaly}. Using best estimate.`
+    );
   }
 
   return E;
@@ -472,7 +496,7 @@ export function updateMassPositions(
     }
 
     // Find central mass (if specified)
-    let centralMass = 100; // Default central mass
+    let centralMass: number;
     let centerPosition: [number, number, number] = [0, 0, 0];
 
     if (mass.orbitsCentralMassId) {
@@ -480,18 +504,15 @@ export function updateMassPositions(
       if (centralBody) {
         centralMass = centralBody.mass;
         centerPosition = centralBody.position;
+      } else {
+        // Fallback if central mass not found
+        centralMass = 100;
       }
     } else {
-      // Sum all other masses for barycenter calculation
-      const totalMass = masses.reduce((sum, m) => {
-        if (m.id !== mass.id) {
-          return sum + m.mass;
-        }
-        return sum;
-      }, 0);
-      if (totalMass > 0) {
-        centralMass = totalMass;
-      }
+      // For systems orbiting a common barycenter (no central mass ID),
+      // the period depends on the total mass of the system.
+      const totalMass = masses.reduce((sum, m) => sum + m.mass, 0);
+      centralMass = totalMass > 0 ? totalMass : 100;
     }
 
     // Compute new position

@@ -294,10 +294,10 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   },
 
   advanceSimulationTime: (deltaTime: number) => {
-    const { config, orbitsEnabled, simulationTime } = get();
+    const { config, orbitsEnabled, simulationTime, isComputing } = get();
 
-    // Don't advance if orbits are disabled
-    if (!orbitsEnabled) {
+    // Don't advance if orbits are disabled or already computing
+    if (!orbitsEnabled || isComputing) {
       return;
     }
 
@@ -325,15 +325,21 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   },
 
   resetSimulationTime: () => {
-    const { config } = get();
+    const { config, currentPreset, seed } = get();
 
-    // Reset positions to t=0
-    const updatedMasses = updateMassPositions(config.masses, 0);
+    // To ensure a true reset, reload the original scenario config
+    // before recalculating positions at t=0.
+    const initialConfig = currentPreset
+      ? getScenarioConfig(currentPreset, seed)
+      : config;
+
+    // Reset positions to t=0 using the pristine config
+    const updatedMasses = updateMassPositions(initialConfig.masses, 0);
 
     set({
       simulationTime: 0,
       config: {
-        ...config,
+        ...initialConfig,
         masses: updatedMasses,
       },
     });
