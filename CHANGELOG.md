@@ -35,8 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Preset Scenarios
 - Single Mass: Spherically symmetric curvature demonstration
-- Binary Orbit: Two-body gravitational interaction
-- Gravitational Wave: Quadrupole pattern simulation
+- Binary Orbit (Static): A static snapshot of a two-body gravitational interaction
+- Gravitational Wave (Static): A static quadrupole pattern representing a moment of a gravitational wave
 - Triple System: Three-body complexity
 - Mass Cluster: Aggregate curvature visualization
 
