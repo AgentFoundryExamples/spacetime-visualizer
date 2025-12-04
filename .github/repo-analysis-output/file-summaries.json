@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "total_files": 28,
+  "total_files": 30,
   "files": [
     {
       "schema_version": "2.0",
@@ -81,8 +81,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 9505,
-        "loc": 217,
+        "size_bytes": 9747,
+        "loc": 223,
         "todo_count": 0
       }
     },
@@ -123,8 +123,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 10530,
-        "loc": 292,
+        "size_bytes": 11660,
+        "loc": 327,
         "todo_count": 0
       }
     },
@@ -144,6 +144,34 @@
     },
     {
       "schema_version": "2.0",
+      "path": "src/physics/orbit.test.ts",
+      "language": "TypeScript",
+      "role": "implementation",
+      "role_justification": "general implementation file (default classification)",
+      "summary": "TypeScript core implementation",
+      "summary_text": "TypeScript core implementation",
+      "metrics": {
+        "size_bytes": 15007,
+        "loc": 356,
+        "todo_count": 0
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "path": "src/physics/orbit.ts",
+      "language": "TypeScript",
+      "role": "implementation",
+      "role_justification": "general implementation file (default classification)",
+      "summary": "TypeScript core implementation",
+      "summary_text": "TypeScript core implementation",
+      "metrics": {
+        "size_bytes": 15612,
+        "loc": 431,
+        "todo_count": 0
+      }
+    },
+    {
+      "schema_version": "2.0",
       "path": "src/physics/scenarios.ts",
       "language": "TypeScript",
       "role": "implementation",
@@ -151,8 +179,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 10872,
-        "loc": 330,
+        "size_bytes": 11564,
+        "loc": 351,
         "todo_count": 0
       }
     },
@@ -165,8 +193,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 3136,
-        "loc": 69,
+        "size_bytes": 4116,
+        "loc": 93,
         "todo_count": 0
       }
     },
@@ -207,8 +235,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 7250,
-        "loc": 218,
+        "size_bytes": 9585,
+        "loc": 279,
         "todo_count": 0
       }
     },
@@ -235,8 +263,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 26266,
-        "loc": 649,
+        "size_bytes": 27939,
+        "loc": 682,
         "todo_count": 0
       }
     },

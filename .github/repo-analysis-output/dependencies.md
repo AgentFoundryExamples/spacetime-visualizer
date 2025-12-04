@@ -8,8 +8,8 @@ Includes classification of external dependencies as stdlib vs third-party.
 
 ## Statistics
 
-- **Total files**: 28
-- **Intra-repo dependencies**: 41
+- **Total files**: 30
+- **Intra-repo dependencies**: 46
 - **External stdlib dependencies**: 0
 - **External third-party dependencies**: 13
 
@@ -35,21 +35,21 @@ Total: 13 unique packages
 
 ## Most Depended Upon Files (Intra-Repo)
 
-- `src/physics/types.ts` (11 dependents)
+- `src/physics/types.ts` (13 dependents)
 - `src/visualization/materials.ts` (5 dependents)
 - `src/content/strings.ts` (4 dependents)
 - `src/visualization/modes/types.ts` (4 dependents)
 - `src/state/simulation.ts` (3 dependents)
-- `src/physics/curvature.ts` (2 dependents)
+- `src/physics/curvature.ts` (3 dependents)
+- `src/physics/orbit.ts` (2 dependents)
 - `src/physics/scenarios.ts` (2 dependents)
 - `src/visualization/renderer.ts` (2 dependents)
 - `src/components/webgl-utils.ts` (1 dependents)
-- `src/hooks/useSimulation.ts` (1 dependents)
 
 ## Files with Most Dependencies (Intra-Repo)
 
+- `src/state/simulation.ts` (5 dependencies)
 - `src/visualization/modes/index.ts` (5 dependencies)
-- `src/state/simulation.ts` (4 dependencies)
 - `src/tests/curvature.spec.ts` (4 dependencies)
 - `src/visualization/modes/mesh.ts` (4 dependencies)
 - `src/visualization/modes/contour.ts` (3 dependencies)
@@ -57,4 +57,4 @@ Total: 13 unique packages
 - `src/visualization/renderer.test.ts` (3 dependencies)
 - `src/hooks/useSimulation.test.ts` (2 dependencies)
 - `src/hooks/useSimulation.ts` (2 dependencies)
-- `src/visualization/modes/modes.test.ts` (2 dependencies)
+- `src/physics/orbit.test.ts` (2 dependencies)

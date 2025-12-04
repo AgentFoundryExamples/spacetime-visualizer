@@ -190,6 +190,14 @@
             },
             {
               "type": "file",
+              "name": "orbit.test.ts"
+            },
+            {
+              "type": "file",
+              "name": "orbit.ts"
+            },
+            {
+              "type": "file",
               "name": "scenarios.ts"
             },
             {

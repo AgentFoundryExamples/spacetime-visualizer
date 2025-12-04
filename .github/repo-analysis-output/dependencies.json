@@ -106,6 +106,26 @@
       }
     },
     {
+      "id": "src/physics/orbit.test.ts",
+      "path": "src/physics/orbit.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/physics/orbit.ts",
+      "path": "src/physics/orbit.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
       "id": "src/physics/scenarios.ts",
       "path": "src/physics/scenarios.ts",
       "type": "file",
@@ -329,6 +349,22 @@
       "target": "src/physics/types.ts"
     },
     {
+      "source": "src/physics/orbit.test.ts",
+      "target": "src/physics/orbit.ts"
+    },
+    {
+      "source": "src/physics/orbit.test.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
+      "source": "src/physics/orbit.ts",
+      "target": "src/physics/curvature.ts"
+    },
+    {
+      "source": "src/physics/orbit.ts",
+      "target": "src/physics/types.ts"
+    },
+    {
       "source": "src/physics/scenarios.ts",
       "target": "src/physics/types.ts"
     },
@@ -347,6 +383,10 @@
     {
       "source": "src/state/simulation.ts",
       "target": "src/physics/scenarios.ts"
+    },
+    {
+      "source": "src/state/simulation.ts",
+      "target": "src/physics/orbit.ts"
     },
     {
       "source": "src/state/simulation.ts",

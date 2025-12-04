@@ -4,7 +4,7 @@ Heuristic summaries of source files based on filenames, extensions, and paths.
 
 Schema Version: 2.0
 
-Total files: 28
+Total files: 30
 
 ## eslint.config.js
 **Language:** JavaScript  
@@ -56,8 +56,8 @@ Total files: 28
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 9.28 KB  
-**LOC:** 217  
+**Size:** 9.52 KB  
+**LOC:** 223  
 **TODOs/FIXMEs:** 0  
 
 ## src/hooks/index.ts
@@ -83,8 +83,8 @@ Total files: 28
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 10.28 KB  
-**LOC:** 292  
+**Size:** 11.39 KB  
+**LOC:** 327  
 **TODOs/FIXMEs:** 0  
 
 ## src/physics/curvature.ts
@@ -96,13 +96,31 @@ Total files: 28
 **LOC:** 352  
 **TODOs/FIXMEs:** 0  
 
+## src/physics/orbit.test.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 14.66 KB  
+**LOC:** 356  
+**TODOs/FIXMEs:** 0  
+
+## src/physics/orbit.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 15.25 KB  
+**LOC:** 431  
+**TODOs/FIXMEs:** 0  
+
 ## src/physics/scenarios.ts
 **Language:** TypeScript  
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 10.62 KB  
-**LOC:** 330  
+**Size:** 11.29 KB  
+**LOC:** 351  
 **TODOs/FIXMEs:** 0  
 
 ## src/physics/types.ts
@@ -110,8 +128,8 @@ Total files: 28
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 3.06 KB  
-**LOC:** 69  
+**Size:** 4.02 KB  
+**LOC:** 93  
 **TODOs/FIXMEs:** 0  
 
 ## src/state/config.test.ts
@@ -137,8 +155,8 @@ Total files: 28
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 7.08 KB  
-**LOC:** 218  
+**Size:** 9.36 KB  
+**LOC:** 279  
 **TODOs/FIXMEs:** 0  
 
 ## src/test/setup.ts
@@ -155,8 +173,8 @@ Total files: 28
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 25.65 KB  
-**LOC:** 649  
+**Size:** 27.28 KB  
+**LOC:** 682  
 **TODOs/FIXMEs:** 0  
 
 ## src/visualization/index.ts
