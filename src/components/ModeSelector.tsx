@@ -21,7 +21,7 @@ import '../styles/panels.css';
 /**
  * Available visualization modes in display order.
  */
-const MODES: VisualizationMode[] = ['mesh', 'contour', 'fieldLines'];
+const MODES: VisualizationMode[] = ['mesh', 'contour', 'fieldLines', 'gravitationalWaves'];
 
 /**
  * Props for ModeSelector component.
