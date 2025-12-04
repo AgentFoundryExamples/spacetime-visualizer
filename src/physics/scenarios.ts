@@ -483,7 +483,7 @@ export function generateExtremeMassRatioScenario(
     bounds: DEFAULT_BOUNDS,
     timeStep: DEFAULT_TIME_STEP,
     masses,
-    orbitsEnabled: false,
+    orbitsEnabled: true,
   };
 }
 
@@ -642,7 +642,7 @@ export function generateBlackHoleInspiralScenario(
     bounds: DEFAULT_BOUNDS,
     timeStep: DEFAULT_TIME_STEP,
     masses,
-    orbitsEnabled: false,
+    orbitsEnabled: true,
   };
 }
 

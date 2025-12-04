@@ -504,10 +504,12 @@ describe('scenarios', () => {
       const config = generateExtremeMassRatioScenario();
       expect(() => validateGridConfig(config)).not.toThrow();
       expect(config.masses.length).toBe(2);
-      // Primary should be much more massive than secondary
-      expect(config.masses[0].mass / config.masses[1].mass).toBeGreaterThan(50);
+      // Primary should be much more massive than secondary (67:1 to 100:1 ratio)
+      expect(config.masses[0].mass / config.masses[1].mass).toBeGreaterThan(66);
       // Secondary should have orbital parameters
       expect(config.masses[1].orbit).toBeDefined();
+      // Orbits should be enabled for animation
+      expect(config.orbitsEnabled).toBe(true);
     });
 
     it('should generate valid hierarchical triple scenario', () => {
@@ -529,6 +531,8 @@ describe('scenarios', () => {
       const ratio = config.masses[0].mass / config.masses[1].mass;
       expect(ratio).toBeGreaterThan(0.5);
       expect(ratio).toBeLessThan(2);
+      // Orbits should be enabled for animation
+      expect(config.orbitsEnabled).toBe(true);
     });
 
     it('should produce deterministic scenarios with same seed', () => {
