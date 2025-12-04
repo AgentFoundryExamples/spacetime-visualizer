@@ -100,7 +100,13 @@ function App() {
         });
         // Clear success message after 3 seconds
         setTimeout(() => {
-          setExportState(getInitialExportState());
+          setExportState((prevState) => {
+            // Only clear the message if another export isn't in progress
+            if (prevState.isExporting) {
+              return prevState;
+            }
+            return getInitialExportState();
+          });
         }, 3000);
       } else {
         setExportState({
@@ -151,7 +157,13 @@ function App() {
         });
         // Clear success message after 3 seconds
         setTimeout(() => {
-          setExportState(getInitialExportState());
+          setExportState((prevState) => {
+            // Only clear the message if another export isn't in progress
+            if (prevState.isExporting) {
+              return prevState;
+            }
+            return getInitialExportState();
+          });
         }, 3000);
       } else {
         setExportState({

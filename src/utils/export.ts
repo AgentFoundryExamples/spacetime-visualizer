@@ -282,12 +282,19 @@ export async function captureVideo(
   }
 
   let progressInterval: ReturnType<typeof setInterval> | null = null;
+  let stream: MediaStream | null = null;
 
   try {
     onProgress?.(0, 'Initializing video recording...');
 
     // Capture stream from canvas
-    const stream = canvas.captureStream(fps);
+    try {
+      stream = canvas.captureStream(fps);
+    } catch (streamError) {
+      const message =
+        streamError instanceof Error ? streamError.message : 'Failed to capture canvas stream';
+      return { success: false, error: `Stream capture failed: ${message}` };
+    }
     const state = createVideoRecordingState();
 
     // Create MediaRecorder with appropriate settings
@@ -321,11 +328,15 @@ export async function captureVideo(
       }
 
       state.mediaRecorder.onstop = () => {
+        // Clean up stream tracks to prevent memory leaks
+        stream?.getTracks().forEach((track) => track.stop());
         const blob = new Blob(state.chunks, { type: mimeType });
         resolve(blob);
       };
 
       state.mediaRecorder.onerror = (event) => {
+        // Clean up stream tracks on error as well
+        stream?.getTracks().forEach((track) => track.stop());
         reject(new Error(`Recording error: ${event.type}`));
       };
     });
@@ -371,6 +382,10 @@ export async function captureVideo(
     // Ensure interval is cleaned up on error
     if (progressInterval) {
       clearInterval(progressInterval);
+    }
+    // Clean up stream tracks on error
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
     }
     const message = error instanceof Error ? error.message : 'Unknown error during video export';
     console.error('Video export failed:', error);
