@@ -29,7 +29,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSimulationStore } from '../state/simulation';
-import type { ScenarioPreset, MassSource } from '../state/simulation';
+import type {
+  ScenarioPreset,
+  MassSource,
+  VisualizationMode,
+  CurvatureGridConfig,
+} from '../state/simulation';
 import { checkResolutionWarning, clampResolution } from '../visualization';
 
 /**
@@ -74,6 +79,12 @@ export interface UseSimulationState {
   gridResolution: number;
   /** Currently selected scenario */
   currentPreset: ScenarioPreset | null;
+  /** Current visualization mode */
+  visualizationMode: VisualizationMode;
+  /** Current configuration */
+  config: CurvatureGridConfig;
+  /** Whether the configuration has been modified from the preset */
+  hasUnsavedChanges: boolean;
 }
 
 /**
@@ -82,6 +93,10 @@ export interface UseSimulationState {
 export interface UseSimulationActions {
   /** Load a preset scenario */
   loadScenario: (preset: ScenarioPreset) => void;
+  /** Load a custom configuration */
+  loadCustomConfig: (config: CurvatureGridConfig) => void;
+  /** Set visualization mode */
+  setVisualizationMode: (mode: VisualizationMode) => void;
   /** Set grid resolution (debounced) */
   setResolution: (resolution: number) => void;
   /** Set mass scale multiplier (debounced) */
@@ -118,6 +133,7 @@ export function useSimulation(
   const [autoRotate, setAutoRotate] = useState(false);
   const [massScale, setMassScaleLocal] = useState(1.0);
   const [localResolution, setLocalResolution] = useState<number | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Refs for debouncing
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -134,7 +150,10 @@ export function useSimulation(
     error,
     currentPreset,
     config,
+    visualizationMode,
     loadScenario: storeLoadScenario,
+    loadCustomConfig: storeLoadCustomConfig,
+    setVisualizationMode: storeSetVisualizationMode,
     setResolution: storeSetResolution,
     updateMass: storeUpdateMass,
     compute: storeCompute,
@@ -199,6 +218,7 @@ export function useSimulation(
     (preset: ScenarioPreset) => {
       setLocalResolution(null);
       setMassScaleLocal(1.0);
+      setHasUnsavedChanges(false);
       // Clear base masses - they'll be captured on first scale change
       baseMassesRef.current.clear();
       storeLoadScenario(preset);
@@ -206,10 +226,29 @@ export function useSimulation(
     [storeLoadScenario]
   );
 
+  const loadCustomConfig = useCallback(
+    (config: CurvatureGridConfig) => {
+      setLocalResolution(config.resolution);
+      setMassScaleLocal(1.0);
+      setHasUnsavedChanges(false);
+      baseMassesRef.current.clear();
+      storeLoadCustomConfig(config);
+    },
+    [storeLoadCustomConfig]
+  );
+
+  const setVisualizationMode = useCallback(
+    (mode: VisualizationMode) => {
+      storeSetVisualizationMode(mode);
+    },
+    [storeSetVisualizationMode]
+  );
+
   const setResolution = useCallback(
     (resolution: number) => {
       const clamped = clampResolution(resolution);
       setLocalResolution(clamped);
+      setHasUnsavedChanges(true);
       storeSetResolution(clamped);
       scheduleCompute();
     },
@@ -223,6 +262,7 @@ export function useSimulation(
         Math.min(MAX_MASS_SCALE, scale)
       );
       setMassScaleLocal(clampedScale);
+      setHasUnsavedChanges(true);
 
       // Update all masses with the new scale using stored base masses
       // This prevents floating-point drift from repeated scale operations
@@ -247,6 +287,7 @@ export function useSimulation(
       // Batch updates
       const existing = pendingMassUpdatesRef.current.get(id) ?? {};
       pendingMassUpdatesRef.current.set(id, { ...existing, ...updates });
+      setHasUnsavedChanges(true);
       scheduleCompute();
     },
     [scheduleCompute]
@@ -273,6 +314,7 @@ export function useSimulation(
     setMassScaleLocal(1.0);
     setIsPaused(false);
     setAutoRotate(false);
+    setHasUnsavedChanges(false);
     pendingMassUpdatesRef.current.clear();
     baseMassesRef.current.clear();
     storeReset();
@@ -287,10 +329,15 @@ export function useSimulation(
     massScale,
     gridResolution: displayResolution,
     currentPreset,
+    visualizationMode,
+    config,
+    hasUnsavedChanges,
   };
 
   const actions: UseSimulationActions = {
     loadScenario,
+    loadCustomConfig,
+    setVisualizationMode,
     setResolution,
     setMassScale,
     updateMass,

@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { SCENARIO_PRESETS, type ScenarioPreset } from '../state/simulation';
+import type { ScenarioPreset } from '../state/simulation';
 import type { UseSimulationState, UseSimulationActions } from '../hooks';
+import { ModeSelector } from './ModeSelector';
+import { ScenarioLibrary } from './ScenarioLibrary';
+import { EducationPanel } from './EducationPanel';
+import { UI_STRINGS } from '../content/strings';
 import '../styles/controls.css';
+import '../styles/panels.css';
 
 /**
  * Props for ControlsPanel component.
@@ -42,10 +47,15 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
     massScale,
     gridResolution,
     currentPreset,
+    visualizationMode,
+    config,
+    hasUnsavedChanges,
   } = state;
 
   const {
     loadScenario,
+    loadCustomConfig,
+    setVisualizationMode,
     setResolution,
     setMassScale,
     togglePause,
@@ -61,7 +71,7 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
       {isComputing && (
         <div className="computing-indicator">
           <div className="computing-spinner" />
-          <span>Computing curvature...</span>
+          <span>{UI_STRINGS.statusComputing}</span>
         </div>
       )}
 
@@ -71,38 +81,41 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
         <div className="control-warning">{resolutionWarning}</div>
       )}
 
+      {/* Visualization Mode Selection */}
+      <section className="control-section">
+        <h3 className="control-section-title">{UI_STRINGS.sectionModes}</h3>
+        <ModeSelector
+          currentMode={visualizationMode}
+          onModeChange={setVisualizationMode}
+          disabled={isComputing}
+        />
+      </section>
+
+      <div className="control-divider" />
+
       {/* Scenario Selection */}
       <section className="control-section">
-        <h3 className="control-section-title">Scenarios</h3>
-        <div className="scenario-selector">
-          {SCENARIO_PRESETS.map((scenario) => (
-            <button
-              key={scenario.id}
-              className={`control-button scenario-button ${
-                currentPreset === scenario.id ? 'scenario-button--selected' : ''
-              }`}
-              onClick={() => loadScenario(scenario.id as ScenarioPreset)}
-              disabled={isComputing}
-            >
-              <span className="scenario-name">{scenario.name}</span>
-              <span className="scenario-description">
-                {scenario.description}
-              </span>
-            </button>
-          ))}
-        </div>
+        <h3 className="control-section-title">{UI_STRINGS.sectionScenarios}</h3>
+        <ScenarioLibrary
+          currentPreset={currentPreset}
+          currentConfig={config}
+          hasUnsavedChanges={hasUnsavedChanges}
+          onSelectPreset={(preset) => loadScenario(preset as ScenarioPreset)}
+          onLoadCustomPreset={loadCustomConfig}
+          disabled={isComputing}
+        />
       </section>
 
       <div className="control-divider" />
 
       {/* Parameters */}
       <section className="control-section">
-        <h3 className="control-section-title">Parameters</h3>
+        <h3 className="control-section-title">{UI_STRINGS.sectionParameters}</h3>
 
         {/* Grid Resolution */}
         <div className="control-group">
           <label className="control-label">
-            <span>Grid Resolution</span>
+            <span>{UI_STRINGS.paramGridResolution}</span>
             <span className="control-value">{gridResolution}</span>
           </label>
           <input
@@ -120,7 +133,7 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
         {/* Mass Scale */}
         <div className="control-group">
           <label className="control-label">
-            <span>Mass Scale</span>
+            <span>{UI_STRINGS.paramMassScale}</span>
             <span className="control-value">{massScale.toFixed(1)}x</span>
           </label>
           <input
@@ -140,10 +153,10 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
 
       {/* Camera Controls */}
       <section className="control-section">
-        <h3 className="control-section-title">Camera</h3>
+        <h3 className="control-section-title">{UI_STRINGS.sectionCamera}</h3>
 
         <div className="toggle-control">
-          <span className="toggle-label">Auto-Rotate</span>
+          <span className="toggle-label">{UI_STRINGS.cameraAutoRotate}</span>
           <button
             className={`toggle-switch ${autoRotate ? 'toggle-switch--active' : ''}`}
             onClick={toggleAutoRotate}
@@ -157,7 +170,7 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
             className="control-button control-button--small"
             onClick={resetCamera}
           >
-            Reset Camera
+            {UI_STRINGS.cameraReset}
           </button>
         </div>
       </section>
@@ -166,22 +179,34 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
 
       {/* Playback Controls */}
       <section className="control-section">
-        <h3 className="control-section-title">Playback</h3>
+        <h3 className="control-section-title">{UI_STRINGS.sectionPlayback}</h3>
         <div className="button-group">
           <button
             className={`control-button ${isPaused ? '' : 'control-button--active'}`}
             onClick={togglePause}
           >
-            {isPaused ? '▶ Play' : '⏸ Pause'}
+            {isPaused ? UI_STRINGS.playbackPlay : UI_STRINGS.playbackPause}
           </button>
           <button
             className="control-button"
             onClick={recompute}
             disabled={isComputing}
           >
-            🔄 Refresh
+            {UI_STRINGS.playbackRefresh}
           </button>
         </div>
+      </section>
+
+      <div className="control-divider" />
+
+      {/* Education Panel */}
+      <section className="control-section">
+        <h3 className="control-section-title">{UI_STRINGS.sectionEducation}</h3>
+        <EducationPanel
+          currentMode={visualizationMode}
+          currentScenario={currentPreset}
+          defaultCollapsed={true}
+        />
       </section>
 
       <div className="control-divider" />
@@ -193,7 +218,7 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
           onClick={reset}
           disabled={isComputing}
         >
-          ↺ Reset All
+          {UI_STRINGS.playbackReset}
         </button>
       </section>
     </div>
