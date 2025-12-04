@@ -45,6 +45,8 @@ import {
   MIN_WAVE_FREQUENCY,
   MAX_WAVE_AMPLITUDE,
   MIN_WAVE_AMPLITUDE,
+  DEFAULT_WAVE_FREQUENCY,
+  DEFAULT_WAVE_AMPLITUDE,
 } from './index';
 import type { CurvatureGridResult } from '../../physics/types';
 
@@ -318,6 +320,12 @@ describe('visualization/modes', () => {
       expect(clampWaveFrequency(-1)).toBe(MIN_WAVE_FREQUENCY);
       expect(clampWaveFrequency(5)).toBe(5);
     });
+
+    it('should return default for NaN and non-finite values', () => {
+      expect(clampWaveFrequency(NaN)).toBe(DEFAULT_WAVE_FREQUENCY);
+      expect(clampWaveFrequency(Infinity)).toBe(DEFAULT_WAVE_FREQUENCY);
+      expect(clampWaveFrequency(-Infinity)).toBe(DEFAULT_WAVE_FREQUENCY);
+    });
   });
 
   describe('clampWaveAmplitude', () => {
@@ -325,6 +333,12 @@ describe('visualization/modes', () => {
       expect(clampWaveAmplitude(100)).toBe(MAX_WAVE_AMPLITUDE);
       expect(clampWaveAmplitude(-1)).toBe(MIN_WAVE_AMPLITUDE);
       expect(clampWaveAmplitude(1.5)).toBe(1.5);
+    });
+
+    it('should return default for NaN and non-finite values', () => {
+      expect(clampWaveAmplitude(NaN)).toBe(DEFAULT_WAVE_AMPLITUDE);
+      expect(clampWaveAmplitude(Infinity)).toBe(DEFAULT_WAVE_AMPLITUDE);
+      expect(clampWaveAmplitude(-Infinity)).toBe(DEFAULT_WAVE_AMPLITUDE);
     });
   });
 

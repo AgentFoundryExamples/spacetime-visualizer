@@ -96,19 +96,27 @@ export const DEFAULT_WAVE_PARAMETERS: WaveParameters = {
 
 /**
  * Clamps wave frequency to safe bounds to prevent aliasing or GPU instability.
+ * Also handles NaN/undefined values by returning the default.
  * @param frequency - Requested frequency
  * @returns Clamped frequency value
  */
 export function clampWaveFrequency(frequency: number): number {
+  if (!Number.isFinite(frequency)) {
+    return DEFAULT_WAVE_FREQUENCY;
+  }
   return Math.min(Math.max(MIN_WAVE_FREQUENCY, frequency), MAX_WAVE_FREQUENCY);
 }
 
 /**
  * Clamps wave amplitude to safe bounds.
+ * Also handles NaN/undefined values by returning the default.
  * @param amplitude - Requested amplitude
  * @returns Clamped amplitude value
  */
 export function clampWaveAmplitude(amplitude: number): number {
+  if (!Number.isFinite(amplitude)) {
+    return DEFAULT_WAVE_AMPLITUDE;
+  }
   return Math.min(Math.max(MIN_WAVE_AMPLITUDE, amplitude), MAX_WAVE_AMPLITUDE);
 }
 
@@ -240,6 +248,12 @@ export class GravitationalWavesModeRenderer implements VisualizationModeRenderer
     const sliceZ = Math.floor(resolution / 2);
     const sliceStart = sliceZ * resolution * resolution;
 
+    // Validate we have enough samples to avoid out-of-bounds access
+    if (samples.length < sliceStart + resolution * resolution) {
+      // Not enough data to render, return empty object
+      return { object: group, resources };
+    }
+
     // Get bounds from samples
     const firstSample = samples[sliceStart];
     const lastSample = samples[sliceStart + resolution * resolution - 1];
@@ -320,6 +334,11 @@ export class GravitationalWavesModeRenderer implements VisualizationModeRenderer
     const { samples, resolution, maxDeviation } = result;
     const sliceZ = Math.floor(resolution / 2);
     const sliceStart = sliceZ * resolution * resolution;
+
+    // Validate we have enough samples to avoid out-of-bounds access
+    if (samples.length < sliceStart + resolution * resolution) {
+      return false; // Not enough data, need full re-render
+    }
 
     const positions = positionAttr.array as Float32Array;
     const normFactor = maxDeviation > 1e-10 ? 1 / maxDeviation : 1;

@@ -197,7 +197,12 @@ export function ControlsPanel({
       {/* Wave Settings Controls (only shown in gravitational waves mode) */}
       {isWaveMode && (
         <>
-          <section className="control-section" aria-labelledby="waves-heading">
+          <section 
+            className="control-section" 
+            aria-labelledby="waves-heading"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             <h3 id="waves-heading" className="control-section-title">{UI_STRINGS.sectionWaves}</h3>
 
             <div className="toggle-control">
