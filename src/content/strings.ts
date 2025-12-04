@@ -199,6 +199,7 @@ export const UI_STRINGS = {
   sectionCamera: 'Camera',
   sectionPlayback: 'Playback',
   sectionEducation: 'Learn',
+  sectionOrbits: 'Orbital Motion',
 
   // Mode selector
   modeSelectLabel: 'Select visualization mode',
@@ -223,6 +224,13 @@ export const UI_STRINGS = {
   // Parameters
   paramGridResolution: 'Grid Resolution',
   paramMassScale: 'Mass Scale',
+
+  // Orbital motion controls
+  orbitEnable: 'Enable Orbits',
+  orbitResetTime: 'Reset Time',
+  orbitTimeLabel: 'Time',
+  orbitHint:
+    'Enable orbital motion to animate masses along their orbital paths.',
 
   // Camera controls
   cameraAutoRotate: 'Auto-Rotate',

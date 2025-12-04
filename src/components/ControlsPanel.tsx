@@ -50,6 +50,8 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
     visualizationMode,
     config,
     hasUnsavedChanges,
+    orbitsEnabled,
+    simulationTime,
   } = state;
 
   const {
@@ -63,7 +65,12 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
     resetCamera,
     recompute,
     reset,
+    setOrbitsEnabled,
+    resetSimulationTime,
   } = actions;
+
+  // Check if any masses have orbital parameters defined
+  const hasOrbitalMasses = config.masses.some((m) => m.orbit !== undefined);
 
   return (
     <div className="controls-panel">
@@ -147,6 +154,47 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
             disabled={isComputing}
           />
         </div>
+      </section>
+
+      <div className="control-divider" />
+
+      {/* Orbital Motion Controls */}
+      <section className="control-section">
+        <h3 className="control-section-title">{UI_STRINGS.sectionOrbits}</h3>
+
+        <div className="toggle-control">
+          <span className="toggle-label">{UI_STRINGS.orbitEnable}</span>
+          <button
+            className={`toggle-switch ${orbitsEnabled ? 'toggle-switch--active' : ''}`}
+            onClick={() => setOrbitsEnabled(!orbitsEnabled)}
+            aria-pressed={orbitsEnabled}
+            aria-label="Toggle orbital motion"
+            disabled={!hasOrbitalMasses}
+          />
+        </div>
+
+        {orbitsEnabled && (
+          <>
+            <div className="control-group">
+              <label className="control-label">
+                <span>{UI_STRINGS.orbitTimeLabel}</span>
+                <span className="control-value">{simulationTime.toFixed(2)}s</span>
+              </label>
+            </div>
+            <div className="button-group">
+              <button
+                className="control-button control-button--small"
+                onClick={resetSimulationTime}
+              >
+                {UI_STRINGS.orbitResetTime}
+              </button>
+            </div>
+          </>
+        )}
+
+        {!hasOrbitalMasses && (
+          <p className="control-hint">{UI_STRINGS.orbitHint}</p>
+        )}
       </section>
 
       <div className="control-divider" />

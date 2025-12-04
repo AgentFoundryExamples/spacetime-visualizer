@@ -267,6 +267,20 @@
   margin: var(--spacing-sm) 0;
 }
 
+/* Hint text */
+.control-hint {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin: var(--spacing-sm) 0 0 0;
+  font-style: italic;
+}
+
+/* Disabled toggle styles */
+.toggle-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
   .controls-panel {

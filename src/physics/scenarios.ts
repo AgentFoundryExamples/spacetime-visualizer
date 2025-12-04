@@ -180,6 +180,13 @@ export function generateBinaryScenario(seed: number = 42): CurvatureGridConfig {
   const massRatio = 0.5 + random() * 0.5; // 0.5-1.0
 
   const baseMass = 80;
+  const secondaryMass = baseMass * massRatio;
+  const totalMass = baseMass + secondaryMass;
+
+  // Compute semi-major axes for binary orbit around center of mass
+  const a1 = (separation * secondaryMass) / totalMass;
+  const a2 = (separation * baseMass) / totalMass;
+
   const masses: MassSource[] = [
     {
       id: 'mass-1',
@@ -187,13 +194,29 @@ export function generateBinaryScenario(seed: number = 42): CurvatureGridConfig {
       mass: baseMass,
       radius: 0.4,
       color: '#ff6b6b',
+      orbit: {
+        semiMajorAxis: a1,
+        eccentricity: 0,
+        inclination: 0,
+        longitudeOfAscendingNode: 0,
+        argumentOfPeriapsis: 0,
+        initialTrueAnomaly: Math.PI,
+      },
     },
     {
       id: 'mass-2',
       position: [separation / 2, 0, 0],
-      mass: baseMass * massRatio,
+      mass: secondaryMass,
       radius: 0.35,
       color: '#4ecdc4',
+      orbit: {
+        semiMajorAxis: a2,
+        eccentricity: 0,
+        inclination: 0,
+        longitudeOfAscendingNode: 0,
+        argumentOfPeriapsis: 0,
+        initialTrueAnomaly: 0,
+      },
     },
   ];
 
@@ -202,6 +225,7 @@ export function generateBinaryScenario(seed: number = 42): CurvatureGridConfig {
     bounds: DEFAULT_BOUNDS,
     timeStep: DEFAULT_TIME_STEP,
     masses,
+    orbitsEnabled: false,
   };
 }
 

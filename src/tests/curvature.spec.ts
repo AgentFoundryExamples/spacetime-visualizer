@@ -657,6 +657,57 @@ describe('simulation store', () => {
     expect(state.currentPreset).toBeNull();
     expect(state.error).toBeNull();
   });
+
+  it('should toggle orbits enabled', () => {
+    const store = useSimulationStore.getState();
+
+    expect(useSimulationStore.getState().orbitsEnabled).toBe(false);
+
+    store.setOrbitsEnabled(true);
+    expect(useSimulationStore.getState().orbitsEnabled).toBe(true);
+    expect(useSimulationStore.getState().config.orbitsEnabled).toBe(true);
+
+    store.setOrbitsEnabled(false);
+    expect(useSimulationStore.getState().orbitsEnabled).toBe(false);
+  });
+
+  it('should reset simulation time when loading scenario', async () => {
+    const store = useSimulationStore.getState();
+
+    // Advance time
+    store.setOrbitsEnabled(true);
+    store.loadScenario('binary-orbit');
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    // Time should reset when loading scenario
+    expect(useSimulationStore.getState().simulationTime).toBe(0);
+  });
+
+  it('should reset simulation time to zero', async () => {
+    const store = useSimulationStore.getState();
+    store.loadScenario('binary-orbit');
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    store.resetSimulationTime();
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(useSimulationStore.getState().simulationTime).toBe(0);
+  });
+
+  it('should load binary-orbit with orbital parameters', async () => {
+    const store = useSimulationStore.getState();
+    store.loadScenario('binary-orbit');
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const state = useSimulationStore.getState();
+    expect(state.config.masses.length).toBe(2);
+    expect(state.config.masses[0].orbit).toBeDefined();
+    expect(state.config.masses[1].orbit).toBeDefined();
+  });
 });
 
 describe('multi-mass superposition', () => {

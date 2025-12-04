@@ -28,6 +28,25 @@
  */
 
 /**
+ * Orbital parameters for a body in a Keplerian orbit.
+ * Re-exported from orbit.ts for convenience.
+ */
+export interface OrbitalParameters {
+  /** Semi-major axis (orbital size) in simulation units */
+  semiMajorAxis: number;
+  /** Eccentricity (orbital shape, 0 = circular, <1 = ellipse) */
+  eccentricity: number;
+  /** Inclination in radians (tilt from XY plane) */
+  inclination: number;
+  /** Longitude of ascending node in radians (rotation in XY plane) */
+  longitudeOfAscendingNode: number;
+  /** Argument of periapsis in radians (rotation within orbital plane) */
+  argumentOfPeriapsis: number;
+  /** True anomaly at t=0 in radians (initial position on orbit) */
+  initialTrueAnomaly: number;
+}
+
+/**
  * Represents a point-mass source that curves spacetime.
  * Used for computing gravitational potential and tidal forces.
  */
@@ -42,6 +61,10 @@ export interface MassSource {
   radius?: number;
   /** Optional color for visualization (CSS color string) */
   color?: string;
+  /** Optional orbital parameters for dynamic orbit simulation */
+  orbit?: OrbitalParameters;
+  /** Optional ID of the central mass this body orbits around */
+  orbitsCentralMassId?: string;
 }
 
 /**
@@ -69,6 +92,8 @@ export interface CurvatureGridConfig {
   timeStep: number;
   /** Array of mass sources to compute curvature from */
   masses: MassSource[];
+  /** Whether dynamic orbital motion is enabled */
+  orbitsEnabled?: boolean;
 }
 
 /**

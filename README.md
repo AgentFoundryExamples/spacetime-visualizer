@@ -72,6 +72,18 @@ Select from preset scenarios to explore different gravitational configurations:
 | Reset | "Reset Camera" button | "Reset Camera" button |
 | Auto-Rotate | Toggle switch | Toggle switch |
 
+### Orbital Motion Controls
+
+Enable dynamic orbital motion for scenarios with defined orbits (e.g., Binary Orbit):
+
+| Control | Function |
+|---------|----------|
+| Enable Orbits | Toggle orbital motion on/off |
+| Reset Time | Reset simulation time to t=0 |
+| Time | Displays current simulation time |
+
+**Note:** Orbital motion is only available for scenarios with masses that have orbital parameters defined. The Binary Orbit scenario supports this feature out of the box.
+
 ### Playback Controls
 
 | Button | Function |
