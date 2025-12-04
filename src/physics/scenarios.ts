@@ -37,7 +37,11 @@ export type ScenarioPreset =
   | 'binary-orbit'
   | 'gravitational-wave'
   | 'triple-system'
-  | 'cluster';
+  | 'cluster'
+  | 'gravitational-lensing'
+  | 'extreme-mass-ratio'
+  | 'hierarchical-triple'
+  | 'black-hole-inspiral';
 
 /**
  * Description of a scenario preset.
@@ -87,6 +91,34 @@ export const SCENARIO_PRESETS: ScenarioDescription[] = [
     description:
       'A cluster of multiple masses showing aggregate curvature effects.',
     massCount: 5,
+  },
+  {
+    id: 'gravitational-lensing',
+    name: 'Gravitational Lensing',
+    description:
+      'A massive central object with test particles, demonstrating light deflection curvature.',
+    massCount: 1,
+  },
+  {
+    id: 'extreme-mass-ratio',
+    name: 'Extreme Mass Ratio',
+    description:
+      'A binary with vastly different masses, simulating star-planet or EMRI systems.',
+    massCount: 2,
+  },
+  {
+    id: 'hierarchical-triple',
+    name: 'Hierarchical Triple',
+    description:
+      'A close binary orbiting a more massive third body, demonstrating multi-scale dynamics.',
+    massCount: 3,
+  },
+  {
+    id: 'black-hole-inspiral',
+    name: 'Black Hole Inspiral',
+    description:
+      'Two equal masses in close orbit, simulating pre-merger gravitational wave sources.',
+    massCount: 2,
   },
 ];
 
@@ -363,6 +395,252 @@ export function generateGravitationalWaveScenario(
 }
 
 /**
+ * Generates a gravitational lensing scenario configuration.
+ * Places a single massive object optimized for demonstrating curvature depth.
+ *
+ * @param seed - Random seed for deterministic generation
+ * @returns CurvatureGridConfig for a gravitational lensing scenario
+ */
+export function generateGravitationalLensingScenario(
+  seed: number = 42
+): CurvatureGridConfig {
+  const random = createSeededRandom(seed);
+
+  // Large central mass with slight variation
+  const massVariation = 0.95 + random() * 0.1;
+  const baseMass = 200 * massVariation;
+
+  const masses: MassSource[] = [
+    {
+      id: 'lens-mass',
+      position: [0, 0, 0],
+      mass: baseMass,
+      radius: 0.8,
+      color: '#9b59b6', // Purple for the massive lens
+    },
+  ];
+
+  return {
+    resolution: DEFAULT_RESOLUTION,
+    bounds: DEFAULT_BOUNDS,
+    timeStep: DEFAULT_TIME_STEP,
+    masses,
+  };
+}
+
+/**
+ * Generates an extreme mass ratio scenario configuration.
+ * Places two masses with vastly different scales (e.g., 100:1 ratio).
+ *
+ * @param seed - Random seed for deterministic generation
+ * @returns CurvatureGridConfig for an extreme mass ratio scenario
+ */
+export function generateExtremeMassRatioScenario(
+  seed: number = 42
+): CurvatureGridConfig {
+  const random = createSeededRandom(seed);
+
+  // Large central mass (like a star or massive black hole)
+  const primaryMass = 150;
+  // Small orbiting mass (like a planet or stellar remnant) - ratio ~100:1
+  const secondaryMass = primaryMass * (0.01 + random() * 0.005);
+
+  // Orbital radius for the secondary
+  const orbitRadius = 2.5 + random() * 0.5;
+
+  const masses: MassSource[] = [
+    {
+      id: 'primary-mass',
+      position: [0, 0, 0],
+      mass: primaryMass,
+      radius: 0.6,
+      color: '#f39c12', // Orange for the primary
+    },
+    {
+      id: 'secondary-mass',
+      position: [orbitRadius, 0, 0],
+      mass: secondaryMass,
+      radius: 0.15,
+      color: '#3498db', // Blue for the secondary
+      orbit: {
+        semiMajorAxis: orbitRadius,
+        eccentricity: 0.1 + random() * 0.1, // Slightly eccentric orbit
+        inclination: random() * 0.2 - 0.1, // Small inclination
+        longitudeOfAscendingNode: 0,
+        argumentOfPeriapsis: random() * Math.PI * 2,
+        initialTrueAnomaly: random() * Math.PI * 2,
+      },
+    },
+  ];
+
+  return {
+    resolution: DEFAULT_RESOLUTION,
+    bounds: DEFAULT_BOUNDS,
+    timeStep: DEFAULT_TIME_STEP,
+    masses,
+    orbitsEnabled: false,
+  };
+}
+
+/**
+ * Generates a hierarchical triple scenario configuration.
+ * A close binary orbiting around a more massive third body.
+ *
+ * @param seed - Random seed for deterministic generation
+ * @returns CurvatureGridConfig for a hierarchical triple scenario
+ */
+export function generateHierarchicalTripleScenario(
+  seed: number = 42
+): CurvatureGridConfig {
+  const random = createSeededRandom(seed);
+
+  // Outer massive body
+  const tertiaryMass = 120;
+  // Inner binary masses (roughly equal)
+  const primaryMass = 40 * (0.9 + random() * 0.2);
+  const secondaryMass = 40 * (0.9 + random() * 0.2);
+
+  // Outer orbit radius (binary center of mass around tertiary)
+  const outerRadius = 3.0;
+  // Inner binary separation
+  const innerSeparation = 0.8 + random() * 0.3;
+
+  // Inner binary positions relative to their center of mass
+  const totalInnerMass = primaryMass + secondaryMass;
+  const innerOffset1 = (innerSeparation * secondaryMass) / totalInnerMass;
+  const innerOffset2 = (innerSeparation * primaryMass) / totalInnerMass;
+
+  // Initial angle for the binary center of mass around tertiary
+  const outerAngle = random() * Math.PI * 2;
+
+  // Binary center of mass position
+  const binaryCMx = outerRadius * Math.cos(outerAngle);
+  const binaryCMy = outerRadius * Math.sin(outerAngle);
+
+  // Inner binary angle
+  const innerAngle = random() * Math.PI * 2;
+
+  const masses: MassSource[] = [
+    {
+      id: 'tertiary-mass',
+      position: [0, 0, 0],
+      mass: tertiaryMass,
+      radius: 0.5,
+      color: '#e74c3c', // Red for the massive tertiary
+    },
+    {
+      id: 'primary-mass',
+      position: [
+        binaryCMx + innerOffset1 * Math.cos(innerAngle),
+        binaryCMy + innerOffset1 * Math.sin(innerAngle),
+        0,
+      ],
+      mass: primaryMass,
+      radius: 0.35,
+      color: '#2ecc71', // Green for primary
+    },
+    {
+      id: 'secondary-mass',
+      position: [
+        binaryCMx - innerOffset2 * Math.cos(innerAngle),
+        binaryCMy - innerOffset2 * Math.sin(innerAngle),
+        0,
+      ],
+      mass: secondaryMass,
+      radius: 0.35,
+      color: '#3498db', // Blue for secondary
+    },
+  ];
+
+  return {
+    resolution: DEFAULT_RESOLUTION,
+    bounds: DEFAULT_BOUNDS,
+    timeStep: DEFAULT_TIME_STEP,
+    masses,
+  };
+}
+
+/**
+ * Generates a black hole inspiral scenario configuration.
+ * Two equal masses in close orbit, simulating pre-merger dynamics.
+ *
+ * @param seed - Random seed for deterministic generation
+ * @returns CurvatureGridConfig for a black hole inspiral scenario
+ */
+export function generateBlackHoleInspiralScenario(
+  seed: number = 42
+): CurvatureGridConfig {
+  const random = createSeededRandom(seed);
+
+  // Two roughly equal masses (like merging black holes)
+  const baseMass = 80;
+  const massRatio = 0.9 + random() * 0.2; // Close to equal
+
+  const mass1 = baseMass;
+  const mass2 = baseMass * massRatio;
+  const totalMass = mass1 + mass2;
+
+  // Close separation for inspiral phase
+  const separation = 1.2 + random() * 0.3;
+
+  // Compute orbital parameters for center of mass frame
+  const a1 = (separation * mass2) / totalMass;
+  const a2 = (separation * mass1) / totalMass;
+
+  // Initial phase angle
+  const initialPhase = random() * Math.PI * 2;
+
+  const masses: MassSource[] = [
+    {
+      id: 'bh-1',
+      position: [
+        (-separation / 2) * Math.cos(initialPhase),
+        (-separation / 2) * Math.sin(initialPhase),
+        0,
+      ],
+      mass: mass1,
+      radius: 0.4,
+      color: '#2c3e50', // Dark for black hole 1
+      orbit: {
+        semiMajorAxis: a1,
+        eccentricity: 0,
+        inclination: 0,
+        longitudeOfAscendingNode: 0,
+        argumentOfPeriapsis: 0,
+        initialTrueAnomaly: Math.PI + initialPhase,
+      },
+    },
+    {
+      id: 'bh-2',
+      position: [
+        (separation / 2) * Math.cos(initialPhase),
+        (separation / 2) * Math.sin(initialPhase),
+        0,
+      ],
+      mass: mass2,
+      radius: 0.4 * Math.cbrt(massRatio), // Proportional radius
+      color: '#34495e', // Slightly lighter dark for black hole 2
+      orbit: {
+        semiMajorAxis: a2,
+        eccentricity: 0,
+        inclination: 0,
+        longitudeOfAscendingNode: 0,
+        argumentOfPeriapsis: 0,
+        initialTrueAnomaly: initialPhase,
+      },
+    },
+  ];
+
+  return {
+    resolution: DEFAULT_RESOLUTION,
+    bounds: DEFAULT_BOUNDS,
+    timeStep: DEFAULT_TIME_STEP,
+    masses,
+    orbitsEnabled: false,
+  };
+}
+
+/**
  * Gets a scenario configuration by preset name.
  *
  * @param preset - The scenario preset identifier
@@ -384,6 +662,14 @@ export function getScenarioConfig(
       return generateTripleScenario(seed);
     case 'cluster':
       return generateClusterScenario(seed);
+    case 'gravitational-lensing':
+      return generateGravitationalLensingScenario(seed);
+    case 'extreme-mass-ratio':
+      return generateExtremeMassRatioScenario(seed);
+    case 'hierarchical-triple':
+      return generateHierarchicalTripleScenario(seed);
+    case 'black-hole-inspiral':
+      return generateBlackHoleInspiralScenario(seed);
     default: {
       // Exhaustive check
       const _exhaustive: never = preset;

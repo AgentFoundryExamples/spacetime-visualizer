@@ -186,6 +186,66 @@ Multiple masses clustered together approximate extended mass distributions.
 
 Galaxy clusters exhibit similar aggregate gravitational behavior.`,
   },
+  'gravitational-lensing': {
+    name: 'Gravitational Lensing',
+    description:
+      'A massive central object demonstrating deep curvature for light deflection.',
+    educationalText: `## Gravitational Lensing Scenario
+
+A very massive object creates extreme spacetime curvature.
+
+**Physics highlights:**
+- Light bends as it passes through curved spacetime
+- The deflection angle depends on the impact parameter
+- This effect is used to detect dark matter and distant galaxies
+
+Einstein's prediction of light bending was confirmed during the 1919 solar eclipse.`,
+  },
+  'extreme-mass-ratio': {
+    name: 'Extreme Mass Ratio',
+    description:
+      'A binary with vastly different masses, simulating star-planet or EMRI systems.',
+    educationalText: `## Extreme Mass Ratio Scenario
+
+A massive primary with a much smaller orbiting companion (~100:1 mass ratio).
+
+**Physics highlights:**
+- The smaller body barely affects the primary's position
+- EMRIs (Extreme Mass Ratio Inspirals) are key LISA gravitational wave sources
+- Demonstrates how planets orbit stars with minimal stellar motion
+
+This configuration is common in planetary systems and galactic nuclei.`,
+  },
+  'hierarchical-triple': {
+    name: 'Hierarchical Triple',
+    description:
+      'A close binary orbiting a more massive third body, demonstrating multi-scale dynamics.',
+    educationalText: `## Hierarchical Triple Scenario
+
+A stable configuration with two orbital timescales.
+
+**Physics highlights:**
+- Inner binary completes many orbits per outer orbit
+- Kozai-Lidov oscillations can exchange eccentricity and inclination
+- Common in stellar systems like Alpha Centauri
+
+Hierarchical systems are more stable than arbitrary three-body configurations.`,
+  },
+  'black-hole-inspiral': {
+    name: 'Black Hole Inspiral',
+    description:
+      'Two equal masses in close orbit, simulating pre-merger gravitational wave sources.',
+    educationalText: `## Black Hole Inspiral Scenario
+
+Two compact objects in tight orbit, slowly spiraling inward.
+
+**Physics highlights:**
+- Energy is radiated away as gravitational waves
+- Orbital decay follows Peters-Mathews formalism
+- LIGO detected such inspirals starting in 2015
+
+The final merger produces the most powerful events in the universe.`,
+  },
 };
 
 /**

@@ -46,6 +46,10 @@ import {
   generateBinaryScenario,
   generateTripleScenario,
   generateClusterScenario,
+  generateGravitationalLensingScenario,
+  generateExtremeMassRatioScenario,
+  generateHierarchicalTripleScenario,
+  generateBlackHoleInspiralScenario,
   getScenarioConfig,
   createCustomScenario,
 } from '../physics/scenarios';
@@ -489,6 +493,44 @@ describe('scenarios', () => {
       expect(config.masses.length).toBe(5);
     });
 
+    it('should generate valid gravitational lensing scenario', () => {
+      const config = generateGravitationalLensingScenario();
+      expect(() => validateGridConfig(config)).not.toThrow();
+      expect(config.masses.length).toBe(1);
+      expect(config.masses[0].mass).toBeGreaterThan(100); // Should be a massive lens
+    });
+
+    it('should generate valid extreme mass ratio scenario', () => {
+      const config = generateExtremeMassRatioScenario();
+      expect(() => validateGridConfig(config)).not.toThrow();
+      expect(config.masses.length).toBe(2);
+      // Primary should be much more massive than secondary
+      expect(config.masses[0].mass / config.masses[1].mass).toBeGreaterThan(50);
+      // Secondary should have orbital parameters
+      expect(config.masses[1].orbit).toBeDefined();
+    });
+
+    it('should generate valid hierarchical triple scenario', () => {
+      const config = generateHierarchicalTripleScenario();
+      expect(() => validateGridConfig(config)).not.toThrow();
+      expect(config.masses.length).toBe(3);
+      // Tertiary should be the most massive
+      expect(config.masses[0].mass).toBeGreaterThan(config.masses[1].mass);
+    });
+
+    it('should generate valid black hole inspiral scenario', () => {
+      const config = generateBlackHoleInspiralScenario();
+      expect(() => validateGridConfig(config)).not.toThrow();
+      expect(config.masses.length).toBe(2);
+      // Both masses should have orbital parameters
+      expect(config.masses[0].orbit).toBeDefined();
+      expect(config.masses[1].orbit).toBeDefined();
+      // Masses should be roughly equal (within factor of 2)
+      const ratio = config.masses[0].mass / config.masses[1].mass;
+      expect(ratio).toBeGreaterThan(0.5);
+      expect(ratio).toBeLessThan(2);
+    });
+
     it('should produce deterministic scenarios with same seed', () => {
       const config1 = generateBinaryScenario(42);
       const config2 = generateBinaryScenario(42);
@@ -506,6 +548,24 @@ describe('scenarios', () => {
       // Masses should differ due to random variation
       expect(config1.masses[1].mass).not.toBe(config2.masses[1].mass);
     });
+
+    it('should produce deterministic new scenarios with same seed', () => {
+      const config1 = generateGravitationalLensingScenario(42);
+      const config2 = generateGravitationalLensingScenario(42);
+      expect(config1.masses[0].mass).toBe(config2.masses[0].mass);
+
+      const config3 = generateExtremeMassRatioScenario(42);
+      const config4 = generateExtremeMassRatioScenario(42);
+      expect(config3.masses).toEqual(config4.masses);
+
+      const config5 = generateHierarchicalTripleScenario(42);
+      const config6 = generateHierarchicalTripleScenario(42);
+      expect(config5.masses).toEqual(config6.masses);
+
+      const config7 = generateBlackHoleInspiralScenario(42);
+      const config8 = generateBlackHoleInspiralScenario(42);
+      expect(config7.masses).toEqual(config8.masses);
+    });
   });
 
   describe('getScenarioConfig', () => {
@@ -514,6 +574,10 @@ describe('scenarios', () => {
       expect(getScenarioConfig('binary-orbit').masses.length).toBe(2);
       expect(getScenarioConfig('triple-system').masses.length).toBe(3);
       expect(getScenarioConfig('cluster').masses.length).toBe(5);
+      expect(getScenarioConfig('gravitational-lensing').masses.length).toBe(1);
+      expect(getScenarioConfig('extreme-mass-ratio').masses.length).toBe(2);
+      expect(getScenarioConfig('hierarchical-triple').masses.length).toBe(3);
+      expect(getScenarioConfig('black-hole-inspiral').masses.length).toBe(2);
     });
 
     it('should pass seed to generator', () => {

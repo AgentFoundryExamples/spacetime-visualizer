@@ -52,6 +52,10 @@ Select from preset scenarios to explore different gravitational configurations:
 | Gravitational Wave | Quadrupole pattern simulating wave propagation |
 | Triple System | Three-body system with complex superposition |
 | Mass Cluster | Multiple masses showing aggregate curvature |
+| Gravitational Lensing | Massive object demonstrating deep curvature (v0.2) |
+| Extreme Mass Ratio | Binary with ~100:1 mass ratio (v0.2) |
+| Hierarchical Triple | Inner binary orbiting a massive third body (v0.2) |
+| Black Hole Inspiral | Two equal masses in tight pre-merger orbit (v0.2) |
 
 **Custom Presets:** You can save your current configuration as a custom preset and load it later. Custom presets are stored in browser local storage.
 
