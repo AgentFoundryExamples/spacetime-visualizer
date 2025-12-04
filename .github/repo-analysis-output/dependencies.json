@@ -199,6 +199,26 @@
       }
     },
     {
+      "id": "src/utils/export.test.ts",
+      "path": "src/utils/export.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/utils/export.ts",
+      "path": "src/utils/export.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": []
+      }
+    },
+    {
       "id": "src/visualization/index.ts",
       "path": "src/visualization/index.ts",
       "type": "file",
@@ -458,6 +478,10 @@
     {
       "source": "src/tests/curvature.spec.ts",
       "target": "src/state/simulation.ts"
+    },
+    {
+      "source": "src/utils/export.test.ts",
+      "target": "src/utils/export.ts"
     },
     {
       "source": "src/visualization/modes/contour.ts",

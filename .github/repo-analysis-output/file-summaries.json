@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "total_files": 35,
+  "total_files": 37,
   "files": [
     {
       "schema_version": "2.0",
@@ -81,8 +81,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 12014,
-        "loc": 271,
+        "size_bytes": 12482,
+        "loc": 283,
         "todo_count": 0
       }
     },
@@ -265,6 +265,34 @@
       "metrics": {
         "size_bytes": 31211,
         "loc": 735,
+        "todo_count": 0
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "path": "src/utils/export.test.ts",
+      "language": "TypeScript",
+      "role": "implementation",
+      "role_justification": "general implementation file (default classification)",
+      "summary": "TypeScript core implementation",
+      "summary_text": "TypeScript core implementation",
+      "metrics": {
+        "size_bytes": 9514,
+        "loc": 217,
+        "todo_count": 0
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "path": "src/utils/export.ts",
+      "language": "TypeScript",
+      "role": "implementation",
+      "role_justification": "general implementation file (default classification)",
+      "summary": "TypeScript core implementation",
+      "summary_text": "TypeScript core implementation",
+      "metrics": {
+        "size_bytes": 12736,
+        "loc": 350,
         "todo_count": 0
       }
     },
