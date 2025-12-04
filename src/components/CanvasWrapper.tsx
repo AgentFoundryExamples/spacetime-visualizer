@@ -41,6 +41,8 @@ export interface CanvasWrapperProps {
   isPaused?: boolean;
   /** Callback to set the reset camera function */
   onResetCameraRef?: (resetFn: () => void) => void;
+  /** Callback to provide canvas reference for exports */
+  onCanvasRef?: (canvas: HTMLCanvasElement | null) => void;
 }
 
 /**
@@ -248,6 +250,27 @@ function ContextLossHandler({ onContextLost }: { onContextLost: () => void }) {
 }
 
 /**
+ * Canvas reference provider component.
+ * Exposes the Three.js canvas element to parent components.
+ */
+function CanvasRefProvider({
+  onCanvasRef,
+}: {
+  onCanvasRef?: (canvas: HTMLCanvasElement | null) => void;
+}) {
+  const { gl } = useThree();
+
+  useEffect(() => {
+    onCanvasRef?.(gl.domElement);
+    return () => {
+      onCanvasRef?.(null);
+    };
+  }, [gl, onCanvasRef]);
+
+  return null;
+}
+
+/**
  * Maximum number of context loss recovery attempts before giving up.
  */
 const MAX_CONTEXT_RESTORE_ATTEMPTS = 3;
@@ -265,6 +288,7 @@ export function CanvasWrapper({
   autoRotate = false,
   isPaused = false,
   onResetCameraRef,
+  onCanvasRef,
 }: CanvasWrapperProps) {
   const [contextLost, setContextLost] = useState(false);
   const [key, setKey] = useState(0);
@@ -322,7 +346,7 @@ export function CanvasWrapper({
       gl={{
         antialias: true,
         powerPreference: 'high-performance',
-        preserveDrawingBuffer: false,
+        preserveDrawingBuffer: true,
       }}
       camera={{ position: DEFAULT_CAMERA_POSITION, fov: 60 }}
       onCreated={({ gl }) => {
@@ -330,6 +354,7 @@ export function CanvasWrapper({
       }}
     >
       <ContextLossHandler onContextLost={handleContextLost} />
+      <CanvasRefProvider onCanvasRef={onCanvasRef} />
 
       {/* Lighting */}
       <ambientLight intensity={0.4} />

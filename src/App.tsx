@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useCallback, useRef, useEffect } from 'react';
+import { useMemo, useCallback, useRef, useEffect, useState } from 'react';
 import {
   Sidebar,
   Footer,
@@ -23,7 +23,17 @@ import {
 } from './components';
 import { useSimulation } from './hooks';
 import { useSimulationStore } from './state/simulation';
+import {
+  capturePng,
+  captureVideo,
+  getInitialExportState,
+  ExportQueueManager,
+  type ExportState,
+} from './utils/export';
 import './styles/layout.css';
+
+// Singleton export queue manager
+const exportQueue = new ExportQueueManager();
 
 /**
  * Main application component
@@ -36,12 +46,135 @@ function App() {
   // Ref for camera reset function
   const resetCameraRef = useRef<(() => void) | null>(null);
 
+  // Ref for canvas element (for exports)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Export state
+  const [exportState, setExportState] = useState<ExportState>(
+    getInitialExportState()
+  );
+
   const handleResetCameraRef = useCallback((resetFn: () => void) => {
     resetCameraRef.current = resetFn;
   }, []);
 
   const handleResetCamera = useCallback(() => {
     resetCameraRef.current?.();
+  }, []);
+
+  const handleCanvasRef = useCallback((canvas: HTMLCanvasElement | null) => {
+    canvasRef.current = canvas;
+  }, []);
+
+  // Export handlers
+  const handleExportPng = useCallback(() => {
+    if (!canvasRef.current) {
+      console.error('Canvas not available for export');
+      return;
+    }
+
+    exportQueue.enqueue(async () => {
+      setExportState({
+        isExporting: true,
+        progress: 0,
+        message: 'Starting export...',
+        format: 'png',
+        error: null,
+      });
+
+      const result = await capturePng(canvasRef.current!, {}, (progress, message) => {
+        setExportState((prev) => ({
+          ...prev,
+          progress,
+          message,
+        }));
+      });
+
+      if (result.success) {
+        setExportState({
+          isExporting: false,
+          progress: 100,
+          message: `Saved: ${result.filename}`,
+          format: 'png',
+          error: null,
+        });
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setExportState((prevState) => {
+            // Only clear the message if another export isn't in progress
+            if (prevState.isExporting) {
+              return prevState;
+            }
+            return getInitialExportState();
+          });
+        }, 3000);
+      } else {
+        setExportState({
+          isExporting: false,
+          progress: 0,
+          message: '',
+          format: 'png',
+          error: result.error ?? 'Unknown error',
+        });
+      }
+    });
+  }, []);
+
+  const handleExportVideo = useCallback((duration: number) => {
+    if (!canvasRef.current) {
+      console.error('Canvas not available for export');
+      return;
+    }
+
+    exportQueue.enqueue(async () => {
+      setExportState({
+        isExporting: true,
+        progress: 0,
+        message: 'Initializing recording...',
+        format: 'webm',
+        error: null,
+      });
+
+      const result = await captureVideo(
+        canvasRef.current!,
+        { duration },
+        (progress, message) => {
+          setExportState((prev) => ({
+            ...prev,
+            progress,
+            message,
+          }));
+        }
+      );
+
+      if (result.success) {
+        setExportState({
+          isExporting: false,
+          progress: 100,
+          message: `Saved: ${result.filename}`,
+          format: 'webm',
+          error: null,
+        });
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setExportState((prevState) => {
+            // Only clear the message if another export isn't in progress
+            if (prevState.isExporting) {
+              return prevState;
+            }
+            return getInitialExportState();
+          });
+        }, 3000);
+      } else {
+        setExportState({
+          isExporting: false,
+          progress: 0,
+          message: '',
+          format: 'webm',
+          error: result.error ?? 'Unknown error',
+        });
+      }
+    });
   }, []);
 
   // Use simulation hook
@@ -62,13 +195,20 @@ function App() {
         </div>
       )}
       <main className="app-main">
-        <Sidebar state={state} actions={actions} />
+        <Sidebar
+          state={state}
+          actions={actions}
+          exportState={exportState}
+          onExportPng={handleExportPng}
+          onExportVideo={handleExportVideo}
+        />
         <div className="canvas-container">
           {webglSupported && (
             <CanvasWrapper
               autoRotate={state.autoRotate}
               isPaused={state.isPaused}
               onResetCameraRef={handleResetCameraRef}
+              onCanvasRef={handleCanvasRef}
             />
           )}
         </div>

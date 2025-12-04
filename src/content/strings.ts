@@ -318,6 +318,20 @@ export const UI_STRINGS = {
   warningWebGLUnsupported:
     'WebGL2 is not supported in your browser. The visualization may not work correctly.',
   errorComputationFailed: 'Failed to compute curvature',
+
+  // Export controls
+  sectionExport: 'Export',
+  exportScreenshot: '📷 Screenshot (PNG)',
+  exportVideo: '🎬 Record Video',
+  exportDuration: 'Duration',
+  exportDurationUnit: 's',
+  exportProgress: 'Exporting...',
+  exportSuccess: 'Export complete!',
+  exportError: 'Export failed',
+  exportVideoUnsupported:
+    'Video recording is not supported in this browser. Try Chrome or Firefox.',
+  exportRecording: 'Recording...',
+  exportProcessing: 'Processing...',
 } as const;
 
 /**

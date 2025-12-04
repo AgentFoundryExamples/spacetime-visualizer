@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
 import type { ScenarioPreset } from '../state/simulation';
 import type { UseSimulationState, UseSimulationActions } from '../hooks';
 import { ModeSelector } from './ModeSelector';
 import { ScenarioLibrary } from './ScenarioLibrary';
 import { EducationPanel } from './EducationPanel';
 import { UI_STRINGS } from '../content/strings';
+import type { ExportState } from '../utils/export';
+import {
+  isVideoExportSupported,
+  DEFAULT_VIDEO_DURATION,
+  MAX_VIDEO_DURATION,
+} from '../utils/export';
 import '../styles/controls.css';
 import '../styles/panels.css';
 
@@ -31,13 +38,27 @@ export interface ControlsPanelProps {
   state: UseSimulationState;
   /** Simulation action handlers */
   actions: UseSimulationActions;
+  /** Export state for tracking export progress */
+  exportState?: ExportState;
+  /** Handler for PNG screenshot export */
+  onExportPng?: () => void;
+  /** Handler for video recording export */
+  onExportVideo?: (duration: number) => void;
 }
 
 /**
  * Controls panel component for simulation parameters.
  * Provides UI for adjusting mass, grid density, camera, and scenario selection.
  */
-export function ControlsPanel({ state, actions }: ControlsPanelProps) {
+export function ControlsPanel({
+  state,
+  actions,
+  exportState,
+  onExportPng,
+  onExportVideo,
+}: ControlsPanelProps) {
+  const [videoDuration, setVideoDuration] = useState(DEFAULT_VIDEO_DURATION);
+
   const {
     isComputing,
     error,
@@ -243,6 +264,85 @@ export function ControlsPanel({ state, actions }: ControlsPanelProps) {
             {UI_STRINGS.playbackRefresh}
           </button>
         </div>
+      </section>
+
+      <div className="control-divider" />
+
+      {/* Export Controls */}
+      <section className="control-section">
+        <h3 className="control-section-title">{UI_STRINGS.sectionExport}</h3>
+
+        {/* Export Progress */}
+        {exportState?.isExporting && (
+          <div className="export-progress">
+            <div className="export-progress-bar">
+              <div
+                className="export-progress-fill"
+                style={{ width: `${exportState.progress}%` }}
+              />
+            </div>
+            <span className="export-progress-text">{exportState.message}</span>
+          </div>
+        )}
+
+        {/* Export Success */}
+        {!exportState?.isExporting && exportState?.progress === 100 && !exportState?.error && (
+          <div className="export-success">{UI_STRINGS.exportSuccess}</div>
+        )}
+
+        {/* Export Error */}
+        {!exportState?.isExporting && exportState?.error && (
+          <div className="control-error">{exportState.error}</div>
+        )}
+
+        {/* Screenshot Button */}
+        <div className="button-group">
+          <button
+            className="control-button"
+            onClick={onExportPng}
+            disabled={isComputing || exportState?.isExporting}
+          >
+            {UI_STRINGS.exportScreenshot}
+          </button>
+        </div>
+
+        {/* Video Recording */}
+        {isVideoExportSupported() ? (
+          <>
+            <div className="control-group">
+              <label className="control-label">
+                <span>{UI_STRINGS.exportDuration}</span>
+                <span className="control-value">
+                  {videoDuration}
+                  {UI_STRINGS.exportDurationUnit}
+                </span>
+              </label>
+              <input
+                type="range"
+                className="control-slider"
+                min={1}
+                max={MAX_VIDEO_DURATION}
+                step={1}
+                value={videoDuration}
+                onChange={(e) => setVideoDuration(parseInt(e.target.value, 10))}
+                disabled={exportState?.isExporting}
+              />
+            </div>
+            <div className="button-group">
+              <button
+                className="control-button"
+                onClick={() => onExportVideo?.(videoDuration)}
+                disabled={isComputing || exportState?.isExporting}
+              >
+                {exportState?.isExporting && exportState.format === 'webm'
+                  ? UI_STRINGS.exportRecording
+                  : UI_STRINGS.exportVideo}
+              </button>
+            </div>
+          </>
+        ) : (
+          <p className="control-hint">{UI_STRINGS.exportVideoUnsupported}</p>
+        )}
       </section>
 
       <div className="control-divider" />
