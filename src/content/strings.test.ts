@@ -41,7 +41,7 @@ import type { VisualizationMode } from './strings';
 describe('content/strings', () => {
   describe('MODE_STRINGS', () => {
     it('should have strings for all visualization modes', () => {
-      const modes: VisualizationMode[] = ['mesh', 'contour', 'fieldLines'];
+      const modes: VisualizationMode[] = ['mesh', 'contour', 'fieldLines', 'gravitationalWaves'];
 
       modes.forEach((mode) => {
         const strings = MODE_STRINGS[mode];
@@ -57,6 +57,13 @@ describe('content/strings', () => {
       expect(mesh.name).toBe('Heightfield Mesh');
       expect(mesh.description).toContain('3D surface');
       expect(mesh.educationalText).toContain('heightfield');
+    });
+
+    it('should have name, description, and educationalText for gravitationalWaves mode', () => {
+      const waves = MODE_STRINGS.gravitationalWaves;
+      expect(waves.name).toBe('Gravitational Waves');
+      expect(waves.description).toContain('ripples');
+      expect(waves.educationalText).toContain('gravitational waves');
     });
 
     it('should have name, description, and educationalText for contour mode', () => {

@@ -35,7 +35,7 @@
 /**
  * Visualization mode identifiers.
  */
-export type VisualizationMode = 'mesh' | 'contour' | 'fieldLines';
+export type VisualizationMode = 'mesh' | 'contour' | 'fieldLines' | 'gravitationalWaves';
 
 /**
  * Mode display information.
@@ -106,6 +106,25 @@ Field lines show the direction and strength of the gravitational field using ani
 This visualization demonstrates how test particles would naturally fall in the gravitational field.
 
 [Learn more about tidal forces](#physics-engine)`,
+  },
+  gravitationalWaves: {
+    name: 'Gravitational Waves',
+    description: 'Animated ripples showing gravitational wave propagation.',
+    educationalText: `## Gravitational Waves Mode
+
+This mode visualizes gravitational waves as propagating ripples through spacetime.
+
+**Key concepts:**
+- **Ripple propagation**: Waves emanate from regions of changing curvature
+- **Amplitude**: Controls the strength of the wave distortions
+- **Frequency**: Controls how rapidly the waves oscillate
+- **Attenuation**: Waves weaken as they propagate outward
+
+Gravitational waves are produced by accelerating masses, most dramatically by inspiraling compact objects like binary black holes.
+
+**Performance note:** High frequency values may cause visual artifacts on lower-end GPUs. Reduce frequency if you experience issues.
+
+[Learn more about gravitational waves](#physics-engine)`,
   },
 };
 
@@ -260,6 +279,7 @@ export const UI_STRINGS = {
   sectionPlayback: 'Playback',
   sectionEducation: 'Learn',
   sectionOrbits: 'Orbital Motion',
+  sectionWaves: 'Wave Settings',
 
   // Mode selector
   modeSelectLabel: 'Select visualization mode',
@@ -291,6 +311,13 @@ export const UI_STRINGS = {
   orbitTimeLabel: 'Time',
   orbitHint:
     'Enable orbital motion to animate masses along their orbital paths.',
+
+  // Wave controls
+  waveEnable: 'Enable Waves',
+  waveAmplitude: 'Wave Amplitude',
+  waveFrequency: 'Wave Frequency',
+  waveHint:
+    'Wave controls are only available in Gravitational Waves mode.',
 
   // Camera controls
   cameraAutoRotate: 'Auto-Rotate',

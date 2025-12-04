@@ -47,6 +47,12 @@ import {
   getPhysicsComputer,
   terminatePhysicsComputer,
 } from '../workers';
+import type { WaveParameters } from '../visualization/modes';
+import {
+  DEFAULT_WAVE_PARAMETERS,
+  clampWaveAmplitude,
+  clampWaveFrequency,
+} from '../visualization/modes';
 
 /**
  * Simulation state and actions.
@@ -87,6 +93,9 @@ export interface SimulationState {
 
   /** Warning message about worker status (null if no warning) */
   workerWarning: string | null;
+
+  /** Wave parameters for gravitational wave mode */
+  waveParams: WaveParameters;
 
   /** Load a preset scenario */
   loadScenario: (preset: ScenarioPreset, seed?: number) => void;
@@ -135,6 +144,9 @@ export interface SimulationState {
 
   /** Reset simulation time to zero */
   resetSimulationTime: () => void;
+
+  /** Set wave parameters */
+  setWaveParams: (params: Partial<WaveParameters>) => void;
 }
 
 /**
@@ -166,6 +178,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   timeScale: 1,
   isUsingWorker: false,
   workerWarning: null,
+  waveParams: { ...DEFAULT_WAVE_PARAMETERS },
 
   loadScenario: (preset: ScenarioPreset, seed?: number) => {
     const newSeed = seed ?? get().seed;
@@ -312,6 +325,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       timeScale: 1,
       isUsingWorker: false,
       workerWarning: null,
+      waveParams: { ...DEFAULT_WAVE_PARAMETERS },
     });
   },
 
@@ -394,6 +408,22 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     // Trigger curvature recomputation
     get().compute();
   },
+
+  setWaveParams: (params: Partial<WaveParameters>) => {
+    set((state) => {
+      const newParams = { ...state.waveParams };
+      if (params.amplitude !== undefined) {
+        newParams.amplitude = clampWaveAmplitude(params.amplitude);
+      }
+      if (params.frequency !== undefined) {
+        newParams.frequency = clampWaveFrequency(params.frequency);
+      }
+      if (params.enabled !== undefined) {
+        newParams.enabled = params.enabled;
+      }
+      return { waveParams: newParams };
+    });
+  },
 }));
 
 // Re-export types for UI convenience
@@ -408,3 +438,4 @@ export { SCENARIO_PRESETS } from '../physics/scenarios';
 export { CurvatureValidationError } from '../physics/curvature';
 export type { VisualizationMode } from '../content/strings';
 export { isWorkerSupported, isUsingWorker } from '../workers';
+export type { WaveParameters } from '../visualization/modes';

@@ -39,12 +39,27 @@ export { createEmptyResources, disposeResources } from './types';
 export { MeshModeRenderer, createMeshModeRenderer } from './mesh';
 export { ContourModeRenderer, createContourModeRenderer } from './contour';
 export { FieldLinesModeRenderer, createFieldLinesModeRenderer } from './fieldLines';
+export {
+  GravitationalWavesModeRenderer,
+  createGravitationalWavesModeRenderer,
+  clampWaveFrequency,
+  clampWaveAmplitude,
+  DEFAULT_WAVE_PARAMETERS,
+  MAX_WAVE_FREQUENCY,
+  MIN_WAVE_FREQUENCY,
+  MAX_WAVE_AMPLITUDE,
+  MIN_WAVE_AMPLITUDE,
+  DEFAULT_WAVE_FREQUENCY,
+  DEFAULT_WAVE_AMPLITUDE,
+} from './gravitationalWaves';
+export type { WaveParameters } from './gravitationalWaves';
 
 import type { VisualizationMode } from '../../content/strings';
 import type { ModeRegistry, VisualizationModeRenderer } from './types';
 import { createMeshModeRenderer } from './mesh';
 import { createContourModeRenderer } from './contour';
 import { createFieldLinesModeRenderer } from './fieldLines';
+import { createGravitationalWavesModeRenderer } from './gravitationalWaves';
 
 /**
  * Creates a registry of all available visualization mode renderers.
@@ -54,6 +69,7 @@ export function createModeRegistry(): ModeRegistry {
     mesh: createMeshModeRenderer(),
     contour: createContourModeRenderer(),
     fieldLines: createFieldLinesModeRenderer(),
+    gravitationalWaves: createGravitationalWavesModeRenderer(),
   };
 }
 

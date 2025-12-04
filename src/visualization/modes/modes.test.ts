@@ -33,10 +33,18 @@ import {
   createMeshModeRenderer,
   createContourModeRenderer,
   createFieldLinesModeRenderer,
+  createGravitationalWavesModeRenderer,
   createModeRegistry,
   getModeRenderer,
   disposeResources,
   createEmptyResources,
+  clampWaveFrequency,
+  clampWaveAmplitude,
+  DEFAULT_WAVE_PARAMETERS,
+  MAX_WAVE_FREQUENCY,
+  MIN_WAVE_FREQUENCY,
+  MAX_WAVE_AMPLITUDE,
+  MIN_WAVE_AMPLITUDE,
 } from './index';
 import type { CurvatureGridResult } from '../../physics/types';
 
@@ -196,6 +204,130 @@ describe('visualization/modes', () => {
     });
   });
 
+  describe('GravitationalWavesModeRenderer', () => {
+    it('should have correct id', () => {
+      const renderer = createGravitationalWavesModeRenderer();
+      expect(renderer.id).toBe('gravitationalWaves');
+    });
+
+    it('should render a group object with wave mesh', () => {
+      const renderer = createGravitationalWavesModeRenderer();
+      const result = createTestResult(8);
+      const { object, resources } = renderer.render(result);
+
+      expect(object).toBeInstanceOf(THREE.Group);
+      expect(object.name).toBe('gravitational-waves');
+      expect(object.children.length).toBeGreaterThan(0);
+      expect(resources.geometries.length).toBeGreaterThan(0);
+      expect(resources.materials.length).toBeGreaterThan(0);
+
+      // Cleanup
+      disposeResources(resources);
+    });
+
+    it('should update existing mesh when resolution matches', () => {
+      const renderer = createGravitationalWavesModeRenderer();
+      const result = createTestResult(8);
+      const { object, resources } = renderer.render(result);
+
+      // Update with same resolution
+      const newResult = createTestResult(8);
+      const updateSuccessful = renderer.update(newResult, object);
+
+      expect(updateSuccessful).toBe(true);
+
+      // Cleanup
+      disposeResources(resources);
+    });
+
+    it('should return false when resolution changes', () => {
+      const renderer = createGravitationalWavesModeRenderer();
+      const result = createTestResult(8);
+      const { object, resources } = renderer.render(result);
+
+      // Update with different resolution
+      const newResult = createTestResult(16);
+      const updateSuccessful = renderer.update(newResult, object);
+
+      expect(updateSuccessful).toBe(false);
+
+      // Cleanup
+      disposeResources(resources);
+    });
+
+    it('should have default wave parameters', () => {
+      const renderer = createGravitationalWavesModeRenderer();
+      const params = renderer.getWaveParameters();
+
+      expect(params.amplitude).toBe(DEFAULT_WAVE_PARAMETERS.amplitude);
+      expect(params.frequency).toBe(DEFAULT_WAVE_PARAMETERS.frequency);
+      expect(params.enabled).toBe(DEFAULT_WAVE_PARAMETERS.enabled);
+    });
+
+    it('should update wave parameters', () => {
+      const renderer = createGravitationalWavesModeRenderer();
+      
+      renderer.setWaveParameters({ amplitude: 1.5, frequency: 2.0 });
+      const params = renderer.getWaveParameters();
+
+      expect(params.amplitude).toBe(1.5);
+      expect(params.frequency).toBe(2.0);
+    });
+
+    it('should clamp wave parameters to safe ranges', () => {
+      const renderer = createGravitationalWavesModeRenderer();
+      
+      // Set values outside bounds
+      renderer.setWaveParameters({ amplitude: 100, frequency: 100 });
+      const params = renderer.getWaveParameters();
+
+      expect(params.amplitude).toBe(MAX_WAVE_AMPLITUDE);
+      expect(params.frequency).toBe(MAX_WAVE_FREQUENCY);
+
+      // Set values below minimum
+      renderer.setWaveParameters({ amplitude: -1, frequency: -1 });
+      const params2 = renderer.getWaveParameters();
+
+      expect(params2.amplitude).toBe(MIN_WAVE_AMPLITUDE);
+      expect(params2.frequency).toBe(MIN_WAVE_FREQUENCY);
+    });
+
+    it('should update shader uniforms when rendered', () => {
+      const renderer = createGravitationalWavesModeRenderer();
+      renderer.setWaveParameters({ amplitude: 1.5, frequency: 3.0 });
+      
+      const result = createTestResult(8);
+      const { object, resources } = renderer.render(result);
+
+      // Find the wave mesh
+      const waveMesh = object.getObjectByName('wave-mesh') as THREE.Mesh;
+      expect(waveMesh).toBeDefined();
+      
+      const material = waveMesh.material as THREE.ShaderMaterial;
+      expect(material.uniforms.uAmplitude.value).toBe(1.5);
+      expect(material.uniforms.uFrequency.value).toBe(3.0);
+
+      // Cleanup
+      disposeResources(resources);
+    });
+  });
+
+  describe('clampWaveFrequency', () => {
+    it('should clamp frequency to valid range', () => {
+      expect(clampWaveFrequency(100)).toBe(MAX_WAVE_FREQUENCY);
+      expect(clampWaveFrequency(-1)).toBe(MIN_WAVE_FREQUENCY);
+      expect(clampWaveFrequency(5)).toBe(5);
+    });
+  });
+
+  describe('clampWaveAmplitude', () => {
+    it('should clamp amplitude to valid range', () => {
+      expect(clampWaveAmplitude(100)).toBe(MAX_WAVE_AMPLITUDE);
+      expect(clampWaveAmplitude(-1)).toBe(MIN_WAVE_AMPLITUDE);
+      expect(clampWaveAmplitude(1.5)).toBe(1.5);
+    });
+  });
+
   describe('createModeRegistry', () => {
     it('should return a registry with all modes', () => {
       const registry = createModeRegistry();
@@ -203,10 +335,12 @@ describe('visualization/modes', () => {
       expect(registry.mesh).toBeDefined();
       expect(registry.contour).toBeDefined();
       expect(registry.fieldLines).toBeDefined();
+      expect(registry.gravitationalWaves).toBeDefined();
 
       expect(registry.mesh.id).toBe('mesh');
       expect(registry.contour.id).toBe('contour');
       expect(registry.fieldLines.id).toBe('fieldLines');
+      expect(registry.gravitationalWaves.id).toBe('gravitationalWaves');
     });
   });
 
@@ -215,6 +349,7 @@ describe('visualization/modes', () => {
       expect(getModeRenderer('mesh').id).toBe('mesh');
       expect(getModeRenderer('contour').id).toBe('contour');
       expect(getModeRenderer('fieldLines').id).toBe('fieldLines');
+      expect(getModeRenderer('gravitationalWaves').id).toBe('gravitationalWaves');
     });
   });
 

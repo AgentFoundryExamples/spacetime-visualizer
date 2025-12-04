@@ -38,6 +38,7 @@ Switch between different visualization modes to explore spacetime curvature from
 | Heightfield Mesh | 3D surface showing curvature depth as height displacement |
 | Contour Grid | Equipotential lines showing gravitational field strength |
 | Field Lines | Animated particles showing gravitational field direction |
+| Gravitational Waves | Animated ripples showing gravitational wave propagation (v0.3) |
 
 For detailed information about modes and how to add new ones, see [docs/scenarios.md](docs/scenarios.md).
 
@@ -94,6 +95,21 @@ Enable dynamic orbital motion for scenarios with defined orbits (e.g., Binary Or
 - Switching scenarios resets time to zero but maintains the running state if orbits are enabled
 
 **Note:** Orbital motion is only available for scenarios with masses that have orbital parameters defined. The Binary Orbit scenario supports this feature out of the box.
+
+### Wave Controls
+
+When in Gravitational Waves mode, additional controls appear:
+
+| Control | Function |
+|---------|----------|
+| Enable Waves | Toggle wave animation on/off |
+| Wave Amplitude | Control wave distortion strength (0.1 - 2.0) |
+| Wave Frequency | Control wave oscillation speed (0.1 - 10.0 Hz) |
+
+**Performance notes:**
+- High frequency values may cause visual artifacts on low-resolution grids
+- Reduce frequency if experiencing GPU performance issues
+- Wave settings are preserved when switching scenarios
 
 ### Playback Controls
 

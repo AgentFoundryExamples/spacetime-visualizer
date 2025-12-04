@@ -34,6 +34,7 @@ import type {
   MassSource,
   VisualizationMode,
   CurvatureGridConfig,
+  WaveParameters,
 } from '../state/simulation';
 import { checkResolutionWarning, clampResolution } from '../visualization';
 
@@ -95,6 +96,8 @@ export interface UseSimulationState {
   isUsingWorker: boolean;
   /** Warning message about worker status (null if no warning) */
   workerWarning: string | null;
+  /** Wave parameters for gravitational wave mode */
+  waveParams: WaveParameters;
 }
 
 /**
@@ -131,6 +134,8 @@ export interface UseSimulationActions {
   advanceSimulationTime: (deltaTime: number) => void;
   /** Reset simulation time to zero */
   resetSimulationTime: () => void;
+  /** Set wave parameters */
+  setWaveParams: (params: Partial<WaveParameters>) => void;
 }
 
 /**
@@ -174,6 +179,7 @@ export function useSimulation(
     timeScale,
     isUsingWorker,
     workerWarning,
+    waveParams,
     loadScenario: storeLoadScenario,
     loadCustomConfig: storeLoadCustomConfig,
     setVisualizationMode: storeSetVisualizationMode,
@@ -185,6 +191,7 @@ export function useSimulation(
     setTimeScale: storeSetTimeScale,
     advanceSimulationTime: storeAdvanceSimulationTime,
     resetSimulationTime: storeResetSimulationTime,
+    setWaveParams: storeSetWaveParams,
   } = useSimulationStore();
 
   // Calculate resolution warning
@@ -372,6 +379,13 @@ export function useSimulation(
     storeResetSimulationTime();
   }, [storeResetSimulationTime]);
 
+  const setWaveParams = useCallback(
+    (params: Partial<WaveParameters>) => {
+      storeSetWaveParams(params);
+    },
+    [storeSetWaveParams]
+  );
+
   const state: UseSimulationState = {
     isComputing,
     error,
@@ -389,6 +403,7 @@ export function useSimulation(
     timeScale,
     isUsingWorker,
     workerWarning,
+    waveParams,
   };
 
   const actions: UseSimulationActions = {
@@ -407,6 +422,7 @@ export function useSimulation(
     setTimeScale,
     advanceSimulationTime,
     resetSimulationTime,
+    setWaveParams,
   };
 
   return [state, actions];
