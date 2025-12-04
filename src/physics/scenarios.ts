@@ -440,10 +440,15 @@ export function generateExtremeMassRatioScenario(
 ): CurvatureGridConfig {
   const random = createSeededRandom(seed);
 
+  // Mass ratio constants for EMRI-like systems
+  // Secondary mass is 1-1.5% of primary mass (~67:1 to ~100:1 ratio)
+  const MIN_MASS_RATIO = 0.01; // 1% of primary
+  const MASS_RATIO_VARIATION = 0.005; // Additional 0-0.5%
+
   // Large central mass (like a star or massive black hole)
   const primaryMass = 150;
-  // Small orbiting mass (like a planet or stellar remnant) - ratio ~100:1
-  const secondaryMass = primaryMass * (0.01 + random() * 0.005);
+  // Small orbiting mass (like a planet or stellar remnant)
+  const secondaryMass = primaryMass * (MIN_MASS_RATIO + random() * MASS_RATIO_VARIATION);
 
   // Orbital radius for the secondary
   const orbitRadius = 2.5 + random() * 0.5;
@@ -583,7 +588,8 @@ export function generateBlackHoleInspiralScenario(
   // Close separation for inspiral phase
   const separation = 1.2 + random() * 0.3;
 
-  // Compute orbital parameters for center of mass frame
+  // Compute orbital semi-major axes for center of mass frame
+  // a1 is distance from COM to mass1, a2 is distance from COM to mass2
   const a1 = (separation * mass2) / totalMass;
   const a2 = (separation * mass1) / totalMass;
 
@@ -594,8 +600,8 @@ export function generateBlackHoleInspiralScenario(
     {
       id: 'bh-1',
       position: [
-        (-separation / 2) * Math.cos(initialPhase),
-        (-separation / 2) * Math.sin(initialPhase),
+        -a1 * Math.cos(initialPhase),
+        -a1 * Math.sin(initialPhase),
         0,
       ],
       mass: mass1,
@@ -613,8 +619,8 @@ export function generateBlackHoleInspiralScenario(
     {
       id: 'bh-2',
       position: [
-        (separation / 2) * Math.cos(initialPhase),
-        (separation / 2) * Math.sin(initialPhase),
+        a2 * Math.cos(initialPhase),
+        a2 * Math.sin(initialPhase),
         0,
       ],
       mass: mass2,
