@@ -17,16 +17,32 @@ import {
   generateExportFilename,
   clampExportResolution,
   clampVideoDuration,
+  clampGifDuration,
+  clampMp4Duration,
   isVideoExportSupported,
+  isGifExportSupported,
+  isMp4ExportSupported,
   getSupportedVideoMimeType,
+  getSupportedMp4MimeType,
   downloadBlob,
   getInitialExportState,
   ExportQueueManager,
+  SimpleGifEncoder,
+  getExportEncoderConfig,
+  validateExportEncoderConfig,
   MAX_EXPORT_RESOLUTION,
   MAX_VIDEO_DURATION,
+  MAX_GIF_DURATION,
+  MAX_MP4_DURATION,
   DEFAULT_VIDEO_FPS,
   DEFAULT_VIDEO_BITRATE,
   DEFAULT_VIDEO_DURATION,
+  DEFAULT_GIF_FPS,
+  DEFAULT_GIF_QUALITY,
+  DEFAULT_GIF_DURATION,
+  DEFAULT_MP4_FPS,
+  DEFAULT_MP4_BITRATE,
+  DEFAULT_MP4_DURATION,
 } from './export';
 
 describe('Export Utilities', () => {
@@ -39,6 +55,16 @@ describe('Export Utilities', () => {
     it('generates WebM filename with timestamp', () => {
       const filename = generateExportFilename('webm');
       expect(filename).toMatch(/^spacetime-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.webm$/);
+    });
+
+    it('generates GIF filename with timestamp', () => {
+      const filename = generateExportFilename('gif');
+      expect(filename).toMatch(/^spacetime-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.gif$/);
+    });
+
+    it('generates MP4 filename with timestamp', () => {
+      const filename = generateExportFilename('mp4');
+      expect(filename).toMatch(/^spacetime-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.mp4$/);
     });
 
     it('uses custom prefix', () => {
@@ -93,6 +119,42 @@ describe('Export Utilities', () => {
     });
   });
 
+  describe('clampGifDuration', () => {
+    it('passes through valid duration', () => {
+      expect(clampGifDuration(5)).toBe(5);
+    });
+
+    it('clamps minimum duration to 1', () => {
+      expect(clampGifDuration(0)).toBe(1);
+      expect(clampGifDuration(-5)).toBe(1);
+    });
+
+    it('clamps maximum duration to MAX_GIF_DURATION', () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      expect(clampGifDuration(20)).toBe(MAX_GIF_DURATION);
+      expect(consoleWarnSpy).toHaveBeenCalled();
+      consoleWarnSpy.mockRestore();
+    });
+  });
+
+  describe('clampMp4Duration', () => {
+    it('passes through valid duration', () => {
+      expect(clampMp4Duration(15)).toBe(15);
+    });
+
+    it('clamps minimum duration to 1', () => {
+      expect(clampMp4Duration(0)).toBe(1);
+      expect(clampMp4Duration(-5)).toBe(1);
+    });
+
+    it('clamps maximum duration to MAX_MP4_DURATION', () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      expect(clampMp4Duration(60)).toBe(MAX_MP4_DURATION);
+      expect(consoleWarnSpy).toHaveBeenCalled();
+      consoleWarnSpy.mockRestore();
+    });
+  });
+
   describe('isVideoExportSupported', () => {
     it('returns false when MediaRecorder is not available', () => {
       const originalMediaRecorder = globalThis.MediaRecorder;
@@ -103,12 +165,38 @@ describe('Export Utilities', () => {
     });
   });
 
+  describe('isGifExportSupported', () => {
+    it('returns true when HTMLCanvasElement is available', () => {
+      expect(isGifExportSupported()).toBe(true);
+    });
+  });
+
+  describe('isMp4ExportSupported', () => {
+    it('returns true when at least WebM is supported', () => {
+      const originalMediaRecorder = globalThis.MediaRecorder;
+      // @ts-expect-error - intentionally removing MediaRecorder
+      delete globalThis.MediaRecorder;
+      expect(isMp4ExportSupported()).toBe(false);
+      globalThis.MediaRecorder = originalMediaRecorder;
+    });
+  });
+
   describe('getSupportedVideoMimeType', () => {
     it('returns null when MediaRecorder is not available', () => {
       const originalMediaRecorder = globalThis.MediaRecorder;
       // @ts-expect-error - intentionally removing MediaRecorder
       delete globalThis.MediaRecorder;
       expect(getSupportedVideoMimeType()).toBeNull();
+      globalThis.MediaRecorder = originalMediaRecorder;
+    });
+  });
+
+  describe('getSupportedMp4MimeType', () => {
+    it('returns null when MediaRecorder is not available', () => {
+      const originalMediaRecorder = globalThis.MediaRecorder;
+      // @ts-expect-error - intentionally removing MediaRecorder
+      delete globalThis.MediaRecorder;
+      expect(getSupportedMp4MimeType()).toBeNull();
       globalThis.MediaRecorder = originalMediaRecorder;
     });
   });
@@ -273,13 +361,74 @@ describe('Export Utilities', () => {
     });
   });
 
+  describe('SimpleGifEncoder', () => {
+    it('initializes with correct dimensions', () => {
+      const encoder = new SimpleGifEncoder(100, 100, 10, 100);
+      expect(encoder.frameCount).toBe(0);
+    });
+
+    it('clamps quality to valid range', () => {
+      // Quality should be clamped between 1 and 20
+      const encoder1 = new SimpleGifEncoder(100, 100, 0, 100);
+      const encoder2 = new SimpleGifEncoder(100, 100, 25, 100);
+      expect(encoder1).toBeDefined();
+      expect(encoder2).toBeDefined();
+    });
+
+    it('throws when encoding with no frames', async () => {
+      const encoder = new SimpleGifEncoder(100, 100);
+      await expect(encoder.encode()).rejects.toThrow('No frames to encode');
+    });
+  });
+
+  describe('getExportEncoderConfig', () => {
+    it('returns default configuration', () => {
+      const config = getExportEncoderConfig();
+      expect(config.useWorkerEncoding).toBe(true);
+      expect(config.maxConcurrentExports).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('validateExportEncoderConfig', () => {
+    it('returns no errors for valid config', () => {
+      const errors = validateExportEncoderConfig({
+        useWorkerEncoding: true,
+        maxConcurrentExports: 2,
+      });
+      expect(errors).toHaveLength(0);
+    });
+
+    it('returns error for invalid concurrent exports', () => {
+      const errors = validateExportEncoderConfig({
+        useWorkerEncoding: true,
+        maxConcurrentExports: 10,
+      });
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors[0]).toContain('VITE_MAX_CONCURRENT_EXPORTS');
+    });
+  });
+
   describe('Constants', () => {
-    it('has valid default values', () => {
+    it('has valid default video values', () => {
       expect(MAX_EXPORT_RESOLUTION).toBe(4096);
       expect(MAX_VIDEO_DURATION).toBe(30);
       expect(DEFAULT_VIDEO_FPS).toBe(30);
       expect(DEFAULT_VIDEO_BITRATE).toBe(5_000_000);
       expect(DEFAULT_VIDEO_DURATION).toBe(5);
+    });
+
+    it('has valid default GIF values', () => {
+      expect(MAX_GIF_DURATION).toBe(10);
+      expect(DEFAULT_GIF_FPS).toBe(15);
+      expect(DEFAULT_GIF_QUALITY).toBe(10);
+      expect(DEFAULT_GIF_DURATION).toBe(3);
+    });
+
+    it('has valid default MP4 values', () => {
+      expect(MAX_MP4_DURATION).toBe(30);
+      expect(DEFAULT_MP4_FPS).toBe(30);
+      expect(DEFAULT_MP4_BITRATE).toBe(5_000_000);
+      expect(DEFAULT_MP4_DURATION).toBe(5);
     });
   });
 });

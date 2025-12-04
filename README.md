@@ -144,14 +144,25 @@ Capture and share your visualizations:
 | Control | Function |
 |---------|----------|
 | Screenshot (PNG) | Capture the current view as a PNG image |
-| Record Video | Record a WebM video of the visualization |
-| Duration slider | Set video recording duration (1-30 seconds) |
+| Format selector | Choose between WebM Video, GIF Animation, or MP4 Video |
+| Duration slider | Set recording duration (varies by format) |
+| Record button | Start recording in selected format |
 
 **Export Features:**
 - **PNG Screenshots**: Instant capture of the current canvas state
-- **WebM Video**: Records live animations, camera movements, and orbital motion
+- **WebM Video**: Records live animations, camera movements, and orbital motion (up to 30s)
+- **GIF Animation**: Creates animated GIF files (up to 10s due to memory constraints)
+- **MP4 Video**: Records in MP4 format when browser supports H.264 (up to 30s)
 - **Progress Indicator**: Shows export progress with status messages
 - **Queue Management**: Multiple export requests are handled sequentially
+
+**Format Comparison:**
+
+| Format | Max Duration | Best For |
+|--------|-------------|----------|
+| WebM | 30 seconds | High quality video, Chrome/Firefox |
+| GIF | 10 seconds | Sharing on social media, embedding |
+| MP4 | 30 seconds | Universal playback compatibility |
 
 For detailed export documentation, see [docs/scenarios.md](docs/scenarios.md#exporting-visuals).
 
@@ -286,8 +297,26 @@ cp .env.example .env
 |----------|-------------|---------|-------------|
 | `VITE_GRID_RESOLUTION` | Grid resolution for spacetime visualization (cells per axis) | `32` | 8-256 |
 | `VITE_ANIMATION_TIMESTEP` | Animation timestep in seconds | `0.016` | 0.001-0.1 |
+| `VITE_USE_PHYSICS_WORKER` | Enable Web Worker for physics computation | `true` | true/false |
+| `VITE_MAX_VIDEO_DURATION` | Maximum WebM video recording duration (seconds) | `30` | 1-60 |
+| `VITE_VIDEO_BITRATE` | Video recording bitrate (bits per second) | `5000000` | - |
+
+#### Export Configuration (GIF/MP4)
+
+| Variable | Description | Default | Valid Range |
+|----------|-------------|---------|-------------|
+| `VITE_EXPORT_ENCODER_PATH` | Path to external encoder (optional) | - | File path |
+| `VITE_USE_EXPORT_WORKER` | Use Web Worker for export encoding | `true` | true/false |
+| `VITE_MAX_CONCURRENT_EXPORTS` | Maximum concurrent export operations | `1` | 1-5 |
+| `VITE_MAX_GIF_DURATION` | Maximum GIF animation duration (seconds) | `10` | 1-10 |
+| `VITE_GIF_QUALITY` | GIF quality (lower is better) | `10` | 1-20 |
+| `VITE_GIF_FPS` | GIF frames per second | `15` | 1-30 |
+| `VITE_MAX_MP4_DURATION` | Maximum MP4 video duration (seconds) | `30` | 1-60 |
+| `VITE_MP4_BITRATE` | MP4 video bitrate (bits per second) | `5000000` | - |
 
 > **Note**: All environment variables are optional. The application will use safe defaults if they are not set or contain invalid values.
+
+> **Export Limitations**: GIF exports are limited to 10 seconds due to memory constraints. MP4 export requires browser support for H.264 codec; if unavailable, the application falls back to WebM format with .mp4 extension.
 
 ### Configuration Precedence
 
