@@ -332,6 +332,10 @@ export const UI_STRINGS = {
     'Video recording is not supported in this browser. Try Chrome or Firefox.',
   exportRecording: 'Recording...',
   exportProcessing: 'Processing...',
+
+  // Accessibility
+  skipToMain: 'Skip to main content',
+  accessibilityLiveRegion: 'Status announcements',
 } as const;
 
 /**

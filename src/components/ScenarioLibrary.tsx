@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ScenarioPreset } from '../physics/scenarios';
 import { SCENARIO_PRESETS } from '../physics/scenarios';
 import type { CurvatureGridConfig } from '../physics/types';
@@ -173,6 +173,16 @@ export function ScenarioLibrary({
   );
   const [showOverwriteWarning, setShowOverwriteWarning] = useState(false);
   const [pendingLoad, setPendingLoad] = useState<CurvatureGridConfig | null>(null);
+  
+  // Ref for the cancel button in the alert dialog for focus management
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Focus the cancel button when the overwrite warning dialog opens
+  useEffect(() => {
+    if (showOverwriteWarning && cancelButtonRef.current) {
+      cancelButtonRef.current.focus();
+    }
+  }, [showOverwriteWarning]);
 
   const handleSaveCustom = useCallback(() => {
     const name = prompt(UI_STRINGS.scenarioSavePrompt);
@@ -239,26 +249,38 @@ export function ScenarioLibrary({
   );
 
   return (
-    <div className="scenario-library">
+    <div className="scenario-library" role="region" aria-label="Scenario selection">
       {!storageAvailable && (
-        <div className="scenario-library__warning">
+        <div className="scenario-library__warning" role="alert">
           {UI_STRINGS.scenarioStorageUnavailable}
         </div>
       )}
 
       {showOverwriteWarning && (
-        <div className="scenario-library__warning">
-          <p>{UI_STRINGS.scenarioOverwriteWarning}</p>
+        <div 
+          className="scenario-library__warning" 
+          role="alertdialog" 
+          aria-modal="true"
+          aria-labelledby="overwrite-warning"
+          aria-describedby="overwrite-warning-desc"
+        >
+          <p id="overwrite-warning">{UI_STRINGS.scenarioOverwriteWarning}</p>
+          <p id="overwrite-warning-desc" className="sr-only">
+            Choose Continue to load the preset and discard your changes, or Cancel to keep editing.
+          </p>
           <div className="scenario-library__actions">
             <button
               className="scenario-library__action-btn"
               onClick={handleConfirmLoad}
+              aria-label="Confirm loading preset and discard changes"
             >
               Continue
             </button>
             <button
+              ref={cancelButtonRef}
               className="scenario-library__action-btn"
               onClick={handleCancelLoad}
+              aria-label="Cancel and keep current changes"
             >
               Cancel
             </button>
@@ -267,23 +289,25 @@ export function ScenarioLibrary({
       )}
 
       {/* Built-in presets */}
-      <div className="scenario-library__section">
-        <h4 className="scenario-library__section-title">
+      <div className="scenario-library__section" role="group" aria-labelledby="builtin-presets-title">
+        <h4 id="builtin-presets-title" className="scenario-library__section-title">
           {UI_STRINGS.scenarioBuiltInLabel}
         </h4>
-        <div className="scenario-library__list">
+        <div className="scenario-library__list" role="listbox" aria-label="Built-in scenario presets">
           {SCENARIO_PRESETS.map((preset) => {
             const strings = SCENARIO_STRINGS[preset.id];
             const isSelected = currentPreset === preset.id;
 
             return (
-              <div key={preset.id} className="scenario-library__item">
+              <div key={preset.id} className="scenario-library__item" role="option" aria-selected={isSelected}>
                 <button
                   className={`scenario-library__item-button ${
                     isSelected ? 'scenario-library__item-button--selected' : ''
                   }`}
                   onClick={() => handleSelectBuiltIn(preset.id)}
                   disabled={disabled}
+                  aria-label={`${strings?.name ?? preset.name}: ${strings?.description ?? preset.description}`}
+                  aria-pressed={isSelected}
                 >
                   <span className="scenario-library__item-name">
                     {strings?.name ?? preset.name}
@@ -300,19 +324,21 @@ export function ScenarioLibrary({
 
       {/* Custom presets */}
       {storageAvailable && (
-        <div className="scenario-library__section">
-          <h4 className="scenario-library__section-title">
+        <div className="scenario-library__section" role="group" aria-labelledby="custom-presets-title">
+          <h4 id="custom-presets-title" className="scenario-library__section-title">
             {UI_STRINGS.scenarioCustomLabel}
           </h4>
           {customPresets.length === 0 ? (
             <p className="scenario-library__empty">No custom presets saved.</p>
           ) : (
-            <div className="scenario-library__list">
+            <div className="scenario-library__list" role="listbox" aria-label="Custom scenario presets">
               {customPresets.map((preset) => {
                 const isSelected = currentPreset === preset.id;
+                const massCount = preset.config.masses.length;
+                const massText = `${massCount} mass${massCount !== 1 ? 'es' : ''}`;
 
                 return (
-                  <div key={preset.id} className="scenario-library__item">
+                  <div key={preset.id} className="scenario-library__item" role="option" aria-selected={isSelected}>
                     <button
                       className={`scenario-library__item-button ${
                         isSelected
@@ -321,13 +347,14 @@ export function ScenarioLibrary({
                       }`}
                       onClick={() => handleLoadCustom(preset.config)}
                       disabled={disabled}
+                      aria-label={`${preset.name}: ${massText}`}
+                      aria-pressed={isSelected}
                     >
                       <span className="scenario-library__item-name">
                         {preset.name}
                       </span>
                       <span className="scenario-library__item-description">
-                        {preset.config.masses.length} mass
-                        {preset.config.masses.length !== 1 ? 'es' : ''}
+                        {massText}
                       </span>
                     </button>
                     <button
@@ -335,6 +362,7 @@ export function ScenarioLibrary({
                       onClick={() => handleDeleteCustom(preset.id)}
                       disabled={disabled}
                       title={UI_STRINGS.scenarioDeleteCustom}
+                      aria-label={`Delete custom preset ${preset.name}`}
                     >
                       ✕
                     </button>
@@ -350,6 +378,7 @@ export function ScenarioLibrary({
               className="scenario-library__action-btn"
               onClick={handleSaveCustom}
               disabled={disabled || currentConfig.masses.length === 0}
+              aria-label="Save current configuration as a custom preset"
             >
               {UI_STRINGS.scenarioSaveCustom}
             </button>

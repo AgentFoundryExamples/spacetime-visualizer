@@ -122,6 +122,43 @@ The expandable educational panel explains the current visualization mode and sce
 - Key concepts and physics principles
 - Links to relevant documentation
 
+### Accessibility Features
+
+The application is designed with accessibility in mind, following WCAG 2.1 AA guidelines:
+
+#### Keyboard Navigation
+
+| Action | Shortcut |
+|--------|----------|
+| Skip to main content | Tab (first focus brings up skip link) |
+| Navigate controls | Tab / Shift+Tab |
+| Activate buttons | Enter / Space |
+| Adjust sliders | Arrow keys |
+| Select mode/scenario | Arrow keys (within radio group) |
+
+#### Screen Reader Support
+
+- All interactive controls have descriptive ARIA labels
+- Live regions announce export progress and status changes
+- Section headings provide navigation landmarks
+- Progress bars include value announcements
+
+#### Visual Accessibility
+
+- Visible focus indicators on all interactive elements
+- Respects `prefers-reduced-motion` to disable animations
+- High contrast mode support via `forced-colors` media query
+- Color contrast meets WCAG AA requirements
+
+#### Assistive Technology Testing
+
+The application has been tested with:
+- VoiceOver (macOS/iOS)
+- NVDA (Windows)
+- ChromeVox (Chrome extension)
+
+For more details, see the [Accessibility Testing Checklist](#accessibility-testing-checklist) below.
+
 ## Requirements
 
 ### Browser Requirements
@@ -727,6 +764,47 @@ npm run preview
 ```
 
 Open `http://localhost:4173` and repeat steps 3-9 above.
+
+### Accessibility Testing Checklist
+
+Use this checklist to verify accessibility features are working correctly:
+
+#### Keyboard Navigation
+
+| Feature | Test | Status |
+|---------|------|--------|
+| Skip link | Tab into page, skip link appears | ☐ |
+| Tab order | All controls reachable in logical order | ☐ |
+| Focus visible | Focus ring visible on all interactive elements | ☐ |
+| Mode selector | Arrow keys navigate modes | ☐ |
+| Sliders | Arrow keys adjust values | ☐ |
+| Toggle buttons | Enter/Space activates | ☐ |
+
+#### Screen Reader
+
+| Feature | Test | Status |
+|---------|------|--------|
+| Page landmarks | Main, navigation, contentinfo announced | ☐ |
+| Control labels | All buttons/sliders have descriptive labels | ☐ |
+| Live regions | Export progress announced | ☐ |
+| Mode changes | Mode/scenario changes announced | ☐ |
+| Error messages | Errors announced via alert role | ☐ |
+
+#### Visual Accessibility
+
+| Feature | Test | Status |
+|---------|------|--------|
+| Color contrast | Text readable at 4.5:1 ratio | ☐ |
+| Reduced motion | Animations disabled when preference set | ☐ |
+| High contrast | Controls visible in high contrast mode | ☐ |
+| Focus indicators | 2px solid focus ring visible | ☐ |
+
+#### Automated Testing
+
+```bash
+# Run accessibility tests
+npm test -- --grep "Accessibility"
+```
 
 ## Release Documentation
 

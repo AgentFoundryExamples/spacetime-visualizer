@@ -23,10 +23,10 @@ export function Footer() {
   const { gridResolution, animationTimestep } = useConfigStore();
 
   return (
-    <footer className="footer">
-      <span className="footer-status">Ready</span>
-      <span className="footer-divider" />
-      <span className="footer-config">
+    <footer className="footer" role="contentinfo" aria-label="Application status">
+      <span className="footer-status" role="status">Ready</span>
+      <span className="footer-divider" aria-hidden="true" />
+      <span className="footer-config" aria-label={`Configuration: Grid ${gridResolution} by ${gridResolution}, Timestep ${animationTimestep.toFixed(3)} seconds`}>
         Grid: {gridResolution}×{gridResolution} | Timestep:{' '}
         {animationTimestep.toFixed(3)}s
       </span>
