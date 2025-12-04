@@ -30,7 +30,31 @@
           "children": [
             {
               "type": "file",
+              "name": "dependencies.json"
+            },
+            {
+              "type": "file",
+              "name": "dependencies.md"
+            },
+            {
+              "type": "file",
+              "name": "file-summaries.json"
+            },
+            {
+              "type": "file",
+              "name": "file-summaries.md"
+            },
+            {
+              "type": "file",
               "name": "SUMMARY.md"
+            },
+            {
+              "type": "file",
+              "name": "tree.json"
+            },
+            {
+              "type": "file",
+              "name": "tree.md"
             }
           ]
         },
@@ -67,40 +91,6 @@
         {
           "type": "file",
           "name": "vite.svg"
-        }
-      ]
-    },
-    {
-      "type": "directory",
-      "name": "repo-analysis-output",
-      "children": [
-        {
-          "type": "file",
-          "name": "dependencies.json"
-        },
-        {
-          "type": "file",
-          "name": "dependencies.md"
-        },
-        {
-          "type": "file",
-          "name": "file-summaries.json"
-        },
-        {
-          "type": "file",
-          "name": "file-summaries.md"
-        },
-        {
-          "type": "file",
-          "name": "SUMMARY.md"
-        },
-        {
-          "type": "file",
-          "name": "tree.json"
-        },
-        {
-          "type": "file",
-          "name": "tree.md"
         }
       ]
     },

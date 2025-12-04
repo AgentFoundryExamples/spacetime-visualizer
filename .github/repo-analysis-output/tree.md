@@ -6,7 +6,13 @@
     ├── LICENSE_HEADER
     └── repo-analyzer.config.json
   ├── repo-analysis-output
-    └── SUMMARY.md
+    ├── dependencies.json
+    ├── dependencies.md
+    ├── file-summaries.json
+    ├── file-summaries.md
+    ├── SUMMARY.md
+    ├── tree.json
+    └── tree.md
   └── workflows
     └── af_maintenance.yml
 ├── docs
@@ -14,14 +20,6 @@
   └── scenarios.md
 ├── public
   └── vite.svg
-├── repo-analysis-output
-  ├── dependencies.json
-  ├── dependencies.md
-  ├── file-summaries.json
-  ├── file-summaries.md
-  ├── SUMMARY.md
-  ├── tree.json
-  └── tree.md
 ├── src
   ├── components
     ├── CanvasWrapper.tsx
