@@ -216,6 +216,16 @@ function ContextLossHandler({ onContextLost }: { onContextLost: () => void }) {
 }
 
 /**
+ * Maximum number of context loss recovery attempts before giving up.
+ */
+const MAX_CONTEXT_RESTORE_ATTEMPTS = 3;
+
+/**
+ * Base delay for context restoration (ms). Uses exponential backoff.
+ */
+const CONTEXT_RESTORE_BASE_DELAY_MS = 1000;
+
+/**
  * Main canvas wrapper component for Three.js visualization.
  * Handles WebGL context, camera controls, and responsive resizing.
  */
@@ -226,17 +236,30 @@ export function CanvasWrapper({
 }: CanvasWrapperProps) {
   const [contextLost, setContextLost] = useState(false);
   const [key, setKey] = useState(0);
+  const [restoreAttempts, setRestoreAttempts] = useState(0);
 
   const handleContextLost = useCallback(() => {
     setContextLost(true);
-    // Attempt to restore by remounting the canvas
-    setTimeout(() => {
-      setKey((k) => k + 1);
-      setContextLost(false);
-    }, 1000);
+    setRestoreAttempts((prev) => {
+      const attempts = prev + 1;
+      if (attempts > MAX_CONTEXT_RESTORE_ATTEMPTS) {
+        console.error(
+          `WebGL context lost ${attempts} times. Not attempting further restoration.`
+        );
+        return attempts;
+      }
+      // Exponential backoff: 1s, 2s, 4s
+      const delay = CONTEXT_RESTORE_BASE_DELAY_MS * Math.pow(2, attempts - 1);
+      setTimeout(() => {
+        setKey((k) => k + 1);
+        setContextLost(false);
+      }, delay);
+      return attempts;
+    });
   }, []);
 
   if (contextLost) {
+    const maxAttemptsExceeded = restoreAttempts > MAX_CONTEXT_RESTORE_ATTEMPTS;
     return (
       <div
         className="canvas-container"
@@ -244,10 +267,14 @@ export function CanvasWrapper({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '8px',
         }}
       >
         <p style={{ color: 'var(--color-text-muted)' }}>
-          Restoring WebGL context...
+          {maxAttemptsExceeded
+            ? 'WebGL context could not be restored. Please refresh the page.'
+            : `Restoring WebGL context... (attempt ${restoreAttempts}/${MAX_CONTEXT_RESTORE_ATTEMPTS})`}
         </p>
       </div>
     );
@@ -260,7 +287,7 @@ export function CanvasWrapper({
       gl={{
         antialias: true,
         powerPreference: 'high-performance',
-        preserveDrawingBuffer: true,
+        preserveDrawingBuffer: false,
       }}
       camera={{ position: DEFAULT_CAMERA_POSITION, fov: 60 }}
       onCreated={({ gl }) => {

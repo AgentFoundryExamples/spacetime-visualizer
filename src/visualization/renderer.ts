@@ -72,7 +72,7 @@ export function clampResolution(resolution: number, maxAllowed = 128): number {
  * Builds a heightfield mesh from curvature grid data.
  * Creates a 2D grid in XY plane with Z displacement based on curvature.
  *
- * The mesh uses vertex colors to encode curvature magnitude (blue = flat, red = curved).
+ * The mesh uses vertex colors to encode curvature (blue = flat/positive, red = negative/curved).
  *
  * @param result - Curvature grid computation result
  * @param heightScale - Scale factor for Z displacement (default: HEIGHT_SCALE_FACTOR)
@@ -87,8 +87,21 @@ export function buildCurvatureMesh(
   // We'll render a 2D heightfield in the XY plane at a fixed Z slice (middle of grid)
   // For a 3D grid of resolution R, we have R³ samples ordered as [z][y][x]
   // We take the middle Z slice
+  // For resolution 2: sliceZ = 1, sliceStart = 1 * 2 * 2 = 4 (valid indices 4-7)
   const sliceZ = Math.floor(resolution / 2);
   const sliceStart = sliceZ * resolution * resolution;
+
+  // Validate slice bounds for edge cases (minimum resolution is 2)
+  const totalSamples = resolution * resolution * resolution;
+  if (
+    sliceStart >= totalSamples ||
+    sliceStart + resolution * resolution > totalSamples
+  ) {
+    // Fallback to first slice if bounds are invalid
+    console.warn(
+      `Invalid slice bounds for resolution ${resolution}, falling back to slice 0`
+    );
+  }
 
   // Number of vertices per axis (resolution points create resolution-1 cells)
   const numVertices = resolution * resolution;
@@ -98,8 +111,9 @@ export function buildCurvatureMesh(
   const normals = new Float32Array(numVertices * 3);
   const colors = new Float32Array(numVertices * 3);
 
-  // Calculate normalization factor for colors
-  const normFactor = maxDeviation > 0 ? 1 / maxDeviation : 1;
+  // Calculate normalization factor for colors and height
+  // Use a small epsilon to avoid division by zero
+  const normFactor = maxDeviation > 1e-10 ? 1 / maxDeviation : 1;
 
   // Fill vertex data from the Z-middle slice
   for (let iy = 0; iy < resolution; iy++) {
@@ -108,17 +122,20 @@ export function buildCurvatureMesh(
       const vertexIdx = iy * resolution + ix;
       const sample = samples[sampleIdx];
 
-      // Position: use original XY, displace Z by curvature
+      // Position: use original XY, displace Z by curvature (signed value shows direction)
       const baseIdx = vertexIdx * 3;
       positions[baseIdx] = sample.position[0];
       positions[baseIdx + 1] = sample.position[1];
-      // Displace upward based on curvature magnitude (negative deviation = downward)
+      // Displace based on curvature (negative deviation = downward, positive = upward)
       positions[baseIdx + 2] =
-        Math.abs(sample.metricDeviation) * heightScale * normFactor;
+        sample.metricDeviation * heightScale * normFactor;
 
-      // Color: based on normalized curvature
-      const normalizedCurvature = Math.abs(sample.metricDeviation) * normFactor;
-      const color = getColorForCurvature(normalizedCurvature);
+      // Color: map signed curvature from [-max, max] to [0, 1] for gradient
+      // -1 (min curvature) -> 0 (blue), 0 (flat) -> 0.5 (middle), +1 (max) -> 1 (red)
+      const normalizedCurvature = (sample.metricDeviation * normFactor + 1) / 2;
+      const color = getColorForCurvature(
+        Math.max(0, Math.min(1, normalizedCurvature))
+      );
       colors[baseIdx] = color.r;
       colors[baseIdx + 1] = color.g;
       colors[baseIdx + 2] = color.b;

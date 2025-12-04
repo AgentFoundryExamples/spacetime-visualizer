@@ -112,6 +112,8 @@ export function useSimulation(
   const pendingMassUpdatesRef = useRef<
     Map<string, Partial<Omit<MassSource, 'id'>>>
   >(new Map());
+  // Store original base masses to avoid floating-point drift from repeated scaling
+  const baseMassesRef = useRef<Map<string, number>>(new Map());
 
   // Store state
   const {
@@ -184,6 +186,8 @@ export function useSimulation(
     (preset: ScenarioPreset) => {
       setLocalResolution(null);
       setMassScaleLocal(1.0);
+      // Clear base masses - they'll be captured on first scale change
+      baseMassesRef.current.clear();
       storeLoadScenario(preset);
     },
     [storeLoadScenario]
@@ -207,11 +211,14 @@ export function useSimulation(
       );
       setMassScaleLocal(clampedScale);
 
-      // Update all masses with the new scale
-      // Use safe division, treating massScale < MIN_MASS_SCALE as 1.0 for base calculation
-      const safePreviousScale = massScale >= MIN_MASS_SCALE ? massScale : 1.0;
+      // Update all masses with the new scale using stored base masses
+      // This prevents floating-point drift from repeated scale operations
       config.masses.forEach((mass) => {
-        const baseMass = mass.mass / safePreviousScale; // Get base mass
+        // Capture base mass on first scale change if not already stored
+        if (!baseMassesRef.current.has(mass.id)) {
+          baseMassesRef.current.set(mass.id, mass.mass);
+        }
+        const baseMass = baseMassesRef.current.get(mass.id) ?? mass.mass;
         pendingMassUpdatesRef.current.set(mass.id, {
           mass: baseMass * clampedScale,
         });
@@ -219,7 +226,7 @@ export function useSimulation(
 
       scheduleCompute();
     },
-    [config.masses, massScale, scheduleCompute]
+    [config.masses, scheduleCompute]
   );
 
   const updateMass = useCallback(
@@ -254,6 +261,7 @@ export function useSimulation(
     setIsPaused(false);
     setAutoRotate(false);
     pendingMassUpdatesRef.current.clear();
+    baseMassesRef.current.clear();
     storeReset();
   }, [storeReset]);
 
