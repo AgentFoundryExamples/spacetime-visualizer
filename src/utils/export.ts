@@ -78,6 +78,8 @@ export interface ExportState {
   progress: number;
   message: string;
   format: ExportFormat | null;
+  /** Error message if export failed, null otherwise */
+  error: string | null;
 }
 
 /**
@@ -137,10 +139,7 @@ export function clampVideoDuration(duration: number): number {
  * Checks if MediaRecorder API is available for video recording.
  */
 export function isVideoExportSupported(): boolean {
-  return (
-    typeof MediaRecorder !== 'undefined' &&
-    MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-  );
+  return getSupportedVideoMimeType() !== null;
 }
 
 /**
@@ -282,6 +281,8 @@ export async function captureVideo(
     };
   }
 
+  let progressInterval: ReturnType<typeof setInterval> | null = null;
+
   try {
     onProgress?.(0, 'Initializing video recording...');
 
@@ -295,7 +296,15 @@ export async function captureVideo(
       videoBitsPerSecond: options.bitrate ?? DEFAULT_VIDEO_BITRATE,
     };
 
-    state.mediaRecorder = new MediaRecorder(stream, recorderOptions);
+    try {
+      state.mediaRecorder = new MediaRecorder(stream, recorderOptions);
+    } catch (recorderError) {
+      const message =
+        recorderError instanceof Error
+          ? recorderError.message
+          : 'Failed to initialize MediaRecorder';
+      return { success: false, error: message };
+    }
 
     // Collect recorded chunks
     state.mediaRecorder.ondataavailable = (event) => {
@@ -329,7 +338,7 @@ export async function captureVideo(
     state.startTime = Date.now();
 
     // Update progress during recording
-    const progressInterval = setInterval(() => {
+    progressInterval = setInterval(() => {
       const elapsed = (Date.now() - state.startTime) / 1000;
       const progress = Math.min(5 + (elapsed / duration) * 85, 90);
       const remaining = Math.max(0, duration - elapsed);
@@ -341,6 +350,7 @@ export async function captureVideo(
 
     // Stop recording
     clearInterval(progressInterval);
+    progressInterval = null;
     state.mediaRecorder.stop();
     state.isRecording = false;
 
@@ -358,6 +368,10 @@ export async function captureVideo(
 
     return { success: true, filename };
   } catch (error) {
+    // Ensure interval is cleaned up on error
+    if (progressInterval) {
+      clearInterval(progressInterval);
+    }
     const message = error instanceof Error ? error.message : 'Unknown error during video export';
     console.error('Video export failed:', error);
     return { success: false, error: message };
@@ -373,6 +387,7 @@ export function getInitialExportState(): ExportState {
     progress: 0,
     message: '',
     format: null,
+    error: null,
   };
 }
 

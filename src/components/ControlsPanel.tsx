@@ -286,13 +286,13 @@ export function ControlsPanel({
         )}
 
         {/* Export Success */}
-        {!exportState?.isExporting && exportState?.progress === 100 && (
+        {!exportState?.isExporting && exportState?.progress === 100 && !exportState?.error && (
           <div className="export-success">{UI_STRINGS.exportSuccess}</div>
         )}
 
         {/* Export Error */}
-        {!exportState?.isExporting && exportState?.message.startsWith('Error') && (
-          <div className="control-error">{exportState.message}</div>
+        {!exportState?.isExporting && exportState?.error && (
+          <div className="control-error">{exportState.error}</div>
         )}
 
         {/* Screenshot Button */}

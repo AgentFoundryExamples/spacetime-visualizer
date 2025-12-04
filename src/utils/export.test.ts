@@ -169,6 +169,7 @@ describe('Export Utilities', () => {
         progress: 0,
         message: '',
         format: null,
+        error: null,
       });
     });
   });

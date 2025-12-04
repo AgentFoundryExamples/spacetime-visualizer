@@ -79,6 +79,7 @@ function App() {
         progress: 0,
         message: 'Starting export...',
         format: 'png',
+        error: null,
       });
 
       const result = await capturePng(canvasRef.current!, {}, (progress, message) => {
@@ -95,6 +96,7 @@ function App() {
           progress: 100,
           message: `Saved: ${result.filename}`,
           format: 'png',
+          error: null,
         });
         // Clear success message after 3 seconds
         setTimeout(() => {
@@ -104,8 +106,9 @@ function App() {
         setExportState({
           isExporting: false,
           progress: 0,
-          message: `Error: ${result.error}`,
+          message: '',
           format: 'png',
+          error: result.error ?? 'Unknown error',
         });
       }
     });
@@ -123,6 +126,7 @@ function App() {
         progress: 0,
         message: 'Initializing recording...',
         format: 'webm',
+        error: null,
       });
 
       const result = await captureVideo(
@@ -143,6 +147,7 @@ function App() {
           progress: 100,
           message: `Saved: ${result.filename}`,
           format: 'webm',
+          error: null,
         });
         // Clear success message after 3 seconds
         setTimeout(() => {
@@ -152,8 +157,9 @@ function App() {
         setExportState({
           isExporting: false,
           progress: 0,
-          message: `Error: ${result.error}`,
+          message: '',
           format: 'webm',
+          error: result.error ?? 'Unknown error',
         });
       }
     });
