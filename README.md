@@ -236,6 +236,11 @@ spacetime-visualizer/
 │   │   │   └── index.ts      # Mode registry and exports
 │   │   ├── materials.ts      # Color mapping and materials
 │   │   └── renderer.ts       # Curvature mesh generation
+│   ├── workers/              # Web Worker for physics offloading
+│   │   ├── types.ts          # Message protocol types
+│   │   ├── physics.worker.ts # Physics computation worker
+│   │   ├── physics-client.ts # Worker client with fallback
+│   │   └── index.ts          # Worker exports
 │   ├── test/
 │   │   └── setup.ts          # Test setup configuration
 │   ├── tests/
@@ -362,14 +367,19 @@ The application automatically attempts to restore the WebGL context if it's lost
 
 ```mermaid
 graph TD
-    A[Simulation Store] -->|CurvatureGridResult| B[Renderer Module]
+    G[Controls Panel] -->|Parameters| H[useSimulation Hook]
+    H -->|Config| I[Simulation Store]
+    I -->|COMPUTE message| J[Physics Worker]
+    J -->|RESULT message| I
+    I -->|CurvatureGridResult| B[Renderer Module]
     B -->|Mesh Data| C[BufferGeometry]
     C --> D[Three.js Scene]
     D --> E[WebGL2 Renderer]
     E --> F[Canvas]
     
-    G[Controls Panel] -->|Parameters| H[useSimulation Hook]
-    H -->|Debounced Updates| A
+    subgraph "Web Worker Thread"
+        J
+    end
     
     subgraph "Visualization Pipeline"
         B
@@ -392,6 +402,56 @@ graph TD
 | `components/CanvasWrapper.tsx` | React Three Fiber integration |
 | `components/ControlsPanel.tsx` | UI controls for parameters |
 | `hooks/useSimulation.ts` | Debounced state management |
+| `workers/physics.worker.ts` | Physics computation in Web Worker |
+| `workers/physics-client.ts` | Worker client with fallback support |
+
+## Web Worker Architecture
+
+Physics computations are offloaded to a dedicated Web Worker to keep the UI responsive during complex simulations. This is especially important for higher grid resolutions and orbital motion.
+
+### Message Protocol
+
+```mermaid
+sequenceDiagram
+    participant Main as Main Thread
+    participant Worker as Physics Worker
+
+    Main->>Worker: INIT
+    Worker-->>Main: READY
+
+    Main->>Worker: COMPUTE (config)
+    Worker-->>Main: RESULT (samples) or ERROR
+
+    Main->>Worker: TERMINATE
+    Worker-->>Main: (closes)
+```
+
+### Message Types
+
+| Message | Direction | Description |
+|---------|-----------|-------------|
+| `INIT` | Main → Worker | Initialize the worker |
+| `READY` | Worker → Main | Worker is ready to receive requests |
+| `COMPUTE` | Main → Worker | Request curvature computation with config |
+| `RESULT` | Worker → Main | Computation result with samples |
+| `ERROR` | Worker → Main | Error with code and message |
+| `TERMINATE` | Main → Worker | Clean up and close worker |
+
+### Fallback Mode
+
+When Web Workers are not available (e.g., SSR, older browsers), the physics client automatically falls back to main thread computation. The fallback:
+
+- Uses `setTimeout(0)` to allow UI updates between blocking computations
+- Produces identical results to worker-based computation
+- Logs a warning when fallback is activated
+
+### Troubleshooting Worker Issues
+
+| Issue | Solution |
+|-------|----------|
+| Worker fails to initialize | Check browser console for errors; fallback will be used |
+| Computation timeout | Reduce grid resolution or simplify scenario |
+| "Worker terminated" error | Reset the simulation or reload the page |
 
 ## Physics Engine
 

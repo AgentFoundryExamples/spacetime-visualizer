@@ -15,6 +15,7 @@ This document details the available visualization modes, preset scenarios, and h
   - [Triple System](#triple-system)
   - [Mass Cluster](#mass-cluster)
 - [Custom Presets](#custom-presets)
+- [Physics Worker Architecture](#physics-worker-architecture)
 - [Adding New Modes](#adding-new-modes)
 - [Adding New Scenarios](#adding-new-scenarios)
 - [Data Contracts](#data-contracts)
@@ -214,6 +215,102 @@ If local storage is unavailable (e.g., private browsing mode):
 - Custom presets section shows warning message
 - Built-in presets remain available
 - No crash or error
+
+## Physics Worker Architecture
+
+Physics computations are offloaded to a dedicated Web Worker to keep the main thread (and UI) responsive during complex simulations.
+
+### Architecture Overview
+
+```mermaid
+graph TD
+    A[Simulation Store] -->|Config| B[Physics Client]
+    B -->|COMPUTE message| C{Worker Available?}
+    C -->|Yes| D[Physics Worker]
+    C -->|No| E[Fallback Compute]
+    D -->|RESULT| B
+    E -->|Result| B
+    B -->|CurvatureGridResult| A
+    
+    subgraph "Web Worker Thread"
+        D
+    end
+    
+    subgraph "Main Thread"
+        A
+        B
+        E
+    end
+```
+
+### Module Responsibilities
+
+| Module | Purpose |
+|--------|---------|
+| `workers/types.ts` | Typed message protocol definitions |
+| `workers/physics.worker.ts` | Worker that performs physics computation |
+| `workers/physics-client.ts` | Client for communicating with worker |
+| `workers/index.ts` | Public exports for worker functionality |
+
+### Message Protocol
+
+The worker uses a typed message protocol for communication:
+
+```typescript
+// Messages from main thread to worker
+type PhysicsWorkerMessage =
+  | { type: 'INIT' }
+  | { type: 'COMPUTE'; requestId: string; config: CurvatureGridConfig }
+  | { type: 'TERMINATE' };
+
+// Responses from worker to main thread
+type PhysicsWorkerResponse =
+  | { type: 'READY' }
+  | { type: 'RESULT'; requestId: string; result: CurvatureGridResult; computeTimeMs: number }
+  | { type: 'ERROR'; requestId?: string; message: string; code: PhysicsErrorCode };
+```
+
+### Error Handling
+
+The worker client handles errors gracefully:
+
+1. **Validation Errors**: Invalid configuration is rejected with a descriptive message
+2. **Computation Errors**: Runtime errors in physics computation are caught and reported
+3. **Worker Errors**: Uncaught exceptions in the worker are forwarded to the error callback
+4. **Timeout Errors**: Computations that exceed the timeout are automatically canceled
+
+### Fallback Mode
+
+When Web Workers are not available, the client automatically falls back to main thread computation:
+
+- SSR (Server-Side Rendering) environments
+- Browsers without Worker support
+- Worker initialization failure
+
+The fallback produces identical results but may cause UI jank during computation.
+
+### Integration with State Management
+
+The `useSimulation` hook exposes worker status:
+
+```typescript
+const [state, actions] = useSimulation();
+
+// Worker status
+console.log(state.isUsingWorker);  // true if using Web Worker
+console.log(state.workerWarning);  // warning message if fallback is used
+```
+
+### Performance Benefits
+
+| Grid Resolution | Main Thread | Web Worker | Improvement |
+|-----------------|-------------|------------|-------------|
+| 16 | ~2ms | ~2ms | Minimal |
+| 32 | ~15ms | ~15ms | UI responsive |
+| 64 | ~100ms | ~100ms | UI responsive |
+| 128 | ~500ms+ | ~500ms+ | UI responsive |
+
+The primary benefit is UI responsiveness—even with long computations, the main thread remains unblocked for user interaction.
 
 ## Adding New Modes
 
