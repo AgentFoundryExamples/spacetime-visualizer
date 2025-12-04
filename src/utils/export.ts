@@ -740,7 +740,8 @@ export async function captureGif(
     // Download the GIF
     downloadBlob(blob, filename);
 
-    onProgress?.(100, 'GIF saved (static preview - animated GIF requires gif.js)!');
+    // Note: For animated GIF support, integrate gif.js or similar encoder
+    onProgress?.(100, 'GIF saved (static preview)!');
 
     return { success: true, filename };
   } catch (error) {
