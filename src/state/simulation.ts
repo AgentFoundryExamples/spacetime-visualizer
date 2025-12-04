@@ -555,6 +555,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 
 /**
  * Samples current mass positions and adds them to trail history.
+ * Uses in-place modification when possible to reduce allocations.
  * Prunes old points if buffer exceeds maxPoints.
  */
 function sampleTrails(
@@ -566,26 +567,37 @@ function sampleTrails(
   // Only sample masses that have orbital parameters (moving masses)
   const orbitalMasses = masses.filter((m) => m.orbit !== undefined);
 
+  // Build a Map for O(1) trail lookups
+  const trailMap = new Map<string, MassTrail>();
+  for (const trail of currentTrails) {
+    trailMap.set(trail.massId, trail);
+  }
+
   return orbitalMasses.map((mass) => {
-    // Find existing trail for this mass or create new
-    const existingTrail = currentTrails.find((t) => t.massId === mass.id);
+    // Find existing trail for this mass using O(1) lookup
+    const existingTrail = trailMap.get(mass.id);
     const existingPoints = existingTrail?.points ?? [];
 
-    // Add new point
+    // Create new point
     const newPoint: TrailPoint = {
       position: [...mass.position] as [number, number, number],
       timestamp,
     };
 
-    // Prune to maxPoints (keep newest)
-    const allPoints = [...existingPoints, newPoint];
-    const prunedPoints = allPoints.length > maxPoints
-      ? allPoints.slice(allPoints.length - maxPoints)
-      : allPoints;
+    // Optimize array operations based on current size
+    let newPoints: TrailPoint[];
+    if (existingPoints.length >= maxPoints) {
+      // At max capacity: shift out oldest and push new (avoid creating intermediate array)
+      newPoints = existingPoints.slice(1);
+      newPoints.push(newPoint);
+    } else {
+      // Under capacity: just append
+      newPoints = [...existingPoints, newPoint];
+    }
 
     return {
       massId: mass.id,
-      points: prunedPoints,
+      points: newPoints,
     };
   });
 }

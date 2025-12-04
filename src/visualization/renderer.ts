@@ -381,6 +381,10 @@ export interface TrailRenderData {
  * Builds trail render data from trail history.
  * Creates line geometry data with fading colors (older = more transparent).
  *
+ * Note: This function allocates new TypedArrays. For animation updates where
+ * point counts remain stable, use updateTrailLine() instead to reuse buffers
+ * and reduce garbage collection pressure.
+ *
  * @param trail - Trail history for a mass
  * @param baseColor - Base color for the trail (CSS color string)
  * @returns Trail render data for creating line geometry
