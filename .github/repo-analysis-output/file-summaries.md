@@ -56,8 +56,8 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 13.40 KB  
-**LOC:** 305  
+**Size:** 13.62 KB  
+**LOC:** 311  
 **TODOs/FIXMEs:** 0  
 
 ## src/hooks/index.ts
@@ -92,8 +92,8 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 7.59 KB  
-**LOC:** 185  
+**Size:** 11.52 KB  
+**LOC:** 287  
 **TODOs/FIXMEs:** 0  
 
 ## src/hooks/useSimulation.ts
@@ -101,8 +101,8 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 12.48 KB  
-**LOC:** 364  
+**Size:** 13.18 KB  
+**LOC:** 391  
 **TODOs/FIXMEs:** 0  
 
 ## src/physics/curvature.ts
@@ -173,8 +173,8 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 12.16 KB  
-**LOC:** 339  
+**Size:** 16.75 KB  
+**LOC:** 483  
 **TODOs/FIXMEs:** 0  
 
 ## src/test/setup.ts
@@ -308,8 +308,8 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 10.81 KB  
-**LOC:** 266  
+**Size:** 16.45 KB  
+**LOC:** 397  
 **TODOs/FIXMEs:** 0  
 
 ## src/visualization/renderer.ts
@@ -317,8 +317,8 @@ Total files: 41
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 11.56 KB  
-**LOC:** 280  
+**Size:** 15.72 KB  
+**LOC:** 398  
 **TODOs/FIXMEs:** 0  
 
 ## src/workers/index.ts
