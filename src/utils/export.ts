@@ -211,7 +211,7 @@ export function clampGifDuration(duration: number): number {
 export function clampMp4Duration(duration: number): number {
   const clamped = Math.min(Math.max(1, duration), MAX_MP4_DURATION);
   if (duration > MAX_MP4_DURATION) {
-    console.warn(`MP4 duration clamped from ${duration}s to ${clamped}s`);
+    console.warn(`MP4 duration clamped from ${duration}s to ${clamped}s (max ${MAX_MP4_DURATION}s)`);
   }
   return clamped;
 }
@@ -575,10 +575,14 @@ export async function captureFrameSequence(
 
 /**
  * Simple GIF encoder using browser-native capabilities.
- * Creates an animated GIF by encoding each frame.
  *
- * Note: This is a simplified implementation. For production use,
- * consider using a worker-based encoder like gif.js for better performance.
+ * **Important:** This is a placeholder implementation that captures frames but
+ * returns a static PNG image as a GIF fallback. For true animated GIF export,
+ * integrate a proper GIF encoder library like gif.js or use a worker-based
+ * encoding solution.
+ *
+ * The class stores all frames and their metadata, ready for integration with
+ * a proper GIF encoding library.
  */
 export class SimpleGifEncoder {
   /** Width of the GIF in pixels */
@@ -600,6 +604,7 @@ export class SimpleGifEncoder {
 
   /**
    * Adds a frame to the GIF.
+   * Frames are stored as PNG data URLs for later encoding.
    */
   addFrame(canvas: HTMLCanvasElement): void {
     // Convert canvas to data URL with quality adjustment
@@ -608,35 +613,44 @@ export class SimpleGifEncoder {
   }
 
   /**
-   * Creates a simple animated GIF placeholder.
-   * Note: True GIF encoding requires a proper encoder library.
-   * This implementation creates a zip of PNG frames as a fallback.
+   * Returns all captured frame data URLs.
+   * Useful for integration with external GIF encoders.
+   */
+  getFrames(): string[] {
+    return [...this.frames];
+  }
+
+  /**
+   * Encodes the captured frames into a GIF.
+   *
+   * **Note:** This is a placeholder implementation that returns the first frame
+   * as a static image. For animated GIF output, integrate a proper GIF encoder
+   * library (e.g., gif.js) and use the following metadata:
+   * - `this.width`, `this.height`: Canvas dimensions
+   * - `this.delay`: Delay between frames in milliseconds
+   * - `this.quality`: Quality setting (1-20)
+   * - `this.getFrames()`: Array of PNG data URLs
+   *
+   * @returns A Blob containing the GIF (currently static first frame)
    */
   async encode(): Promise<Blob> {
     if (this.frames.length === 0) {
       throw new Error('No frames to encode');
     }
 
-    // For browsers that support it, use the WebCodecs API or canvas animation
-    // Fallback: Create a simple format that indicates GIF capability
-    // In production, this would use gif.js or similar library
-
-    // For now, return the first frame as a static image
-    // A proper implementation would use gif.js worker with:
-    // - width/height: this.width, this.height
-    // - delay: this.delay (ms between frames)
-    // - quality: this.quality (1-20)
-    // - frames: this.frames (array of data URLs)
+    // TODO: Integrate proper GIF encoder (gif.js or similar)
+    // For now, return the first frame as a static image placeholder
+    // This allows the UI flow to work while waiting for proper GIF library integration
     const response = await fetch(this.frames[0]);
     const firstFrameBlob = await response.blob();
 
-    // Create a simple GIF-like container
-    // In reality, you'd want to use a proper GIF encoder
+    // Return with image/gif MIME type
+    // Note: This is technically a PNG with GIF mime type as a placeholder
     return new Blob([firstFrameBlob], { type: 'image/gif' });
   }
 
   /**
-   * Gets the frame count.
+   * Gets the number of captured frames.
    */
   get frameCount(): number {
     return this.frames.length;

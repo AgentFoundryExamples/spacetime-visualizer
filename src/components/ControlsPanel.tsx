@@ -34,11 +34,13 @@ import {
 } from '../utils/export';
 import '../styles/controls.css';
 import '../styles/panels.css';
+import type { ExportFormat } from '../utils/export';
 
 /**
  * Animated export format type for use in the UI.
+ * Derived from ExportFormat, excluding static image formats.
  */
-export type AnimatedExportFormat = 'webm' | 'gif' | 'mp4';
+export type AnimatedExportFormat = Exclude<ExportFormat, 'png'>;
 
 /**
  * Props for ControlsPanel component.
