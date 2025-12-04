@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "total_files": 38,
+  "total_files": 40,
   "files": [
     {
       "schema_version": "2.0",
@@ -95,8 +95,36 @@
       "summary": "TypeScript main entry point (role: entry-point)",
       "summary_text": "TypeScript main entry point (role: entry-point)",
       "metrics": {
-        "size_bytes": 1410,
-        "loc": 23,
+        "size_bytes": 1468,
+        "loc": 24,
+        "todo_count": 0
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "path": "src/hooks/useOrbitAnimation.test.ts",
+      "language": "TypeScript",
+      "role": "implementation",
+      "role_justification": "general implementation file (default classification)",
+      "summary": "TypeScript core implementation",
+      "summary_text": "TypeScript core implementation",
+      "metrics": {
+        "size_bytes": 18394,
+        "loc": 438,
+        "todo_count": 0
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "path": "src/hooks/useOrbitAnimation.ts",
+      "language": "TypeScript",
+      "role": "implementation",
+      "role_justification": "general implementation file (default classification)",
+      "summary": "TypeScript core implementation",
+      "summary_text": "TypeScript core implementation",
+      "metrics": {
+        "size_bytes": 3627,
+        "loc": 70,
         "todo_count": 0
       }
     },
@@ -123,8 +151,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 11919,
-        "loc": 335,
+        "size_bytes": 12351,
+        "loc": 349,
         "todo_count": 0
       }
     },
@@ -235,8 +263,8 @@
       "summary": "TypeScript core implementation",
       "summary_text": "TypeScript core implementation",
       "metrics": {
-        "size_bytes": 10341,
-        "loc": 300,
+        "size_bytes": 11430,
+        "loc": 311,
         "todo_count": 0
       }
     },

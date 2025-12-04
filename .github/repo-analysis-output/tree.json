@@ -184,6 +184,14 @@
             },
             {
               "type": "file",
+              "name": "useOrbitAnimation.test.ts"
+            },
+            {
+              "type": "file",
+              "name": "useOrbitAnimation.ts"
+            },
+            {
+              "type": "file",
               "name": "useSimulation.test.ts"
             },
             {

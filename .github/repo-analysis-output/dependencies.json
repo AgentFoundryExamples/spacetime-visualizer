@@ -74,6 +74,29 @@
       }
     },
     {
+      "id": "src/hooks/useOrbitAnimation.test.ts",
+      "path": "src/hooks/useOrbitAnimation.test.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "@testing-library/react",
+          "vitest"
+        ]
+      }
+    },
+    {
+      "id": "src/hooks/useOrbitAnimation.ts",
+      "path": "src/hooks/useOrbitAnimation.ts",
+      "type": "file",
+      "external_dependencies": {
+        "stdlib": [],
+        "third-party": [
+          "react"
+        ]
+      }
+    },
+    {
       "id": "src/hooks/useSimulation.test.ts",
       "path": "src/hooks/useSimulation.test.ts",
       "type": "file",
@@ -403,6 +426,18 @@
     {
       "source": "src/content/strings.test.ts",
       "target": "src/content/strings.ts"
+    },
+    {
+      "source": "src/hooks/useOrbitAnimation.test.ts",
+      "target": "src/hooks/useOrbitAnimation.ts"
+    },
+    {
+      "source": "src/hooks/useOrbitAnimation.test.ts",
+      "target": "src/state/simulation.ts"
+    },
+    {
+      "source": "src/hooks/useOrbitAnimation.ts",
+      "target": "src/state/simulation.ts"
     },
     {
       "source": "src/hooks/useSimulation.test.ts",

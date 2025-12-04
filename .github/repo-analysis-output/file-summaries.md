@@ -4,7 +4,7 @@ Heuristic summaries of source files based on filenames, extensions, and paths.
 
 Schema Version: 2.0
 
-Total files: 38
+Total files: 40
 
 ## eslint.config.js
 **Language:** JavaScript  
@@ -65,8 +65,26 @@ Total files: 38
 **Role:** entry-point  
 **Role Justification:** common entry point name 'index'  
 **Summary:** TypeScript main entry point (role: entry-point)  
-**Size:** 1.38 KB  
-**LOC:** 23  
+**Size:** 1.43 KB  
+**LOC:** 24  
+**TODOs/FIXMEs:** 0  
+
+## src/hooks/useOrbitAnimation.test.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 17.96 KB  
+**LOC:** 438  
+**TODOs/FIXMEs:** 0  
+
+## src/hooks/useOrbitAnimation.ts
+**Language:** TypeScript  
+**Role:** implementation  
+**Role Justification:** general implementation file (default classification)  
+**Summary:** TypeScript core implementation  
+**Size:** 3.54 KB  
+**LOC:** 70  
 **TODOs/FIXMEs:** 0  
 
 ## src/hooks/useSimulation.test.ts
@@ -83,8 +101,8 @@ Total files: 38
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 11.64 KB  
-**LOC:** 335  
+**Size:** 12.06 KB  
+**LOC:** 349  
 **TODOs/FIXMEs:** 0  
 
 ## src/physics/curvature.ts
@@ -155,8 +173,8 @@ Total files: 38
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 10.10 KB  
-**LOC:** 300  
+**Size:** 11.16 KB  
+**LOC:** 311  
 **TODOs/FIXMEs:** 0  
 
 ## src/test/setup.ts
