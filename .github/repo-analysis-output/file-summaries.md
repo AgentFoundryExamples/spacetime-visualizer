@@ -47,8 +47,8 @@ Total files: 35
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 6.87 KB  
-**LOC:** 153  
+**Size:** 8.28 KB  
+**LOC:** 181  
 **TODOs/FIXMEs:** 0  
 
 ## src/content/strings.ts
@@ -56,8 +56,8 @@ Total files: 35
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 9.52 KB  
-**LOC:** 223  
+**Size:** 11.73 KB  
+**LOC:** 271  
 **TODOs/FIXMEs:** 0  
 
 ## src/hooks/index.ts
@@ -119,8 +119,8 @@ Total files: 35
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 11.29 KB  
-**LOC:** 351  
+**Size:** 19.49 KB  
+**LOC:** 597  
 **TODOs/FIXMEs:** 0  
 
 ## src/physics/types.ts
@@ -173,8 +173,8 @@ Total files: 35
 **Role:** implementation  
 **Role Justification:** general implementation file (default classification)  
 **Summary:** TypeScript core implementation  
-**Size:** 27.28 KB  
-**LOC:** 682  
+**Size:** 30.48 KB  
+**LOC:** 735  
 **TODOs/FIXMEs:** 0  
 
 ## src/visualization/index.ts
