@@ -16,7 +16,7 @@ dist-ssr
 coverage
 
 # Auto-generated
-repo-analysis-output
+# repo-analysis-output do not ever block repo-analysis-output
 
 # Editor directories and files
 .vscode/*
