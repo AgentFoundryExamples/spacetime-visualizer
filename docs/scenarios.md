@@ -19,6 +19,7 @@ This document details the available visualization modes, preset scenarios, and h
   - [Hierarchical Triple](#hierarchical-triple) (v0.2)
   - [Black Hole Inspiral](#black-hole-inspiral) (v0.2)
 - [Custom Presets](#custom-presets)
+- [Exporting Visuals](#exporting-visuals)
 - [Physics Worker Architecture](#physics-worker-architecture)
 - [Adding New Modes](#adding-new-modes)
 - [Adding New Scenarios](#adding-new-scenarios)
@@ -283,6 +284,99 @@ If local storage is unavailable (e.g., private browsing mode):
 - Custom presets section shows warning message
 - Built-in presets remain available
 - No crash or error
+
+## Exporting Visuals
+
+The Spacetime Visualizer supports exporting screenshots and video recordings of the current visualization.
+
+### Export Architecture
+
+```mermaid
+graph TD
+    A[Export Controls] -->|Trigger| B{Export Type}
+    B -->|PNG| C[Canvas toDataURL]
+    B -->|WebM| D[MediaRecorder API]
+    C --> E[Download Blob]
+    D --> F[Stream Capture]
+    F --> G[Collect Chunks]
+    G --> E
+    E --> H[Browser Download]
+    
+    subgraph "Progress Tracking"
+        I[Export Queue Manager]
+        J[Progress Callback]
+    end
+    
+    A --> I
+    I --> J
+```
+
+### Supported Formats
+
+| Format | Type | Browser Support |
+|--------|------|-----------------|
+| PNG | Screenshot | All modern browsers |
+| WebM (VP9) | Video | Chrome, Firefox, Edge |
+| WebM (VP8) | Video | Chrome, Firefox, Edge, Safari 16.4+ |
+
+### Screenshot Export (PNG)
+
+1. Navigate to the **Export** section in the Controls panel
+2. Click **📷 Screenshot (PNG)**
+3. The current canvas state is captured and downloaded
+
+**Features:**
+- Preserves current visualization mode and camera position
+- Uses `preserveDrawingBuffer: true` for reliable capture
+- Automatically generates timestamped filename
+
+### Video Recording (WebM)
+
+1. Navigate to the **Export** section in the Controls panel
+2. Adjust the **Duration** slider (1-30 seconds)
+3. Click **🎬 Record Video**
+4. The recording captures the live canvas for the specified duration
+5. When complete, the video file downloads automatically
+
+**Features:**
+- Records at 30 FPS with 5 Mbps bitrate
+- Shows real-time progress indicator
+- Captures animations, orbital motion, and camera movements
+- Uses browser-native MediaRecorder API (no external dependencies)
+
+### Progress Indicators
+
+During export operations:
+- Progress bar shows completion percentage
+- Status message describes current operation
+- Controls are disabled to prevent conflicts
+
+### Edge Cases and Limitations
+
+| Scenario | Behavior |
+|----------|----------|
+| Rapid export triggers | Queued, executed sequentially |
+| Browser lacks MediaRecorder | Video button shows unsupported message |
+| Export during computation | Allowed, captures current state |
+| Large resolution export | Clamped to 4096×4096 max |
+| Video duration > 30s | Clamped to 30 seconds |
+
+### Browser Compatibility
+
+| Feature | Chrome | Firefox | Safari | Edge |
+|---------|--------|---------|--------|------|
+| PNG Screenshots | ✅ | ✅ | ✅ | ✅ |
+| WebM Video (VP9) | ✅ | ✅ | ❌ | ✅ |
+| WebM Video (VP8) | ✅ | ✅ | ✅ 16.4+ | ✅ |
+
+### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Black screenshot | Ensure visualization is loaded before export |
+| Video not recording | Check browser supports MediaRecorder API |
+| Download blocked | Allow downloads from the site in browser settings |
+| Memory issues | Reduce recording duration or canvas size |
 
 ## Physics Worker Architecture
 

@@ -281,6 +281,43 @@
   cursor: not-allowed;
 }
 
+/* Export section styles */
+.export-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.export-progress-bar {
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.export-progress-fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+.export-progress-text {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.export-success {
+  background: rgba(78, 205, 196, 0.1);
+  border: 1px solid #4ecdc4;
+  border-radius: 4px;
+  padding: var(--spacing-sm);
+  font-size: 0.75rem;
+  color: #4ecdc4;
+  text-align: center;
+}
+
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
   .controls-panel {

@@ -16,6 +16,7 @@
 
 import { ControlsPanel } from './ControlsPanel';
 import type { UseSimulationState, UseSimulationActions } from '../hooks';
+import type { ExportState } from '../utils/export';
 
 /**
  * Props for Sidebar component.
@@ -25,12 +26,24 @@ export interface SidebarProps {
   state?: UseSimulationState;
   /** Simulation actions from useSimulation hook */
   actions?: UseSimulationActions;
+  /** Export state for tracking export progress */
+  exportState?: ExportState;
+  /** Handler for PNG screenshot export */
+  onExportPng?: () => void;
+  /** Handler for video recording export */
+  onExportVideo?: (duration: number) => void;
 }
 
 /**
  * Sidebar component providing UI for simulation controls.
  */
-export function Sidebar({ state, actions }: SidebarProps) {
+export function Sidebar({
+  state,
+  actions,
+  exportState,
+  onExportPng,
+  onExportVideo,
+}: SidebarProps) {
   return (
     <aside className="sidebar">
       <header className="sidebar-header">
@@ -38,7 +51,13 @@ export function Sidebar({ state, actions }: SidebarProps) {
       </header>
       <div className="sidebar-content">
         {state && actions ? (
-          <ControlsPanel state={state} actions={actions} />
+          <ControlsPanel
+            state={state}
+            actions={actions}
+            exportState={exportState}
+            onExportPng={onExportPng}
+            onExportVideo={onExportVideo}
+          />
         ) : (
           <p className="sidebar-placeholder">
             Simulation controls will appear here.

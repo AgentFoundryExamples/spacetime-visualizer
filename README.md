@@ -96,6 +96,24 @@ Enable dynamic orbital motion for scenarios with defined orbits (e.g., Binary Or
 | Refresh | Force recompute curvature |
 | Reset All | Reset to initial state |
 
+### Export Controls
+
+Capture and share your visualizations:
+
+| Control | Function |
+|---------|----------|
+| Screenshot (PNG) | Capture the current view as a PNG image |
+| Record Video | Record a WebM video of the visualization |
+| Duration slider | Set video recording duration (1-30 seconds) |
+
+**Export Features:**
+- **PNG Screenshots**: Instant capture of the current canvas state
+- **WebM Video**: Records live animations, camera movements, and orbital motion
+- **Progress Indicator**: Shows export progress with status messages
+- **Queue Management**: Multiple export requests are handled sequentially
+
+For detailed export documentation, see [docs/scenarios.md](docs/scenarios.md#exporting-visuals).
+
 ### Educational Panel
 
 The expandable educational panel explains the current visualization mode and scenario, helping users understand the physics being displayed. It includes:
@@ -683,6 +701,23 @@ npm run build
    - Click Refresh → should recompute curvature
    - Click Reset All → should return to initial state
 
+9. **Test export controls** (Chrome/Firefox recommended):
+   - Scroll to "Export" section in controls panel
+   - Click "📷 Screenshot (PNG)" → should download PNG file
+   - Adjust duration slider → value should update (1-30s)
+   - Click "🎬 Record Video" → progress bar should appear
+   - Wait for recording to complete → should download WebM file
+   - Verify downloaded files open correctly
+
+### Export Manual Checklist
+
+| Browser | PNG Screenshot | Video Recording | Notes |
+|---------|---------------|-----------------|-------|
+| Chrome | ☐ | ☐ | Primary test browser |
+| Firefox | ☐ | ☐ | VP9 codec |
+| Safari | ☐ | ☐ | VP8 fallback (16.4+) |
+| Edge | ☐ | ☐ | Chromium-based |
+
 ### Production Build Verification
 
 ```bash
@@ -691,7 +726,7 @@ npm run build
 npm run preview
 ```
 
-Open `http://localhost:4173` and repeat steps 3-8 above.
+Open `http://localhost:4173` and repeat steps 3-9 above.
 
 ## Release Documentation
 
