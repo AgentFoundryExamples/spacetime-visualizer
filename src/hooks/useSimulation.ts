@@ -85,6 +85,10 @@ export interface UseSimulationState {
   config: CurvatureGridConfig;
   /** Whether the configuration has been modified from the preset */
   hasUnsavedChanges: boolean;
+  /** Whether orbital motion is enabled */
+  orbitsEnabled: boolean;
+  /** Current simulation time */
+  simulationTime: number;
 }
 
 /**
@@ -113,6 +117,12 @@ export interface UseSimulationActions {
   recompute: () => void;
   /** Reset simulation to initial state */
   reset: () => void;
+  /** Enable or disable orbital motion */
+  setOrbitsEnabled: (enabled: boolean) => void;
+  /** Advance simulation time for orbital motion */
+  advanceSimulationTime: (deltaTime: number) => void;
+  /** Reset simulation time to zero */
+  resetSimulationTime: () => void;
 }
 
 /**
@@ -151,6 +161,8 @@ export function useSimulation(
     currentPreset,
     config,
     visualizationMode,
+    orbitsEnabled,
+    simulationTime,
     loadScenario: storeLoadScenario,
     loadCustomConfig: storeLoadCustomConfig,
     setVisualizationMode: storeSetVisualizationMode,
@@ -158,6 +170,9 @@ export function useSimulation(
     updateMass: storeUpdateMass,
     compute: storeCompute,
     reset: storeReset,
+    setOrbitsEnabled: storeSetOrbitsEnabled,
+    advanceSimulationTime: storeAdvanceSimulationTime,
+    resetSimulationTime: storeResetSimulationTime,
   } = useSimulationStore();
 
   // Calculate resolution warning
@@ -320,6 +335,24 @@ export function useSimulation(
     storeReset();
   }, [storeReset]);
 
+  const setOrbitsEnabled = useCallback(
+    (enabled: boolean) => {
+      storeSetOrbitsEnabled(enabled);
+    },
+    [storeSetOrbitsEnabled]
+  );
+
+  const advanceSimulationTime = useCallback(
+    (deltaTime: number) => {
+      storeAdvanceSimulationTime(deltaTime);
+    },
+    [storeAdvanceSimulationTime]
+  );
+
+  const resetSimulationTime = useCallback(() => {
+    storeResetSimulationTime();
+  }, [storeResetSimulationTime]);
+
   const state: UseSimulationState = {
     isComputing,
     error,
@@ -332,6 +365,8 @@ export function useSimulation(
     visualizationMode,
     config,
     hasUnsavedChanges,
+    orbitsEnabled,
+    simulationTime,
   };
 
   const actions: UseSimulationActions = {
@@ -346,6 +381,9 @@ export function useSimulation(
     resetCamera,
     recompute,
     reset,
+    setOrbitsEnabled,
+    advanceSimulationTime,
+    resetSimulationTime,
   };
 
   return [state, actions];

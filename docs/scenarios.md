@@ -92,15 +92,16 @@ A single point mass at the center demonstrating spherically symmetric curvature.
 
 ### Binary Orbit
 
-Two masses in orbital configuration showing gravitational interaction.
+Two masses in orbital configuration showing gravitational interaction. This scenario supports **dynamic orbital motion** - enable orbits in the controls to see the masses revolve around their common center of mass.
 
 | Property | Value |
 |----------|-------|
 | Mass Count | 2 |
 | Separation | 2-4 units |
 | Mass Ratio | 0.5-1.0 |
+| Orbital Motion | Supported |
 
-**Physics:** Shows potential superposition and Lagrange points.
+**Physics:** Shows potential superposition and Lagrange points. When orbits are enabled, masses follow Keplerian orbital trajectories around their barycenter.
 
 ### Gravitational Wave
 
@@ -137,6 +138,45 @@ Multiple masses distributed in a cluster.
 | Radius | ~3 units |
 
 **Physics:** Shows aggregate curvature and shell theorem principles.
+
+## Orbital Motion
+
+The Spacetime Visualizer supports animated orbital motion for masses with defined orbital parameters.
+
+### Enabling Orbits
+
+1. Select a scenario that supports orbital motion (e.g., Binary Orbit)
+2. In the Controls panel, find the **Orbital Motion** section
+3. Toggle **Enable Orbits** to start the animation
+4. The curvature visualization updates in real-time as masses move
+
+### Orbital Parameters
+
+Each mass can have the following orbital parameters:
+
+| Parameter | Description | Range |
+|-----------|-------------|-------|
+| Semi-major axis | Orbital size in simulation units | 0.5-10 |
+| Eccentricity | Orbital shape (0=circular, <1=ellipse) | 0-0.95 |
+| Inclination | Tilt from XY plane in radians | -π/2 to π/2 |
+| Longitude of ascending node | Rotation in XY plane | 0-2π |
+| Argument of periapsis | Rotation within orbital plane | 0-2π |
+| Initial true anomaly | Starting position on orbit | 0-2π |
+
+### Orbital Controls
+
+| Control | Function |
+|---------|----------|
+| Enable Orbits | Toggle orbital motion on/off |
+| Reset Time | Reset simulation time to t=0 |
+| Time display | Shows current simulation time |
+
+### Physics Notes
+
+- Orbits use Keplerian mechanics in the weak-field approximation
+- The simulation time step is clamped (0.001-0.1s) to prevent numerical instability
+- For binary systems, both masses orbit around their common center of mass
+- Extremely high mass ratios may cause numerical issues and are clamped
 
 ## Custom Presets
 

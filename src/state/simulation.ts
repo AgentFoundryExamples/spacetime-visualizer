@@ -44,6 +44,7 @@ import {
   DEFAULT_TIME_STEP,
   DEFAULT_RESOLUTION,
 } from '../physics/scenarios';
+import { updateMassPositions, ORBITAL_CONSTRAINTS } from '../physics/orbit';
 import type { VisualizationMode } from '../content/strings';
 
 /**
@@ -70,6 +71,12 @@ export interface SimulationState {
 
   /** Last validation error message (null if valid) */
   error: string | null;
+
+  /** Whether orbital motion is enabled */
+  orbitsEnabled: boolean;
+
+  /** Current simulation time for orbital motion */
+  simulationTime: number;
 
   /** Load a preset scenario */
   loadScenario: (preset: ScenarioPreset, seed?: number) => void;
@@ -106,6 +113,15 @@ export interface SimulationState {
 
   /** Reset to initial state */
   reset: () => void;
+
+  /** Enable or disable orbital motion */
+  setOrbitsEnabled: (enabled: boolean) => void;
+
+  /** Update simulation time and advance orbits */
+  advanceSimulationTime: (deltaTime: number) => void;
+
+  /** Reset simulation time to zero */
+  resetSimulationTime: () => void;
 }
 
 /**
@@ -132,6 +148,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   seed: 42,
   isComputing: false,
   error: null,
+  orbitsEnabled: false,
+  simulationTime: 0,
 
   loadScenario: (preset: ScenarioPreset, seed?: number) => {
     const newSeed = seed ?? get().seed;
@@ -142,6 +160,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       currentPreset: preset,
       seed: newSeed,
       error: null,
+      simulationTime: 0, // Reset simulation time when loading a new scenario
     });
 
     // Auto-compute after loading
@@ -153,6 +172,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       config: { ...config },
       currentPreset: null,
       error: null,
+      simulationTime: 0,
     });
 
     // Auto-compute after loading
@@ -258,7 +278,74 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       seed: 42,
       isComputing: false,
       error: null,
+      orbitsEnabled: false,
+      simulationTime: 0,
     });
+  },
+
+  setOrbitsEnabled: (enabled: boolean) => {
+    set((state) => ({
+      orbitsEnabled: enabled,
+      config: {
+        ...state.config,
+        orbitsEnabled: enabled,
+      },
+    }));
+  },
+
+  advanceSimulationTime: (deltaTime: number) => {
+    const { config, orbitsEnabled, simulationTime, isComputing } = get();
+
+    // Don't advance if orbits are disabled or already computing
+    if (!orbitsEnabled || isComputing) {
+      return;
+    }
+
+    // Clamp delta time to prevent numerical instability
+    const clampedDelta = Math.min(
+      Math.max(deltaTime, ORBITAL_CONSTRAINTS.minTimeStep),
+      ORBITAL_CONSTRAINTS.maxTimeStep
+    );
+
+    const newTime = simulationTime + clampedDelta;
+
+    // Update mass positions based on orbital parameters
+    const updatedMasses = updateMassPositions(config.masses, newTime);
+
+    set({
+      simulationTime: newTime,
+      config: {
+        ...config,
+        masses: updatedMasses,
+      },
+    });
+
+    // Trigger curvature recomputation
+    get().compute();
+  },
+
+  resetSimulationTime: () => {
+    const { config, currentPreset, seed } = get();
+
+    // To ensure a true reset, reload the original scenario config
+    // before recalculating positions at t=0.
+    const initialConfig = currentPreset
+      ? getScenarioConfig(currentPreset, seed)
+      : config;
+
+    // Reset positions to t=0 using the pristine config
+    const updatedMasses = updateMassPositions(initialConfig.masses, 0);
+
+    set({
+      simulationTime: 0,
+      config: {
+        ...initialConfig,
+        masses: updatedMasses,
+      },
+    });
+
+    // Trigger curvature recomputation
+    get().compute();
   },
 }));
 
